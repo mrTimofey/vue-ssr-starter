@@ -11,7 +11,7 @@
 		p Test: {{ test }}, message: {{ message }}
 		input(v-model="test" required)
 </template>
-<style lang="stylus">
+<style lang="stylus" rel="stylesheet/stylus">
 	#app p
 		background gray
 		color white

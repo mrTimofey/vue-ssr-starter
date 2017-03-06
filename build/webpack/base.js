@@ -1,6 +1,9 @@
 const path = require('path');
 const koutoSwiss = require('kouto-swiss');
 
+const stylusQuery = 'compress&import[]=' + path.resolve(process.cwd(), 'node_modules/kouto-swiss/index.styl');
+const pugQuery = 'doctype=html&basedir=' + path.resolve(process.cwd(), 'src');
+
 module.exports = {
 	devtool: false,
 	output: {
@@ -15,11 +18,9 @@ module.exports = {
 				loader: 'vue-loader',
 				options: {
 					loaders: {
-						pug: 'vue-loader/lib/template-loader?raw&engine=pug&doctype=html&basedir=' + path.resolve(process.cwd(), 'src'),
-						stylus: 'vue-style-loader!css-loader!stylus-loader?compress&import[]=' + path.resolve(process.cwd(), 'node_modules/kouto-swiss/index.styl')
+						pug: 'vue-loader/lib/template-loader?raw&engine=pug&' + pugQuery,
+						stylus: 'vue-style-loader!css-loader!stylus-loader?' + stylusQuery
 					}
-					// require("pug-loader!../node_modules/vue-loader/lib/selector?type=template&index=0!./app.vue")
-					// require("../node_modules/vue-loader/lib/template-loader?raw&engine=pug!../node_modules/vue-loader/lib/selector?type=template&index=0!./app.vue")
 				}
 			},
 			{
@@ -28,18 +29,11 @@ module.exports = {
 			},
 			{
 				test: /\.styl$/,
-				loader: 'stylus-loader',
-				options: {
-					use: [koutoSwiss()]
-				}
+				loader: 'css-loader!stylus-loader?' + stylusQuery
 			},
 			{
 				test: /\.pug$/,
-				loader: 'pug-loader',
-				options: {
-					doctype: 'html',
-					basedir: path.resolve(process.cwd(), 'src')
-				}
+				loader: 'pug-loader?' + pugQuery
 			}
 		]
 	},
