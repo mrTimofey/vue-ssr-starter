@@ -9,7 +9,7 @@
 <template lang="pug">
 	#app
 		p Test: {{ test }}, message: {{ message }}
-		input(v-model="test")
+		input(v-model="test" required)
 </template>
 <style lang="stylus">
 	#app p

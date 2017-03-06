@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const express = require('express');
+const serialize = require('serialize-javascript');
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -22,6 +23,7 @@ app.use('/dist', express.static('./dist'));
 app.get('/favicon.ico', (req, res) => {
 	res.status(404).end('Not found');
 });
+
 app.get('*', (req, res) => {
 	if (!renderer) return res.end('Compiling app, refresh in a moment...');
 
@@ -40,7 +42,7 @@ app.get('*', (req, res) => {
 	});
 
 	stream.on('end', () => {
-		if (context.initialState) res.write(`<script>window.__INITIAL_STATE__=${JSON.stringify(context.initialState)}</script>`);
+		if (context.initialState) res.write(`<script>window.__INITIAL_STATE__=${serialize(context.initialState)}</script>`);
 		res.end(layout.tail);
 	});
 
