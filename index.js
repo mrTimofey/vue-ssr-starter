@@ -2,13 +2,30 @@ const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const serialize = require('serialize-javascript');
+const vueSR = require('vue-server-renderer');
 
 const app = express();
 const port = process.env.PORT || 8080;
 const layoutPlaceholder = '<!-- APP -->';
+const production = process.env.NODE_ENV === 'production';
+const layoutFile = path.resolve('./dist/index.html');
 
-let layout = fs.readFileSync(path.resolve('./dist/index.html'), 'utf-8');
-let renderer = require('vue-server-renderer').createBundleRenderer(fs.readFileSync(path.resolve('./dist/server-bundle.js'), 'utf-8'));
+let layout, renderer;
+
+if (production) {
+	layout = fs.readFileSync(layoutFile, 'utf-8');
+	renderer = vueSR.createBundleRenderer(fs.readFileSync(path.resolve('./dist/server-bundle.js'), 'utf-8'));
+}
+else {
+	require('./build/setup-dev-server')(app, {
+		bundleUpdated(bundle) {
+			renderer = vueSR.createBundleRenderer(bundle);
+		},
+		layoutUpdated(html) {
+			layout = html;
+		}
+	});
+}
 
 function parseLayout() {
 	const i = layout.indexOf(layoutPlaceholder);

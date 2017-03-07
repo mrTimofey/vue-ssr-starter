@@ -8,7 +8,7 @@
 </script>
 <template lang="pug">
 	#app
-		p Test: {{ test }}, message: {{ message }}
+		p Test: {{ test }}, message: {{ message }} {{ test }}
 		input(v-model="test" required)
 </template>
 <style lang="stylus" rel="stylesheet/stylus">
@@ -17,4 +17,6 @@
 		color white
 		padding 10px
 		fixed false 0 0 0
+	#app input
+		background gray
 </style>

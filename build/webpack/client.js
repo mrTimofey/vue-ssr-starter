@@ -21,7 +21,7 @@ module.exports = Object.assign({}, base, {
 			name: 'vendor'
 		}),
 		new HTMLPlugin({
-			template: './src/layout.pug'
+			template: 'src/layout.pug'
 		})
 	])
 });

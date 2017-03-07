@@ -1,4 +1,5 @@
 const base = require('./base');
+const webpack = require('webpack');
 
 module.exports = Object.assign({}, base, {
 	target: 'node',
@@ -7,5 +8,11 @@ module.exports = Object.assign({}, base, {
 		filename: 'server-bundle.js',
 		libraryTarget: 'commonjs2'
 	}),
-	externals: Object.keys(require('../../package.json').dependencies)
+	externals: Object.keys(require('../../package.json').dependencies),
+	plugins: [
+		new webpack.DefinePlugin({
+			'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+			'process.env.VUE_ENV': '"server"'
+		})
+	]
 });
