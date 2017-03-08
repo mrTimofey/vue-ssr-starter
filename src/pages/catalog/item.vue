@@ -6,10 +6,7 @@
 			};
 		},
 		props: ['id'],
-		routePath: ':id',
-		created() {
-			console.log(this.$options.computed);
-		}
+		routePath: ':id'
 	}
 </script>
 <template lang="pug">
