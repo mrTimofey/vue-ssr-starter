@@ -1,8 +1,16 @@
-import App from '../../src/app.vue';
 import Vue from 'vue';
+import App from '../../src/app.vue';
+import { setupPlugins, component } from './shared';
+
+setupPlugins(Vue);
+
+const app = new Vue({
+	render: h => h(App),
+	...component
+});
+const meta = app.$meta();
 
 export default context => {
-	return new Vue({
-		render: h => h(App, { props: { message: context.url }})
-	});
-};
+	context.meta = meta;
+	return app;
+}

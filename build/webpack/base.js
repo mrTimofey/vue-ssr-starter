@@ -1,5 +1,4 @@
 const path = require('path');
-const koutoSwiss = require('kouto-swiss');
 
 const stylusQuery = 'compress&import[]=' + path.resolve(process.cwd(), 'node_modules/kouto-swiss/index.styl');
 const pugQuery = 'doctype=html&basedir=' + path.resolve(process.cwd(), 'src');
@@ -19,17 +18,22 @@ module.exports = {
 				options: {
 					loaders: {
 						pug: 'vue-loader/lib/template-loader?raw&engine=pug&' + pugQuery,
-						stylus: 'vue-style-loader!css-loader!stylus-loader?' + stylusQuery
+						stylus: 'vue-style-loader!css-loader?minimize!stylus-loader?' + stylusQuery,
+						js: 'buble-loader?objectAssign=Object.assign'
 					}
 				}
 			},
 			{
 				test: /\.js$/,
-				loader: 'babel-loader'
+				loader: 'buble-loader',
+				exclude: /node_modules/,
+				options: {
+					objectAssign: 'Object.assign'
+				}
 			},
 			{
 				test: /\.styl$/,
-				loader: 'css-loader!stylus-loader?' + stylusQuery
+				loader: 'css-loader?minimize!stylus-loader?' + stylusQuery
 			},
 			{
 				test: /\.pug$/,
