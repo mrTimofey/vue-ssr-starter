@@ -1,7 +1,10 @@
 import Meta from 'vue-meta';
+import Router from 'vue-router';
+import routes from '../routes';
 
 // setup cue plugins
 export function setupPlugins(Vue) {
+	Vue.use(Router);
 	Vue.use(Meta, {
 		keyName: 'head',
 		attribute: 'data-meta',
@@ -10,5 +13,7 @@ export function setupPlugins(Vue) {
 	});
 }
 
-// fill root component with additional parameters
-export const component = {};
+// root component object
+export const component = {
+	router: new Router({ routes, mode: 'history' })
+};

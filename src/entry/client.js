@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import App from '../../src/app.vue';
+import App from '../app.vue';
 import { setupPlugins, component} from './shared';
 
 setupPlugins(Vue);

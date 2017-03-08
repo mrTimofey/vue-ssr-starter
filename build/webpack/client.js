@@ -6,12 +6,12 @@ const pug = require('pug');
 
 const config = Object.assign({}, base, {
 	entry: {
-		app: './build/entry/client.js',
+		app: './src/entry/client.js',
 		vendor: [
 			//'babel-polyfill',
 			//'axios',
 			'vue',
-			//'vue-router',
+			'vue-router',
 			//'vuex',
 			//'vuex-router-sync'
 		]

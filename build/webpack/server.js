@@ -3,7 +3,7 @@ const webpack = require('webpack');
 
 module.exports = Object.assign({}, base, {
 	target: 'node',
-	entry: './build/entry/server.js',
+	entry: './src/entry/server.js',
 	output: Object.assign({}, base.output, {
 		filename: 'server-bundle.js',
 		libraryTarget: 'commonjs2'

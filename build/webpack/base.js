@@ -33,7 +33,7 @@ module.exports = {
 			},
 			{
 				test: /\.styl$/,
-				loader: 'css-loader?minimize!stylus-loader?' + stylusQuery
+				loader: 'css-loader!stylus-loader?' + stylusQuery
 			},
 			{
 				test: /\.pug$/,
