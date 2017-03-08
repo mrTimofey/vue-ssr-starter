@@ -1,10 +1,15 @@
 <script>
 	export default {
-		head: () => ({
-			title: this.id
-		}),
+		head() {
+			return {
+				title: `Item #${this.id}`
+			};
+		},
 		props: ['id'],
-		routePath: ':id'
+		routePath: ':id',
+		created() {
+			console.log(this.$options.computed);
+		}
 	}
 </script>
 <template lang="pug">
