@@ -1,13 +1,33 @@
 <script>
-    export default {
-	    head: {
-		    title: 'App',
-		    titleTemplate: '%s | Site name',
-		    htmlAttrs: {
-			    lang: 'en'
-		    }
-	    }
-    }
+	import Vue from 'vue';
+	import Meta from 'vue-meta';
+	import Router from 'vue-router';
+	import Vuex from 'vuex';
+	import { sync } from 'vuex-router-sync';
+
+	import routes from './routes';
+
+	Vue.use(Vuex);
+	Vue.use(Router);
+	Vue.use(Meta, {
+		keyName: 'head',
+		attribute: 'data-meta',
+		ssrAttribute: 'data-meta-ssr',
+		tagIDKeyName: 'vmid'
+	});
+
+	const router = new Router({ routes, mode: 'history' });
+
+	export default {
+		router,
+		head: {
+			title: 'App',
+			titleTemplate: '%s | Site name',
+			htmlAttrs: {
+				lang: 'en'
+			}
+		}
+	};
 </script>
 <template lang="pug">
 	#app

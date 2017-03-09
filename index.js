@@ -24,7 +24,6 @@ else {
 			renderer = vueSR.createBundleRenderer(bundle);
 		},
 		layoutUpdated(html) {
-			console.log(html);
 			layout = html.split(layoutDelimeter);
 		}
 	});
