@@ -6,12 +6,13 @@ const pug = require('pug');
 
 const config = Object.assign({}, base, {
 	entry: {
+		shim: 'es6-shim',
 		app: './src/entry/client.js',
 		vendor: [
-			//'babel-polyfill',
 			//'axios',
 			'vue',
 			'vue-router',
+			'vue-meta'
 			//'vuex',
 			//'vuex-router-sync'
 		]
@@ -22,7 +23,7 @@ const config = Object.assign({}, base, {
 			'process.env.VUE_ENV': '"client"'
 		}),
 		new webpack.optimize.CommonsChunkPlugin({
-			name: 'vendor'
+			names: ['shim', 'vendor']
 		}),
 		new HTMLPlugin({
 			template: 'src/layout.pug'
@@ -41,6 +42,7 @@ if (process.env.NODE_ENV === 'production') {
 	config.plugins.push(
 		new ExtractTextPlugin('styles.[hash].css'),
 		new webpack.optimize.UglifyJsPlugin({
+			comment: true,
 			compress: {
 				warnings: false
 			}

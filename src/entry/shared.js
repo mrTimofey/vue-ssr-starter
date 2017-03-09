@@ -2,7 +2,7 @@ import Meta from 'vue-meta';
 import Router from 'vue-router';
 import routes from '../routes';
 
-// setup cue plugins
+// setup vue plugins
 export function setupPlugins(Vue) {
 	Vue.use(Router);
 	Vue.use(Meta, {
