@@ -8,7 +8,6 @@ const vueSR = require('vue-server-renderer');
 const app = express();
 const port = process.env.PORT || 8080;
 // marker to be replaced with additional head tags and an actual application content
-const layoutDelimeter = 'INJECT-HERE';
 const production = process.env.NODE_ENV === 'production';
 const layoutFile = path.resolve('./dist/index.html');
 
