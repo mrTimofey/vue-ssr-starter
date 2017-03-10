@@ -22,7 +22,7 @@
 		router,
 		head: {
 			title: 'App',
-			titleTemplate: '%s | Site name',
+			titleTemplate: '%s | App',
 			htmlAttrs: {
 				lang: 'en'
 			}

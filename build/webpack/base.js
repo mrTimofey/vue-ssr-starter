@@ -19,7 +19,7 @@ module.exports = {
 					loaders: {
 						pug: 'vue-loader/lib/template-loader?raw&engine=pug&' + pugQuery,
 						stylus: 'vue-style-loader!css-loader?minimize!stylus-loader?' + stylusQuery,
-						js: 'buble-loader?objectAssign=Object.assign'
+						js: 'buble-loader?objectAssign=Object.assign&transforms[dangerousForOf]=true&transforms[modules]=false'
 					}
 				}
 			},
@@ -28,7 +28,11 @@ module.exports = {
 				loader: 'buble-loader',
 				exclude: /node_modules/,
 				options: {
-					objectAssign: 'Object.assign'
+					objectAssign: 'Object.assign',
+					transforms: {
+						dangerousForOf: true,
+						modules: false
+					}
 				}
 			},
 			{

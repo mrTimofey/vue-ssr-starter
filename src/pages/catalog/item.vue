@@ -10,5 +10,5 @@
 	}
 </script>
 <template lang="pug">
-	h1!='Catalog item #{{ id }}'
+	h1!='Item #{{ id }}'
 </template>

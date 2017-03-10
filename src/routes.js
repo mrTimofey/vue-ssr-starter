@@ -1,11 +1,24 @@
 const requirePage = require.context('./pages/', true, /\.vue$/);
-export default requirePage.keys().map(name => {
-	const component = requirePage(name);
-	const path = name.substr(1, name.length - 5)
-		.replace(/\/index$/, '/') +
-		// allow components adding additional route parameters
-		(component.routePath ? ('/' + component.routePath) : '');
+const routes = [];
+let route404;
 
-	const children = component.routes || [];
-	return { component, path, children, props: component.routeProps || true };
-});
+for (let name of requirePage.keys()) {
+	let component = requirePage(name),
+		route = {
+			component,
+			path: name.substr(1, name.length - 5).replace(/\/index$/, '/') +
+				// allow components adding additional route parameters
+				(component.routePath ? ('/' + component.routePath) : ''),
+			children: component.routes || [],
+			props: component.routeProps || true
+		};
+	if (route.path === '/404') {
+		route.path = '*';
+		route404 = route;
+	}
+	else routes.push(route);
+}
+
+if (route404) routes.push(route404);
+
+export default routes;
