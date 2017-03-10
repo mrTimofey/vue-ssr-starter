@@ -9,12 +9,12 @@ const config = Object.assign({}, base, {
 		shim: 'es6-shim',
 		app: './src/entry/client.js',
 		vendor: [
-			//'axios',
+			'axios',
 			'vue',
 			'vue-router',
-			'vue-meta'
-			//'vuex',
-			//'vuex-router-sync'
+			'vue-meta',
+			'vuex',
+			'vuex-router-sync'
 		]
 	},
 	plugins: (base.plugins || []).concat([
