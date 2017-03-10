@@ -1,3 +1,8 @@
+import Vue from 'vue';
+import Router from 'vue-router';
+
+Vue.use(Router);
+
 const requirePage = require.context('./pages/', true, /\.vue$/);
 const routes = [];
 let route404;
@@ -21,4 +26,4 @@ for (let name of requirePage.keys()) {
 
 if (route404) routes.push(route404);
 
-export default routes;
+export default new Router({ routes, mode: 'history' });

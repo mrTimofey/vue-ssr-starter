@@ -1,11 +1,14 @@
-import Vue from 'vue';
-import App from '../app.vue';
-
-const app = new Vue(App);
-const meta = app.$meta();
+import app from './app';
 
 export default context => {
-	context.meta = meta;
 	app.$router.push(context.url);
-	return app;
+
+	return Promise.all(app.$router.getMatchedComponents().map(comp => {
+		context.meta = app.$meta();
+		comp.serverRendered = true;
+		if (comp.prefetch) return comp.prefetch(app.$store);
+	})).then(() => {
+		context.initialState = app.$store.state;
+		return app;
+	});
 }
