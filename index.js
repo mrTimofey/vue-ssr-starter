@@ -14,8 +14,39 @@ const layoutFile = path.resolve('./dist/index.html');
 
 let layout, renderer;
 
+function parseLayout(html) {
+	let layout = html.split('<html>');
+
+	const start = layout[0] + '<html';
+	layout = layout[1].split('</head>');
+	const head = '>' + layout[0];
+	layout = layout[1].split('<body>');
+	const body = '</head>' + layout[0] + '<body';
+	layout = layout[1].split('<!--APP-->');
+	const afterBody = '>' + layout[0];
+	const end = layout[1];
+
+	return [
+		// before app layout
+		(headMeta, htmlAttrs, bodyAttrs) => {
+			headMeta = headMeta || '';
+			htmlAttrs = htmlAttrs.replace('data-meta=""', '');
+			bodyAttrs = bodyAttrs.replace('data-meta=""', '');
+
+			htmlAttrs = ' data-meta-ssr' + (htmlAttrs ? (' ' + htmlAttrs) : '');
+			bodyAttrs = bodyAttrs ? (' ' + bodyAttrs.replace('data-meta=""', '')) : '';
+			return start + htmlAttrs +
+					head + headMeta +
+					body + bodyAttrs +
+					afterBody;
+		},
+		// after app layout
+		end
+	]
+}
+
 if (production) {
-	layout = fs.readFileSync(layoutFile, 'utf-8').split(layoutDelimeter);
+	layout = parseLayout(fs.readFileSync(layoutFile, 'utf-8'));
 	renderer = vueSR.createBundleRenderer(fs.readFileSync(path.resolve('./dist/server-bundle.js'), 'utf-8'));
 }
 else {
@@ -24,7 +55,7 @@ else {
 			renderer = vueSR.createBundleRenderer(bundle);
 		},
 		layoutUpdated(html) {
-			layout = html.split(layoutDelimeter);
+			layout = parseLayout(html);
 		}
 	});
 }
@@ -49,13 +80,15 @@ app.get('*', (req, res) => {
 			htmlAttrs,
 			bodyAttrs
 		} = context.meta.inject();
-		res.write(layout[0]);
-		res.write(htmlAttrs.text());
-		res.write(layout[1]);
-		res.write([meta, title, link, style, script, noscript].reduce((acc, el) => acc + el.text(), ''));
-		res.write(layout[2]);
-		res.write(bodyAttrs.text());
-		res.write(layout[3]);
+
+		res.write(layout[0](
+			// <head> ...
+			[meta, title, link, style, script, noscript].reduce((acc, el) => acc + el.text(), ''),
+			// <html ATTRS>
+			htmlAttrs.text(),
+			// <body ATTRS>
+			bodyAttrs.text()
+		));
 	});
 
 	stream.on('data', chunk => {
@@ -64,7 +97,7 @@ app.get('*', (req, res) => {
 
 	stream.on('end', () => {
 		if (context.initialState) res.write(`<script>window.__INITIAL_STATE__=${serialize(context.initialState)}</script>`);
-		res.end(layout[4]);
+		res.end(layout[1]);
 	});
 
 	stream.on('error', err => {
