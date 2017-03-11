@@ -67,7 +67,12 @@ module.exports = {
 				}
 			},
 			{
+				test: /sprite\.svg$/,
+				loader: 'raw-loader'
+			},
+			{
 				test: /\.(png|jpe?g|gif|svg)$/,
+				exclude: /sprite\.svg$/,
 				loader: 'url-loader',
 				options: {
 					limit: 1024,

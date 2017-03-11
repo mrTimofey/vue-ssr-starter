@@ -13,7 +13,7 @@
 <template lang="pug">
 	div
 		transition(name="opacity")
-			p.loading-message(key="loading" v-if="prefetching") Загрузка...
+			p.loading-message(key="loading" v-if="$prefetching") Загрузка...
 			ul(key="list" v-else)
 				li(v-for="item in items"): router-link(':to'!="`/catalog/item/${item.id}`") {{ item.title }}<br><small>{{ item.id }}</small>
 </template>

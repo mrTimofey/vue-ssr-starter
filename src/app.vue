@@ -12,6 +12,7 @@
 <template lang="pug">
 	#app
 		img#logo(src="~i/webpack.svg")
+		!='<svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#i-vk"></use></svg>'
 		nav
 			router-link(to="/") Home
 			!=' | '
