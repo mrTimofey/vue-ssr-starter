@@ -18,8 +18,9 @@
 				li(v-for="item in items"): router-link(':to'!="`/catalog/item/${item.id}`") {{ item.title }}<br><small>{{ item.id }}</small>
 </template>
 <style lang="stylus" rel="stylesheet/stylus">
+	@import '../../style'
 	.loading-message
-		color gray
+		some-mixin(gray)
 	.opacity-enter-active
 		transition opacity 0.5s
 	.opacity-enter, .opacity-leave-to

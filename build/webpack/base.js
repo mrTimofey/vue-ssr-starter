@@ -12,13 +12,16 @@ module.exports = {
 	},
 	module: {
 		rules: [
+
+			// source files
+
 			{
 				test: /\.vue$/,
 				loader: 'vue-loader',
 				options: {
 					loaders: {
 						pug: 'vue-loader/lib/template-loader?raw&engine=pug&' + pugQuery,
-						stylus: 'vue-style-loader!css-loader?minimize!stylus-loader?' + stylusQuery,
+						stylus: 'vue-style-loader!css-loader?minimize&import=false!stylus-loader?' + stylusQuery,
 						js: 'buble-loader?objectAssign=Object.assign&transforms[dangerousForOf]=true&transforms[modules]=false'
 					}
 				}
@@ -40,8 +43,41 @@ module.exports = {
 				loader: 'css-loader!stylus-loader?' + stylusQuery
 			},
 			{
+				test: /\.css$/,
+				loader: 'css-loader?minimize'
+			},
+			{
 				test: /\.pug$/,
 				loader: 'pug-loader?' + pugQuery
+			},
+
+			// assets
+
+			{
+				test: /\.(png|jpg|gif|svg)$/,
+				loader: 'url-loader',
+				options: {
+					limit: 10000,
+					name: '[name].[ext]?[hash]',
+					publicPath: 'assets/i'
+				}
+			},
+			{
+				test: /\.(woff|woff2)$/,
+				loader: 'url-loader',
+				options: {
+					limit: 100000,
+					name: '[name].[ext]',
+					publicPath: 'assets/fonts'
+				}
+			},
+			{
+				test: /\.(doc|docx|ppt|pptx|pdf|txt|rtf)$/,
+				loader: 'file-loader',
+				options: {
+					name: '[name].[hash:5].[ext]',
+					publicPath: 'assets/docs'
+				}
 			}
 		]
 	},
