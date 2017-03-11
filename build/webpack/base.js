@@ -8,7 +8,7 @@ module.exports = {
 	output: {
 		path: path.resolve(process.cwd(), 'dist'),
 		publicPath: '/dist/',
-		filename: '[name].[chunkhash].js'
+		filename: '[name].[chunkhash:7].js'
 	},
 	module: {
 		rules: [
@@ -57,9 +57,8 @@ module.exports = {
 				test: /\.(png|jpg|gif|svg)$/,
 				loader: 'url-loader',
 				options: {
-					limit: 10000,
-					name: '[name].[ext]?[hash]',
-					publicPath: 'assets/i'
+					limit: 1000,
+					name: 'i/[name].[ext]?[hash:5]'
 				}
 			},
 			{
@@ -67,18 +66,22 @@ module.exports = {
 				loader: 'url-loader',
 				options: {
 					limit: 100000,
-					name: '[name].[ext]',
-					publicPath: 'assets/fonts'
+					name: 'fonts/[name].[ext]'
 				}
 			},
 			{
 				test: /\.(doc|docx|ppt|pptx|pdf|txt|rtf)$/,
 				loader: 'file-loader',
 				options: {
-					name: '[name].[hash:5].[ext]',
-					publicPath: 'assets/docs'
+					name: 'docs/[name].[hash:5].[ext]'
 				}
 			}
+		]
+	},
+	resolve: {
+		modules: [
+			'node_modules',
+			path.resolve(process.cwd(), 'assets')
 		]
 	},
 	performance: {

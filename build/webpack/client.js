@@ -40,7 +40,7 @@ if (process.env.NODE_ENV === 'production') {
 	});
 
 	config.plugins.push(
-		new ExtractTextPlugin('styles.[hash].css'),
+		new ExtractTextPlugin('styles.[hash:7].css'),
 		new webpack.optimize.UglifyJsPlugin({
 			comment: true,
 			compress: {

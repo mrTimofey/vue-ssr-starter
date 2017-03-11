@@ -11,6 +11,7 @@
 </script>
 <template lang="pug">
 	#app
+		img#logo(src="~i/webpack.svg")
 		nav
 			router-link(to="/") Home
 			!=' | '
