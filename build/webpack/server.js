@@ -3,7 +3,7 @@ const webpack = require('webpack');
 const fs = require('fs');
 const path = require('path');
 
-module.exports = Object.assign({}, base, {
+const config = Object.assign({}, base, {
 	target: 'node',
 	entry: './src/entry/server.js',
 	output: Object.assign({}, base.output, {
@@ -18,3 +18,13 @@ module.exports = Object.assign({}, base, {
 		})
 	]
 });
+
+// prevent url and file loaders file emitting for SSR
+for (let rule of config.module.rules) {
+	let loaders = /file-loader|url-loader/;
+	if (loaders.test(rule.loader)) {
+		rule.options.emitFile = false;
+	}
+}
+
+module.exports = config;

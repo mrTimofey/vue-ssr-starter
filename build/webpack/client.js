@@ -1,7 +1,7 @@
 const base = require('./base');
 const webpack = require('webpack');
 const HTMLPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const ExtractText = require('extract-text-webpack-plugin');
 const pug = require('pug');
 
 const config = Object.assign({}, base, {
@@ -34,13 +34,13 @@ const config = Object.assign({}, base, {
 if (process.env.NODE_ENV === 'production') {
 	let vueConfig = config.module.rules.find(el => el.loader === 'vue-loader');
 
-	vueConfig.options.loaders.stylus = ExtractTextPlugin.extract({
+	vueConfig.options.loaders.stylus = ExtractText.extract({
 		use: vueConfig.options.loaders.stylus.replace('vue-style-loader!', ''),
 		fallback: 'vue-style-loader'
 	});
 
 	config.plugins.push(
-		new ExtractTextPlugin('styles.[hash:7].css'),
+		new ExtractText('styles.css?[hash:6]'),
 		new webpack.optimize.UglifyJsPlugin({
 			comment: true,
 			compress: {

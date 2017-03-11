@@ -15,7 +15,7 @@ module.exports = {
 	output: {
 		path: path.resolve(process.cwd(), 'dist'),
 		publicPath: '/dist/',
-		filename: '[name].[chunkhash:7].js'
+		filename: '[name].js?[chunkhash:6]'
 	},
 	module: {
 		rules: [
@@ -60,25 +60,25 @@ module.exports = {
 			// assets
 
 			{
-				test: /\.(png|jpe?g|gif|svg)$/,
-				loader: 'url-loader',
-				options: {
-					limit: 1000,
-					name: 'i/[name].[ext]?[hash:5]'
-				}
-			},
-			{
-				test: /\.(woff|woff2)$/,
+				test: /\.(woff|woff2|eot|otf|ttf)$/,
 				loader: 'file-loader',
 				options: {
 					name: 'fonts/[name].[ext]'
 				}
 			},
 			{
-				test: /\.(doc|docx|ppt|pptx|pdf|txt|rtf)$/,
+				test: /\.(png|jpe?g|gif|svg)$/,
+				loader: 'url-loader',
+				options: {
+					limit: 1024,
+					name: 'i/[name].[ext]?[hash:6]'
+				}
+			},
+			{
+				test: /\.(pdf|docx?|pptx?|rtf|txt)$/,
 				loader: 'file-loader',
 				options: {
-					name: 'docs/[name].[ext]?[hash:5]'
+					name: 'docs/[name].[ext]?[hash:6]'
 				}
 			}
 		]
