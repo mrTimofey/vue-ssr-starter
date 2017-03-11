@@ -1,3 +1,12 @@
+import Vue from 'vue';
+
+// prevent warnings when referencing prefetching flag
+Vue.mixin({
+	data: () => ({
+		prefetching: false
+	})
+});
+
 import app from './app';
 
 export default context => {

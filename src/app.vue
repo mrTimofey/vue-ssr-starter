@@ -23,7 +23,7 @@
 			!=' | '
 			router-link(to="/catalog/item/500") Item 500
 			!=' | '
-			a(href="~docs/test.txt") Test.txt
+			a(href="https://vk.com" target="_blank") VK
 		router-view
 </template>
 <style lang="stylus" rel="stylesheet/stylus">
