@@ -2,6 +2,13 @@ const path = require('path');
 
 const stylusQuery = 'compress&import[]=' + path.resolve(process.cwd(), 'node_modules/kouto-swiss/index.styl');
 const pugQuery = 'doctype=html&basedir=' + path.resolve(process.cwd(), 'src');
+const bubleOptions = {
+	objectAssign: 'Object.assign',
+	transforms: {
+		dangerousForOf: true,
+		modules: false
+	}
+};
 
 module.exports = {
 	devtool: false,
@@ -21,22 +28,21 @@ module.exports = {
 				options: {
 					loaders: {
 						pug: 'vue-loader/lib/template-loader?raw&engine=pug&' + pugQuery,
-						stylus: 'vue-style-loader!css-loader?minimize&import=false!stylus-loader?' + stylusQuery,
-						js: 'buble-loader?objectAssign=Object.assign&transforms[dangerousForOf]=true&transforms[modules]=false'
-					}
+						stylus: 'vue-style-loader!css-loader?minimize&import=false!stylus-loader?' + stylusQuery
+					},
+					transformToRequire: {
+						img: 'src',
+						image: 'xlink:href',
+						a: 'href'
+					},
+					buble: bubleOptions
 				}
 			},
 			{
 				test: /\.js$/,
 				loader: 'buble-loader',
 				exclude: /node_modules/,
-				options: {
-					objectAssign: 'Object.assign',
-					transforms: {
-						dangerousForOf: true,
-						modules: false
-					}
-				}
+				options: bubleOptions
 			},
 			{
 				test: /\.styl$/,
@@ -54,7 +60,7 @@ module.exports = {
 			// assets
 
 			{
-				test: /\.(png|jpg|gif|svg)$/,
+				test: /\.(png|jpe?g|gif|svg)$/,
 				loader: 'url-loader',
 				options: {
 					limit: 1000,
@@ -63,9 +69,8 @@ module.exports = {
 			},
 			{
 				test: /\.(woff|woff2)$/,
-				loader: 'url-loader',
+				loader: 'file-loader',
 				options: {
-					limit: 100000,
 					name: 'fonts/[name].[ext]'
 				}
 			},
@@ -73,7 +78,7 @@ module.exports = {
 				test: /\.(doc|docx|ppt|pptx|pdf|txt|rtf)$/,
 				loader: 'file-loader',
 				options: {
-					name: 'docs/[name].[hash:5].[ext]'
+					name: 'docs/[name].[ext]?[hash:5]'
 				}
 			}
 		]

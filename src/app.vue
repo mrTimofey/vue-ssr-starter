@@ -22,5 +22,11 @@
 			router-link(to="/catalog/item/123") Item 123
 			!=' | '
 			router-link(to="/catalog/item/500") Item 500
+			!=' | '
+			a(href="~docs/test.txt") Test.txt
 		router-view
 </template>
+<style lang="stylus" rel="stylesheet/stylus">
+	#logo
+		max-width 300px
+</style>
