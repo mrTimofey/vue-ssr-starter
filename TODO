@@ -1,4 +1,2 @@
-* SSR async fetching
-* vuex
 * statics file/url loader (images, fonts, etc.)
 * SVG sprites loader
