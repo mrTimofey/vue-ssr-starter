@@ -36,3 +36,17 @@ Includes:
 	* `http` - exports http client instance (Axios) which is implicitly injected as `Vue.http` and `Vue.prototype.$http`
 	* `layout.pug` - application HTML layout
 	* `router` - exports vue-router instance
+	* `vars.styl` - globally included file with stylus variables
+
+## Commands
+
+```
+# development server on localhost:8080
+npm run dev
+
+# production build
+npm run build
+
+# production server on localhost:8080
+npm start
+```

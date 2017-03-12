@@ -32,6 +32,8 @@
 		router-view(v-else)
 </template>
 <style lang="stylus" rel="stylesheet/stylus">
+	body
+		color $example-color
 	#logo
 		max-width 300px
 		fixed false false 0 0

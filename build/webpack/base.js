@@ -1,6 +1,8 @@
 const path = require('path');
 
-const stylusQuery = 'compress&import[]=' + path.resolve(process.cwd(), 'node_modules/kouto-swiss/index.styl');
+const stylusQuery = 'compress' +
+	'&import[]=' + path.resolve(process.cwd(), 'node_modules/kouto-swiss/index.styl') +
+	'&import[]=' + path.resolve(process.cwd(), 'src/vars.styl');
 const pugQuery = 'doctype=html&basedir=' + path.resolve(process.cwd(), 'src');
 const bubleOptions = {
 	objectAssign: 'Object.assign',
