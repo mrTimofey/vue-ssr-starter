@@ -30,9 +30,8 @@ export default new Vuex.Store({
 		fetchItems({ commit }) {
 			// imitate async
 			return new Promise((resolve, reject) => {
-				return reject();
-				setTimeout(() => {
-					if (Math.random() > 0.5) {
+				if (Math.random() > 0.5)
+					setTimeout(() => {
 						commit('setItems', [
 							{
 								id: 100,
@@ -47,10 +46,9 @@ export default new Vuex.Store({
 								title: 'Item 104'
 							}
 						]);
-						resolve()
-					}
-					else reject();
-				}, 1000);
+						resolve();
+					}, 1000);
+				else reject();
 			});
 		}
 	}
