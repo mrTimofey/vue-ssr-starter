@@ -2,18 +2,19 @@
 	import { mapGetters } from 'vuex';
 
 	export default {
+		data: () => ({
+			error: false
+		}),
 		computed: {
 			...mapGetters(['items'])
 		},
-		prefetch(store) {
-			return store.dispatch('fetchItems');
-		}
+		prefetch: store => store.dispatch('fetchItems')
 	}
 </script>
 <template lang="pug">
 	div
 		transition(name="opacity")
-			p.loading-message(key="loading" v-if="$prefetching") Загрузка...
+			p.loading-message(key="loading" v-if="prefetching") Загрузка...
 			ul(key="list" v-else)
 				li(v-for="item in items"): router-link(':to'!="`/catalog/item/${item.id}`") {{ item.title }}<br><small>{{ item.id }}</small>
 </template>

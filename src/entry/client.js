@@ -4,14 +4,16 @@ import sprite from 'sprite.svg';
 // call prefetch on component creation
 Vue.mixin({
 	data: () => ({
-		$prefetching: false
+		// let component know when prefetching is done
+		prefetching: false
 	}),
 	created() {
 		if (this.$root._isMounted && this.$options.prefetch) {
-			this.$prefetching = true;
-			// let component catch errors or do something else with this promise
-			this.$prefetchPromise = this.$options.prefetch(this.$root.$store)
-				.then(() => { this.prefetching = false; });
+			this.prefetching = true;
+			this.$options.prefetch(this.$root.$store).then(
+				() => { this.prefetching = false; },
+				err => { this.$store.commit('fireServerError', err); }
+			);
 		}
 	}
 });
@@ -25,3 +27,8 @@ else document.body.appendChild(div);
 import app from './app';
 app.$store.replaceState(window.__INITIAL_STATE__);
 app.$mount(document.body.querySelector('[server-rendered]'));
+
+app.$router.beforeEach((from, to, next) => {
+	if (app.$store.getters.serverError) app.$store.commit('clearServerError');
+	next();
+});

@@ -16,4 +16,8 @@ Vue.use(Meta, {
 	tagIDKeyName: 'vmid'
 });
 
+import Icon from '../icon';
+
+Vue.component('Icon', Icon);
+
 export default new Vue({ store, router, ...app });
