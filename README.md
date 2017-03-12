@@ -1,4 +1,4 @@
-# Webpack SSR server an dev tool
+# Webpack SSR server and dev tool
 
 Includes:
 
