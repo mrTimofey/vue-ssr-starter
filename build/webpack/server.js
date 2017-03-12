@@ -19,12 +19,4 @@ const config = Object.assign({}, base, {
 	]
 });
 
-// prevent url and file loaders file emitting for SSR
-for (let rule of config.module.rules) {
-	let loaders = /file-loader|url-loader/;
-	if (loaders.test(rule.loader)) {
-		rule.options.emitFile = false;
-	}
-}
-
 module.exports = config;

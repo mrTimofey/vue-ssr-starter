@@ -17,9 +17,6 @@ export default new Vuex.Store({
 		setItems(state, items) {
 			Vue.set(state, 'items', items);
 		},
-		pushItem(state, item) {
-			state.items.push(item);
-		},
 		fireServerError(state, err) {
 			state.serverError = err || true;
 		},
@@ -29,7 +26,7 @@ export default new Vuex.Store({
 	},
 	actions: {
 		fetchItems({ commit }) {
-			return http.get('https://randomuser.me/api/', { params: { results: 100 } }).then(res => {
+			return http.get('https://randomuser.me/api/', { params: { results: 10 } }).then(res => {
 				commit('setItems', res.data.results);
 			});
 		}

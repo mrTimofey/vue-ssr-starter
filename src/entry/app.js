@@ -35,7 +35,6 @@ const requireComp = require.context('src/components/shared/', true, /\.(vue|js)$
 for (let name of requireComp.keys()) {
 	let component = requireComp(name);
 	if (component.default) component = component.default;
-
 	Vue.component(fileNameToCamelCase(name), component);
 }
 
@@ -51,7 +50,7 @@ for (let name of requireFilter.keys()) {
 const requireDirective = require.context('src/directives/', true, /\.js$/);
 for (let name of requireDirective.keys()) {
 	let directive = requireDirective(name);
-	if (directive.default) filter = directive.default;
+	if (directive.default) directive = directive.default;
 	Vue.directive(fileNameToCamelCase(name, true), directive);
 }
 

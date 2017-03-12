@@ -48,6 +48,14 @@ if (process.env.NODE_ENV === 'production') {
 			}
 		})
 	);
+
+	// prevent url and file loaders file emitting twice with server bundle
+	for (let rule of config.module.rules) {
+		let loaders = /file-loader|url-loader/;
+		if (loaders.test(rule.loader)) {
+			rule.options.emitFile = false;
+		}
+	}
 }
 else {
 	config.devtool = '#sourcemap';

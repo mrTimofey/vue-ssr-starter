@@ -9,6 +9,7 @@ Includes:
 * Axios
 * Pug
 * SVG sprites builder
+* ES6-shim
 
 ## Application structure
 
@@ -18,7 +19,7 @@ Includes:
 	* `icons/` - contains SVG icons for the sprite
 * `build/` - code related to project building
 	* `setup-dev-server` - development server setup with hot reloading
-	* `svg-sprites` - svg sprites generation script, gathers icons from `assets/icons` and compiles them into `assets/sprite.svg`
+	* `svg-sprite` - svg sprite generation script, gathers icons from `assets/icons` and compiles them into `assets/sprite.svg`
 	* `webpack/` - webpack config, `base` - common, `server` for server with SSR, `client` for browser
 * `dist/` - production build files
 * `src/`

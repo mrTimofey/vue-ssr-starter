@@ -14,27 +14,32 @@
 </script>
 <template lang="pug">
 	#app
-		img#logo(src="~assets/i/webpack.svg")
-		icon.my-con(name="vk")
-		nav
-			router-link(to="/") Home
-			!=' | '
-			router-link(to="/example") Example
-			!=' | '
-			router-link(to="/catalog") Catalog
-			!=' | '
-			router-link(to="/catalog/item/123") Item 123
-			!=' | '
-			router-link(to="/catalog/item/500") Item 500
-			!=' | '
-			a(href="~assets/docs/test.txt" target="_blank") VK
-		p.error(v-if="serverError") Что-то пошло не так...
-		router-view(v-else)
+		header
+			.logos
+				img(src="~assets/i/webpack.svg")
+				img(src="~assets/i/vue.png")
+			nav
+				b!='Examples: '
+				router-link(to="/examples/async") Async
+				!=' | '
+				router-link(to="/examples/server-error") Server error
+				!=' | '
+				router-link(to="/whatever") 404
+				!=' | '
+				a(href="~assets/docs/example.txt" download) Download
+		hr
+		main
+			p.server-error(v-if="serverError")!='Something went wrong... '
+				template(v-if="serverError.message")
+					br
+					| {{ serverError.message }}
+			router-view(v-else)
 </template>
 <style lang="stylus" rel="stylesheet/stylus">
-	body
-		color $example-color
-	#logo
-		max-width 300px
-		fixed false false 0 0
+	.server-error
+		// variable from src/vars.styl
+		color $red
+	.logos
+		img
+			height 80px
 </style>

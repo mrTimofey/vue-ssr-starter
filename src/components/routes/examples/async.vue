@@ -2,11 +2,14 @@
 	import { mapGetters } from 'vuex';
 
 	export default {
-		data: () => ({
-			error: false
-		}),
 		computed: {
 			...mapGetters(['items'])
+		},
+		head() {
+			return {
+				// dynamic head title
+				title: this.prefetching ? 'Loading...' : ('Items fetched: ' + this.items.length)
+			}
 		},
 		prefetch: store => store.dispatch('fetchItems')
 	}
@@ -14,7 +17,7 @@
 <template lang="pug">
 	div
 		transition(name="opacity")
-			p.loading-message(key="loading" v-if="prefetching") Загрузка...
+			p.loading-message(key="loading" v-if="prefetching") Loading items...
 			ul(key="list" v-else)
 				li(v-for="item in items")
 					h3 {{ item.name.title }} {{ item.name.first }} {{ item.name.last }}
