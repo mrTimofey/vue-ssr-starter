@@ -1,13 +1,13 @@
 const fs = require('fs');
 const path = require('path');
 const express = require('express');
+const favicon = require('serve-favicon');
 // serializes any type including functions
 const serialize = require('serialize-javascript');
 const vueSR = require('vue-server-renderer');
 
 const app = express();
 const port = process.env.PORT || 8080;
-// marker to be replaced with additional head tags and an actual application content
 const production = process.env.NODE_ENV === 'production';
 const layoutFile = path.resolve('./dist/index.html');
 
@@ -59,11 +59,9 @@ else {
 	});
 }
 
+app.get('/dist/server-bundle.js', (req, res, next) => { next(); });
 app.use('/dist', express.static('./dist'));
-
-app.get('/favicon.ico', (req, res) => {
-	res.status(404).end('Not found');
-});
+app.use(favicon(path.join(process.cwd(), 'favicon.ico')));
 
 app.get('*', (req, res) => {
 	if (!renderer || !layout) return res.end('Compiling app, refresh in a moment...');
