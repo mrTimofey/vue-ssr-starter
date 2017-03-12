@@ -96,11 +96,17 @@ app.get('*', (req, res) => {
 
 	stream.on('end', () => {
 		if (context.initialState) res.write(`<script>window.__INITIAL_STATE__=${serialize(context.initialState)}</script>`);
+		if (context.initialState.serverError) {
+			console.error((new Date()).toUTCString() + ': data prefetching error');
+			console.error(context.initialState.serverError);
+			res.status(500);
+		}
 		res.end(layout[1]);
 	});
 
 	stream.on('error', err => {
-		console.log(err);
+		console.error((new Date()).toUTCString() + ': page render error');
+		console.error(err);
 		res.status(500).end('Something went wrong...');
 	});
 });
