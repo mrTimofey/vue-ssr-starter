@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex'
-import http from '../http';
+import http from 'src/http';
 
 Vue.use(Vuex);
 
@@ -30,7 +30,6 @@ export default new Vuex.Store({
 	actions: {
 		fetchItems({ commit }) {
 			return http.get('https://randomuser.me/api/', { params: { results: 100 } }).then(res => {
-				console.log(res);
 				commit('setItems', res.data.results);
 			});
 		}

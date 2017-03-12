@@ -21,9 +21,6 @@
 					img(':src'="item.picture.thumbnail")
 </template>
 <style lang="stylus" rel="stylesheet/stylus">
-	@import '../../style'
-	.loading-message
-		some-mixin(gray)
 	.opacity-enter-active
 		transition opacity 0.5s
 	.opacity-enter, .opacity-leave-to

@@ -14,7 +14,7 @@
 </script>
 <template lang="pug">
 	#app
-		img#logo(src="~i/webpack.svg")
+		img#logo(src="~assets/i/webpack.svg")
 		icon.my-con(name="vk")
 		nav
 			router-link(to="/") Home
@@ -27,7 +27,7 @@
 			!=' | '
 			router-link(to="/catalog/item/500") Item 500
 			!=' | '
-			a(href="~docs/test.txt" target="_blank") VK
+			a(href="~assets/docs/test.txt" target="_blank") VK
 		p.error(v-if="serverError") Что-то пошло не так...
 		router-view(v-else)
 </template>

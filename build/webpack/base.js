@@ -91,7 +91,7 @@ module.exports = {
 	resolve: {
 		modules: [
 			'node_modules',
-			path.resolve(process.cwd(), 'assets')
+			process.cwd()
 		]
 	},
 	performance: {

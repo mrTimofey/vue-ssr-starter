@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import sprite from 'sprite.svg';
+import sprite from 'assets/sprite.svg';
 
 // call prefetch on component creation
 Vue.mixin({

@@ -3,7 +3,7 @@ import Router from 'vue-router';
 
 Vue.use(Router);
 
-const requirePage = require.context('./pages/', true, /\.vue$/);
+const requirePage = require.context('src/components/routes/', true, /\.vue$/);
 const routes = [];
 let route404;
 
