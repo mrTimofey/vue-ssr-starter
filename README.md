@@ -23,7 +23,7 @@ Includes:
 * `dist/` - production build files
 * `src/`
 	* `components/` - vue components
-		* `routes/` - components here are implicitly attached to routes same with componets\` file names (excluding leading `_` in file names and `404.vue` which will be used as a catch-all route)
+		* `routes/` - components here are implicitly attached to routes same with componets\` file names (excluding leading `_` in file or folder names and `404.vue` which will be used as a catch-all route)
 		* `shared/` - comonents registered implicitly via `Vue.component()`
 	* `filters/` - vue filters registered implicitly vie `Vue.filter()`
 	* `directives/` - vue directives registered implicitly vie `Vue.directive()`

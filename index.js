@@ -65,7 +65,6 @@ app.use(favicon(path.join(process.cwd(), 'favicon.ico')));
 
 app.get('*', (req, res) => {
 	if (!renderer || !layout) return res.end('Compiling app, refresh in a moment...');
-
 	res.setHeader('Content-Type', 'text/html');
 
 	const context = { url: req.url };
@@ -95,6 +94,7 @@ app.get('*', (req, res) => {
 	stream.on('end', () => {
 		if (context.initialState) res.write(`<script>window.__INITIAL_STATE__=${serialize(context.initialState)}</script>`);
 		if (context.initialState.serverError) {
+			// let application handle server error if possible
 			console.error((new Date()).toUTCString() + ': data prefetching error');
 			console.error(context.initialState.serverError);
 			res.status(500);
