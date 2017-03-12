@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex'
+import http from '../http';
 
 Vue.use(Vuex);
 
@@ -28,27 +29,9 @@ export default new Vuex.Store({
 	},
 	actions: {
 		fetchItems({ commit }) {
-			// imitate async
-			return new Promise((resolve, reject) => {
-				if (Math.random() > 0.5)
-					setTimeout(() => {
-						commit('setItems', [
-							{
-								id: 100,
-								title: 'Item 100'
-							},
-							{
-								id: 101,
-								title: 'Item 101'
-							},
-							{
-								id: 104,
-								title: 'Item 104'
-							}
-						]);
-						resolve();
-					}, 1000);
-				else reject();
+			return http.get('https://randomuser.me/api/', { params: { results: 100 } }).then(res => {
+				console.log(res);
+				commit('setItems', res.data.results);
 			});
 		}
 	}

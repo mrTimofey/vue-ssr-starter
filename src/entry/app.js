@@ -1,12 +1,14 @@
 import Vue from 'vue';
 import Meta from 'vue-meta';
-import { sync } from 'vuex-router-sync';
+import { sync } from 'vuex-router-sync';;
 
-import app from '../app.vue';
-
+import http from '../http'
 import store from '../store';
 import router from '../router';
+import app from '../app.vue';
 
+Vue.http = http;
+Vue.prototype.$http = http;
 sync(store, router);
 
 Vue.use(Meta, {
