@@ -1,4 +1,4 @@
-# Webpack SSR server and dev tool
+# Webpack, Vue, SSR project template
 
 Includes:
 
