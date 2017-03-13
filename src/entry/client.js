@@ -9,8 +9,10 @@ Vue.mixin({
 	}),
 	created() {
 		if (this.$root._isMounted && this.$options.prefetch) {
+			let promise = this.$options.prefetch(this.$root.$store);
+			if (!promise) return;
 			this.prefetching = true;
-			this.$options.prefetch(this.$root.$store).then(
+			promise.then(
 				() => { this.prefetching = false; },
 				err => { this.$store.commit('fireServerError', err); }
 			);
