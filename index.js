@@ -11,6 +11,9 @@ const port = process.env.PORT || 8080;
 const production = process.env.NODE_ENV === 'production';
 const layoutFile = path.resolve('./dist/index.html');
 
+const envFile = path.resolve(process.cwd(), '.env.js');
+const env = fs.existsSync(envFile) ? require(envFile) : {};
+
 let layout, renderer;
 
 function parseLayout(html) {
@@ -62,6 +65,11 @@ else {
 app.get('/dist/server-bundle.js', (req, res, next) => { next(); });
 app.use('/dist', express.static('./dist'));
 app.use(favicon(path.join(process.cwd(), 'favicon.ico')));
+
+// optional api proxy
+if (env.apiProxy) {
+	app.use(env.apiProxy.prefix, require('http-proxy-middleware')(env.apiProxy));
+}
 
 app.get('*', (req, res) => {
 	if (!renderer || !layout) return res.end('Compiling app, refresh in a moment...');
