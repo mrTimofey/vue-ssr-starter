@@ -73,7 +73,7 @@ for (let f of fs.readdirSync(spritesDir)) {
 	spriter.add(p, f, fs.readFileSync(p), { encoding: 'utf-8' });
 }
 
-spriter.compile((err, result, data) => {
+spriter.compile((err, result) => {
 	if (err) return console.error(err);
 	for (let mode in result) {
 		for (let resource in result[mode]) {

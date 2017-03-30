@@ -18,7 +18,7 @@ Vue.use(Meta, {
 	tagIDKeyName: 'vmid'
 });
 
-function fileNameToCamelCase(str, lowerFirst = false) {
+function filenameToCamelCase(str, lowerFirst = false) {
 	return str
 		// remove extension
 		.replace(/\.[a-z0-9]+$/i, '')
@@ -35,7 +35,7 @@ const requireComp = require.context('src/components/shared/', true, /\.(vue|js)$
 for (let name of requireComp.keys()) {
 	let component = requireComp(name);
 	if (component.default) component = component.default;
-	Vue.component(fileNameToCamelCase(name), component);
+	Vue.component(filenameToCamelCase(name), component);
 }
 
 // filters
@@ -43,7 +43,7 @@ const requireFilter = require.context('src/filters/', true, /\.js$/);
 for (let name of requireFilter.keys()) {
 	let filter = requireFilter(name);
 	if (filter.default) filter = filter.default;
-	Vue.filter(fileNameToCamelCase(name, true), filter);
+	Vue.filter(filenameToCamelCase(name, true), filter);
 }
 
 // directives
@@ -51,7 +51,7 @@ const requireDirective = require.context('src/directives/', true, /\.js$/);
 for (let name of requireDirective.keys()) {
 	let directive = requireDirective(name);
 	if (directive.default) directive = directive.default;
-	Vue.directive(fileNameToCamelCase(name, true), directive);
+	Vue.directive(filenameToCamelCase(name, true), directive);
 }
 
 export default new Vue({ store, router, ...app });

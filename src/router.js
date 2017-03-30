@@ -13,7 +13,7 @@ for (let name of requirePage.keys()) {
 		route = {
 			component,
 			path: name.substr(1, name.length - 5).replace(/\/index$/, '/') +
-				// allow components adding additional route parameters
+				// allow components adding their own route parameters
 				(component.routePath ? ('/' + component.routePath) : '')
 		};
 	if (route.path === '/404') {

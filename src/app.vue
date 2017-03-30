@@ -19,6 +19,7 @@
 				router-link(to="/")
 					img(src="~assets/i/webpack.svg")
 					img(src="~assets/i/vue.png")
+					icon(name="webpack")
 			nav
 				b!='Examples: '
 				router-link(to="/examples/async") Async
@@ -33,14 +34,15 @@
 			p.server-error(v-if="serverError")!='Something went wrong... '
 				template(v-if="serverError.message")
 					br
-					| {{ serverError.message }}
+					!='{{ serverError.message }}'
 			router-view(v-else)
 </template>
 <style lang="stylus">
 	.server-error
-		// variable from src/vars.styl
+		// variable from src/shared.styl
 		color $red
 	.logos
-		img
-			height 80px
+		img, svg
+			max-width 80px
+			max-height 80px
 </style>
