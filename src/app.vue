@@ -16,8 +16,9 @@
 	#app
 		header
 			.logos
-				img(src="~assets/i/webpack.svg")
-				img(src="~assets/i/vue.png")
+				router-link(to="/")
+					img(src="~assets/i/webpack.svg")
+					img(src="~assets/i/vue.png")
 			nav
 				b!='Examples: '
 				router-link(to="/examples/async") Async
@@ -35,7 +36,7 @@
 					| {{ serverError.message }}
 			router-view(v-else)
 </template>
-<style lang="stylus" rel="stylesheet/stylus">
+<style lang="stylus">
 	.server-error
 		// variable from src/vars.styl
 		color $red

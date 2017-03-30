@@ -23,7 +23,7 @@
 					h3 {{ item.name.title }} {{ item.name.first }} {{ item.name.last }}
 					img(':src'="item.picture.thumbnail")
 </template>
-<style lang="stylus" rel="stylesheet/stylus">
+<style lang="stylus">
 	.opacity-enter-active
 		transition opacity 0.5s
 	.opacity-enter, .opacity-leave-to
