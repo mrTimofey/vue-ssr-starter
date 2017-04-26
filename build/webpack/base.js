@@ -1,4 +1,5 @@
-const path = require('path');
+const path = require('path'),
+	qstring = require('querystring');
 
 const stylusOptions = {
 	compress: true,
@@ -36,6 +37,9 @@ module.exports = {
 				loader: 'vue-loader',
 				options: {
 					template: pugOptions,
+					loaders: {
+						stylus: qstring.parse(stylusOptions)
+					},
 					transformToRequire: {
 						img: 'src',
 						image: 'xlink:href',
