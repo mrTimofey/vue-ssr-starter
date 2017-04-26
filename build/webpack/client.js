@@ -6,7 +6,6 @@ const pug = require('pug');
 
 const config = Object.assign({}, base, {
 	entry: {
-		shim: 'es6-shim',
 		app: './src/entry/client.js',
 		vendor: [
 			'axios',
@@ -23,7 +22,7 @@ const config = Object.assign({}, base, {
 			'process.env.VUE_ENV': '"client"'
 		}),
 		new webpack.optimize.CommonsChunkPlugin({
-			names: ['shim', 'vendor']
+			names: ['vendor']
 		}),
 		new HTMLPlugin({
 			template: 'src/layout.pug'
