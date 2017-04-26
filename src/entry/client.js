@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import app from './app';
 import sprite from 'assets/sprite.svg';
 
 // call prefetch on component creation
@@ -20,13 +21,13 @@ Vue.mixin({
 	}
 });
 
+// inject svg sprite
 let div = document.createElement('div');
 div.style.display = 'none';
 div.innerHTML = sprite;
 if (document.body.childNodes && document.body.childNodes.length) document.body.insertBefore(div, document.body.childNodes[0]);
 else document.body.appendChild(div);
 
-import app from './app';
 app.$store.replaceState(window.__INITIAL_STATE__);
 app.$mount(document.body.querySelector('[server-rendered]'));
 
