@@ -9,7 +9,6 @@ Includes:
 * Axios
 * Pug
 * SVG sprites builder
-* ES6-shim
 
 ## Application structure
 
