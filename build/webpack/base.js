@@ -1,9 +1,16 @@
 const path = require('path');
 
-const stylusQuery = 'compress' +
-	'&import[]=' + path.resolve(process.cwd(), 'node_modules/kouto-swiss/index.styl') +
-	'&import[]=' + path.resolve(process.cwd(), 'src/shared.styl');
-const pugQuery = 'doctype=html&basedir=' + path.resolve(process.cwd(), 'src');
+const stylusOptions = {
+	compress: true,
+	import: [
+		path.resolve(process.cwd(), 'node_modules/kouto-swiss/index.styl'),
+		path.resolve(process.cwd(), 'src/shared.styl')
+	]
+};
+const pugOptions = {
+	doctype: 'html',
+	basedir: path.resolve(process.cwd(), 'src')
+};
 const bubleOptions = {
 	objectAssign: 'Object.assign',
 	transforms: {
@@ -28,10 +35,7 @@ module.exports = {
 				test: /\.vue$/,
 				loader: 'vue-loader',
 				options: {
-					loaders: {
-						pug: 'vue-loader/lib/template-loader?raw&engine=pug&' + pugQuery,
-						stylus: 'vue-style-loader!css-loader?minimize&import=false!stylus-loader?' + stylusQuery
-					},
+					template: pugOptions,
 					transformToRequire: {
 						img: 'src',
 						image: 'xlink:href',
@@ -48,7 +52,8 @@ module.exports = {
 			},
 			{
 				test: /\.styl$/,
-				loader: 'css-loader!stylus-loader?' + stylusQuery
+				loader: 'css-loader!stylus-loader',
+				options: stylusOptions
 			},
 			{
 				test: /\.css$/,
@@ -56,7 +61,8 @@ module.exports = {
 			},
 			{
 				test: /\.pug$/,
-				loader: 'pug-loader?' + pugQuery
+				loader: 'pug-loader',
+				options: pugOptions
 			},
 
 			// assets

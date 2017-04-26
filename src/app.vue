@@ -13,6 +13,7 @@
 	};
 </script>
 <template lang="pug">
+	include /mixins.pug
 	#app
 		header
 			.logos
@@ -31,6 +32,7 @@
 				a(href="~assets/docs/example.txt" download) Download
 		hr
 		main
+			+sayHi()
 			p.server-error(v-if="serverError")!='Something went wrong... '
 				template(v-if="serverError.message")
 					br
