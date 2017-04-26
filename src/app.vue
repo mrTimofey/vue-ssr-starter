@@ -45,4 +45,5 @@
 		img, svg
 			max-width 80px
 			max-height 80px
+			fill #8ED6FB
 </style>

@@ -77,7 +77,7 @@ module.exports = {
 				exclude: /sprite\.svg$/,
 				loader: 'url-loader',
 				options: {
-					limit: 1024,
+					limit: 256,
 					name: 'i/[name].[ext]?[hash:6]'
 				}
 			},
