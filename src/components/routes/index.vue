@@ -6,7 +6,9 @@
 	}
 </script>
 <template lang="pug">
+	include /mixins.pug
 	article
+		+sayHi()
 		h1 Home page
 		p Lorem ipsum dolor sit amet, consectetur adipisicing elit. A alias autem cupiditate deleniti dolor esse exercitationem, fugit hic impedit inventore laudantium necessitatibus obcaecati odit perspiciatis quas quos sequi vitae. Excepturi.
 

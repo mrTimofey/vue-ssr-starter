@@ -1,10 +1,12 @@
-const base = require('./base');
+const { config, options } = require('./base');
 const webpack = require('webpack');
 const HTMLPlugin = require('html-webpack-plugin');
 const ExtractText = require('extract-text-webpack-plugin');
 const pug = require('pug');
 
-const config = Object.assign({}, base, {
+const baseConfig = config();
+
+const clientConfig = Object.assign({}, baseConfig, {
 	entry: {
 		app: './src/entry/client.js',
 		vendor: [
@@ -16,7 +18,7 @@ const config = Object.assign({}, base, {
 			'vuex-router-sync'
 		]
 	},
-	plugins: (base.plugins || []).concat([
+	plugins: (baseConfig.plugins || []).concat([
 		new webpack.DefinePlugin({
 			'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
 			'process.env.VUE_ENV': '"client"'
@@ -31,14 +33,7 @@ const config = Object.assign({}, base, {
 });
 
 if (process.env.NODE_ENV === 'production') {
-	let vueConfig = config.module.rules.find(el => el.loader === 'vue-loader');
-
-	vueConfig.options.loaders.stylus = ExtractText.extract({
-		use: vueConfig.options.loaders.stylus.replace('vue-style-loader!', ''),
-		fallback: 'vue-style-loader'
-	});
-
-	config.plugins.push(
+	clientConfig.plugins.push(
 		new ExtractText('styles.css?[hash:6]'),
 		new webpack.optimize.UglifyJsPlugin({
 			comment: true,
@@ -48,8 +43,38 @@ if (process.env.NODE_ENV === 'production') {
 		})
 	);
 
-	// prevent url and file loaders file emitting twice with server bundle
-	for (let rule of config.module.rules) {
+	let vueConfig = clientConfig.module.rules.find(el => el.loader === 'vue-loader');
+
+	vueConfig.options.loaders.stylus = ExtractText.extract({
+		use: vueConfig.options.loaders.stylus.replace('vue-style-loader!', ''),
+		fallback: 'vue-style-loader'
+	});
+
+	clientConfig.module.rules.push(
+		{
+			test: /\.styl$/,
+			use: ExtractText.extract({
+				use: [
+					'css-loader?minimize',
+					{
+						loader: 'stylus-loader',
+						options: options.stylus
+					}
+				],
+				fallback: 'style-loader',
+			})
+		},
+		{
+			test: /\.css$/,
+			use: ExtractText.extract({
+				loader: 'css-loader?minimize',
+				fallback: 'style-loader',
+			})
+		}
+	);
+
+	// prevent url and file loaders emitting twice with server bundle
+	for (let rule of clientConfig.module.rules) {
 		let loaders = /file-loader|url-loader/;
 		if (loaders.test(rule.loader)) {
 			rule.options.emitFile = false;
@@ -57,7 +82,27 @@ if (process.env.NODE_ENV === 'production') {
 	}
 }
 else {
-	config.devtool = '#sourcemap';
+	clientConfig.devtool = '#sourcemap';
+	clientConfig.module.rules.push(
+		{
+			test: /\.styl$/,
+			use: [
+				'style-loader',
+				'css-loader?minimize',
+				{
+					loader: 'stylus-loader',
+					options: options.stylus
+				}
+			]
+		},
+		{
+			test: /\.css$/,
+			use: [
+				'style-loader',
+				'css-loader?minimize'
+			]
+		}
+	);
 }
 
-module.exports = config;
+module.exports = clientConfig;

@@ -1,12 +1,14 @@
-const base = require('./base');
+const { config } = require('./base');
 const webpack = require('webpack');
 const fs = require('fs');
 const path = require('path');
 
-const config = Object.assign({}, base, {
+const baseConfig = config();
+
+const serverConfig = Object.assign({}, baseConfig, {
 	target: 'node',
 	entry: './src/entry/server.js',
-	output: Object.assign({}, base.output, {
+	output: Object.assign({}, baseConfig.output, {
 		filename: 'server-bundle.js',
 		libraryTarget: 'commonjs2'
 	}),
@@ -19,4 +21,9 @@ const config = Object.assign({}, base, {
 	]
 });
 
-module.exports = config;
+serverConfig.module.rules.push({
+	test: /\.(styl|css)$/,
+	use: 'null-loader'
+});
+
+module.exports = serverConfig;

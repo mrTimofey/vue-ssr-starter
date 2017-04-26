@@ -1,8 +1,7 @@
-const path = require('path'),
-	qstring = require('querystring');
+const path = require('path');
+const qs = require('qs');
 
 const stylusOptions = {
-	compress: true,
 	import: [
 		path.resolve(process.cwd(), 'node_modules/kouto-swiss/index.styl'),
 		path.resolve(process.cwd(), 'src/shared.styl')
@@ -20,7 +19,13 @@ const bubleOptions = {
 	}
 };
 
-module.exports = {
+exports.options = {
+	buble: bubleOptions,
+	stylus: stylusOptions,
+	pug: pugOptions
+};
+
+exports.config = () => ({
 	devtool: false,
 	output: {
 		path: path.resolve(process.cwd(), 'dist'),
@@ -38,7 +43,8 @@ module.exports = {
 				options: {
 					template: pugOptions,
 					loaders: {
-						stylus: qstring.parse(stylusOptions)
+						stylus: 'vue-style-loader!css-loader?minimize&import=false!stylus-loader?' +
+							qs.stringify(stylusOptions, { encode: false, arrayFormat: 'brackets' })
 					},
 					transformToRequire: {
 						img: 'src',
@@ -55,19 +61,12 @@ module.exports = {
 				options: bubleOptions
 			},
 			{
-				test: /\.styl$/,
-				loader: 'css-loader!stylus-loader',
-				options: stylusOptions
-			},
-			{
-				test: /\.css$/,
-				loader: 'css-loader?minimize'
-			},
-			{
 				test: /\.pug$/,
 				loader: 'pug-loader',
 				options: pugOptions
 			},
+
+			// styles loading is different for server and client so let them define the loaders
 
 			// assets
 
@@ -109,4 +108,4 @@ module.exports = {
 	performance: {
 		hints: process.env.NODE_ENV === 'production' ? 'warning' : false
 	}
-};
+});
