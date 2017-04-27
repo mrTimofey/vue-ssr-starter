@@ -2,7 +2,6 @@ const { config, options } = require('./base');
 const webpack = require('webpack');
 const HTMLPlugin = require('html-webpack-plugin');
 const ExtractText = require('extract-text-webpack-plugin');
-const pug = require('pug');
 
 const baseConfig = config();
 
@@ -64,7 +63,7 @@ if (process.env.NODE_ENV === 'production') {
 						options: options.stylus
 					}
 				],
-				fallback: 'style-loader',
+				fallback: 'style-loader'
 			})
 		},
 		{

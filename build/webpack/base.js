@@ -22,7 +22,7 @@ const options = {
 	}),
 	pug: new Options({
 		doctype: 'html',
-		basedir: path.resolve(process.cwd(), 'src')
+		basedir: process.cwd()
 	}),
 	css: new Options({
 		minimize: true,

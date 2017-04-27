@@ -6,7 +6,7 @@
 	};
 </script>
 <template lang="pug">
-	include /mixins.pug
+	include /src/mixins.pug
 	article
 		+sayHi()
 		h1 Home page
