@@ -1,25 +1,5 @@
-import Vue from 'vue';
 import createApp from './app';
 import sprite from 'assets/sprite.svg';
-
-// call prefetch on component creation
-Vue.mixin({
-	data: () => ({
-		// let component know when prefetching is done
-		prefetching: false
-	}),
-	created() {
-		if (this.$root._isMounted && this.$options.prefetch) {
-			let promise = this.$options.prefetch(this.$root.$store);
-			if (!promise) return;
-			this.prefetching = true;
-			promise.then(
-				() => { this.prefetching = false; },
-				err => { this.$store.commit('fireServerError', err); }
-			);
-		}
-	}
-});
 
 // inject svg sprite
 const div = document.createElement('div');
@@ -37,4 +17,4 @@ app.$router.beforeEach((from, to, next) => {
 });
 
 app.$store.replaceState(window.__INITIAL_STATE__);
-app.$mount(document.body.querySelector('[server-rendered]'));
+app.$mount(document.body.querySelector('[data-server-rendered]'));

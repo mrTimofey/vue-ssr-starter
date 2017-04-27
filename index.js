@@ -50,7 +50,9 @@ function parseLayout(html) {
 
 if (production) {
 	layout = parseLayout(fs.readFileSync(layoutFile, 'utf-8'));
-	renderer = vueSR.createBundleRenderer(fs.readFileSync(path.resolve('./dist/server-bundle.js'), 'utf-8'));
+	renderer = vueSR.createBundleRenderer(fs.readFileSync(path.resolve('./dist/server-bundle.js'), 'utf-8'), {
+		runInNewContext: false
+	});
 }
 else {
 	require('./build/setup-dev-server')(app, {

@@ -4,6 +4,7 @@
 	import 'src/footer.css';
 
 	export default {
+		name: 'App',
 		head: {
 			title: 'App',
 			titleTemplate: '%s | App',
