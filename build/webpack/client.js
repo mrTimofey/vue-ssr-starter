@@ -70,8 +70,7 @@ if (process.env.NODE_ENV === 'production') {
 		{
 			test: /\.css$/,
 			use: ExtractText.extract({
-				loader: 'css-loader',
-				options: options.css,
+				loader: 'css-loader?' + options.css,
 				fallback: 'style-loader'
 			})
 		}
