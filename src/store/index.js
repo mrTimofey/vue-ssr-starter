@@ -4,7 +4,7 @@ import http from 'src/http';
 
 Vue.use(Vuex);
 
-export default new Vuex.Store({
+export default () => new Vuex.Store({
 	state: {
 		serverError: false,
 		items: []

@@ -7,9 +7,10 @@ Vue.mixin({
 	})
 });
 
-import app from './app';
+import createApp from './app';
 
 export default context => {
+	const app = createApp(context);
 	app.$router.push(context.url);
 
 	return new Promise(resolve => {

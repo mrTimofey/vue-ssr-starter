@@ -2,14 +2,21 @@ import Vue from 'vue';
 import Meta from 'vue-meta';
 import { sync } from 'vuex-router-sync';
 
-import http from 'src/http';
-import store from 'src/store';
-import router from 'src/router';
-import app from 'src/app.vue';
+function filenameToCamelCase(str, lowerFirst = false) {
+	return str
+	// remove extension
+	.replace(/\.[a-z0-9]+$/i, '')
+	// remove leading ./
+	.replace(/^\.\//, '')
+	// to CamelCase
+	.split('/').join('-').split('_').join('-').split('-')
+	.map((el, i) => el.substr(0, 1)[(lowerFirst && i === 0) ? 'toLowerCase' : 'toUpperCase']() + el.substr(1))
+	.join();
+}
 
-Vue.http = http;
-Vue.prototype.$http = http;
-sync(store, router);
+import createStore from 'src/store';
+import createRouter from 'src/router';
+import app from 'src/app.vue';
 
 Vue.use(Meta, {
 	keyName: 'head',
@@ -17,18 +24,6 @@ Vue.use(Meta, {
 	ssrAttribute: 'data-meta-ssr',
 	tagIDKeyName: 'vmid'
 });
-
-function filenameToCamelCase(str, lowerFirst = false) {
-	return str
-		// remove extension
-		.replace(/\.[a-z0-9]+$/i, '')
-		// remove leading ./
-		.replace(/^\.\//, '')
-		// to CamelCase
-		.split('/').join('-').split('_').join('-').split('-')
-		.map((el, i) => el.substr(0, 1)[(lowerFirst && i === 0) ? 'toLowerCase' : 'toUpperCase']() + el.substr(1))
-		.join();
-}
 
 // shared components
 const requireComp = require.context('src/components/shared/', true, /\.(vue|js)$/);
@@ -54,4 +49,9 @@ for (let name of requireDirective.keys()) {
 	Vue.directive(filenameToCamelCase(name, true), directive);
 }
 
-export default new Vue({ store, router, ...app });
+export default context => {
+	const store = createStore(context),
+		router = createRouter(context);
+	sync(store, router);
+	return new Vue({ store, router, ...app });
+};

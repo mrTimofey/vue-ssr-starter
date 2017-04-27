@@ -31,4 +31,5 @@ for (let name of requirePage.keys()) {
 
 if (route404) routes.push(route404);
 
-export default new Router({ routes, mode: 'history' });
+// we should return factory for SSR
+export default () => new Router({ routes, mode: 'history' });
