@@ -1,29 +1,42 @@
 const path = require('path');
 const qs = require('qs');
 
-const stylusOptions = {
-	import: [
-		path.resolve(process.cwd(), 'node_modules/kouto-swiss/index.styl'),
-		path.resolve(process.cwd(), 'src/shared.styl')
-	]
-};
-const pugOptions = {
-	doctype: 'html',
-	basedir: path.resolve(process.cwd(), 'src')
-};
-const bubleOptions = {
-	objectAssign: 'Object.assign',
-	transforms: {
-		dangerousForOf: true,
-		modules: false
+// allows options to represent both object and query string
+class Options {
+	constructor(options) {
+		for (let k of Object.keys(options)) this[k] = options[k];
 	}
+	toString() {
+		return qs.stringify(this, { encode: false, arrayFormat: 'brackets' }).replace(/=true/g, '');
+	}
+}
+
+// shared options
+const options = {
+	buble: new Options({
+		objectAssign: 'Object.assign',
+		transforms: {
+			dangerousForOf: true,
+			modules: false
+		}
+	}),
+	pug: new Options({
+		doctype: 'html',
+		basedir: path.resolve(process.cwd(), 'src')
+	}),
+	css: new Options({
+		minimize: true,
+		import: false
+	}),
+	stylus: new Options({
+		import: [
+			path.resolve(process.cwd(), 'node_modules/kouto-swiss/index.styl'),
+			path.resolve(process.cwd(), 'src/shared.styl')
+		]
+	})
 };
 
-exports.options = {
-	buble: bubleOptions,
-	stylus: stylusOptions,
-	pug: pugOptions
-};
+exports.options = options;
 
 exports.config = () => ({
 	devtool: false,
@@ -41,29 +54,28 @@ exports.config = () => ({
 				test: /\.vue$/,
 				loader: 'vue-loader',
 				options: {
-					template: pugOptions,
+					template: options.pug,
 					loaders: {
-						stylus: 'vue-style-loader!css-loader?minimize&import=false!stylus-loader?' +
-							qs.stringify(stylusOptions, { encode: false, arrayFormat: 'brackets' })
+						stylus: `vue-style-loader!css-loader?${options.css}!stylus-loader?${options.stylus}`
 					},
 					transformToRequire: {
 						img: 'src',
 						image: 'xlink:href',
 						a: 'href'
 					},
-					buble: bubleOptions
+					buble: options.buble
 				}
 			},
 			{
 				test: /\.js$/,
 				loader: 'buble-loader',
 				exclude: /node_modules/,
-				options: bubleOptions
+				options: options.buble
 			},
 			{
 				test: /\.pug$/,
 				loader: 'pug-loader',
-				options: pugOptions
+				options: options.pug
 			},
 
 			// styles loading is different for server and client so let them define the loaders

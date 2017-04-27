@@ -55,7 +55,10 @@ if (process.env.NODE_ENV === 'production') {
 			test: /\.styl$/,
 			use: ExtractText.extract({
 				use: [
-					'css-loader?minimize',
+					{
+						loader: 'css-loader',
+						options: options.css
+					},
 					{
 						loader: 'stylus-loader',
 						options: options.stylus
@@ -67,8 +70,9 @@ if (process.env.NODE_ENV === 'production') {
 		{
 			test: /\.css$/,
 			use: ExtractText.extract({
-				loader: 'css-loader?minimize',
-				fallback: 'style-loader',
+				loader: 'css-loader',
+				options: options.css,
+				fallback: 'style-loader'
 			})
 		}
 	);
@@ -88,7 +92,10 @@ else {
 			test: /\.styl$/,
 			use: [
 				'style-loader',
-				'css-loader?minimize',
+				{
+					loader: 'css-loader',
+					options: options.css
+				},
 				{
 					loader: 'stylus-loader',
 					options: options.stylus
@@ -99,7 +106,10 @@ else {
 			test: /\.css$/,
 			use: [
 				'style-loader',
-				'css-loader?minimize'
+				{
+					loader: 'css-loader',
+					options: options.css
+				}
 			]
 		}
 	);

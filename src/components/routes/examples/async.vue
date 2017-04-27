@@ -9,10 +9,10 @@
 			return {
 				// dynamic head title
 				title: this.prefetching ? 'Loading...' : ('Items fetched: ' + this.items.length)
-			}
+			};
 		},
 		prefetch: store => store.dispatch('fetchItems')
-	}
+	};
 </script>
 <template lang="pug">
 	div

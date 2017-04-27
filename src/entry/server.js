@@ -15,7 +15,7 @@ export default context => {
 	return new Promise(resolve => {
 		Promise.all(app.$router.getMatchedComponents().map(comp => {
 			context.meta = app.$meta();
-			if (comp.prefetch) return comp.prefetch(app.$store);
+			return comp.prefetch && comp.prefetch(app.$store);
 		})).then(
 			() => {
 				context.initialState = app.$store.state;
@@ -28,4 +28,4 @@ export default context => {
 			}
 		);
 	});
-}
+};

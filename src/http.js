@@ -1,3 +1,4 @@
+/* eslint-disable quote-props */
 import Axios from 'axios';
 export default Axios.create({
 	headers: {

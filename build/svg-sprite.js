@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const fs = require('fs');
 const path = require('path');
 const SVGSpriter = require('svg-sprite');
@@ -51,7 +52,7 @@ const spriter = new SVGSpriter({
 			{ svgo: { plugins: [
 				// collapseGroups is not recursive (
 				{ collapseGroups: true }
-			] }}
+			]} }
 		]
 	},
 	svg: {
@@ -76,7 +77,9 @@ for (let f of fs.readdirSync(spritesDir)) {
 spriter.compile((err, result) => {
 	if (err) return console.error(err);
 	for (let mode in result) {
+		if (!result.hasOwnProperty(mode)) continue;
 		for (let resource in result[mode]) {
+			if (!result[mode].hasOwnProperty(resource)) continue;
 			fs.writeFileSync(result[mode][resource].path, result[mode][resource].contents);
 		}
 	}

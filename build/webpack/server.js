@@ -1,7 +1,5 @@
 const { config } = require('./base');
 const webpack = require('webpack');
-const fs = require('fs');
-const path = require('path');
 
 const baseConfig = config();
 

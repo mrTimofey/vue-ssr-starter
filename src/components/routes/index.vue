@@ -3,7 +3,7 @@
 		head: {
 			title: 'Home'
 		}
-	}
+	};
 </script>
 <template lang="pug">
 	include /mixins.pug

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const fs = require('fs');
 const path = require('path');
 const express = require('express');
@@ -44,7 +45,7 @@ function parseLayout(html) {
 		},
 		// after app layout
 		end
-	]
+	];
 }
 
 if (production) {
@@ -100,7 +101,9 @@ app.get('*', (req, res) => {
 	});
 
 	stream.on('end', () => {
-		if (context.initialState) res.write(`<script>window.__INITIAL_STATE__=${serialize(context.initialState)}</script>`);
+		if (context.initialState) {
+			res.write(`<script>window.__INITIAL_STATE__=${serialize(context.initialState)}</script>`);
+		}
 		if (context.initialState.serverError) {
 			// let application handle server error if possible
 			console.error((new Date()).toUTCString() + ': data prefetching error');

@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Meta from 'vue-meta';
 import { sync } from 'vuex-router-sync';
 
-import http from 'src/http'
+import http from 'src/http';
 import store from 'src/store';
 import router from 'src/router';
 import app from 'src/app.vue';
