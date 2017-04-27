@@ -22,4 +22,4 @@ include /mixins
 				br
 				!='{{ serverError.message }}'
 		router-view(v-else)
-	footer: +pageFooter('2016')
+	footer: +pageFooter(new Date().getFullYear())

@@ -15,3 +15,9 @@
 	};
 </script>
 <template lang="pug" src="src/app.pug"></template>
+<style lang="stylus">
+	footer
+		fixed false 0 0 0
+		background blue
+</style>
+<style lang="stylus" src="src/header.styl"></style>
