@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const favicon = require('serve-favicon');
-// serializes any type including functions
+// serializes any data including functions
 const serialize = require('serialize-javascript');
 const vueSR = require('vue-server-renderer');
 
@@ -12,11 +12,20 @@ const port = process.env.PORT || 8080;
 const production = process.env.NODE_ENV === 'production';
 const layoutFile = path.resolve('./dist/index.html');
 
+// environment parameters
 const envFile = path.resolve(process.cwd(), '.env.js');
 const env = fs.existsSync(envFile) ? require(envFile) : {};
 
 let layout, renderer;
 
+/**
+ * Split layout HTML allowing server renderer to inject component output, store data, meta tags, etc.
+ * @param {string} html layout HTML
+ * @return {[function,string]} [
+ *    function({string} meta tags, {string} attributes for <html>, {string} attributes for body),
+ *    {string} page ending
+ * ]
+ */
 function parseLayout(html) {
 	let layout = html.split('<html>');
 
@@ -82,6 +91,7 @@ app.get('*', (req, res) => {
 	const stream = renderer.renderToStream(context);
 
 	stream.once('data', () => {
+		// get head data from the vue-meta plugin
 		const {
 			meta, title, link, style, script, noscript,
 			htmlAttrs,
