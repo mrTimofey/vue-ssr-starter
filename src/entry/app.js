@@ -39,6 +39,7 @@ for (let name of requireDirective.keys()) {
 	Vue.directive(filenameToCamelCase(name, true), directive);
 }
 
+// we should return factory for SSR (runInNewContext: false)
 export default context => {
 	const store = createStore(context),
 		router = createRouter(context);

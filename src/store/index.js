@@ -4,7 +4,7 @@ import http from 'src/http';
 
 Vue.use(Vuex);
 
-export default () => new Vuex.Store({
+const store = {
 	state: {
 		serverError: false,
 		items: []
@@ -31,4 +31,7 @@ export default () => new Vuex.Store({
 			});
 		}
 	}
-});
+};
+
+// we should return factory for SSR (runInNewContext: false)
+export default () => new Vuex.Store(store);

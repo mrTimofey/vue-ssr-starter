@@ -17,4 +17,5 @@ app.$router.beforeEach((from, to, next) => {
 });
 
 app.$store.replaceState(window.__INITIAL_STATE__);
+delete window.__INITIAL_STATE__;
 app.$mount(document.body.querySelector('[data-server-rendered]'));
