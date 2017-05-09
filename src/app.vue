@@ -5,6 +5,12 @@
 
 	export default {
 		name: 'App',
+		prefetch() {
+			// imitate some async activity
+			return new Promise(resolve => {
+				resolve();
+			});
+		},
 		head: {
 			title: 'App',
 			titleTemplate: '%s | App',
