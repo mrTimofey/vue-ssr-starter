@@ -3,5 +3,6 @@ module.exports = {
 	apiProxy: {
 		target: 'http://example.com',
 		prefix: '/api/v1'
-	}
+	},
+	port: 8080
 };
