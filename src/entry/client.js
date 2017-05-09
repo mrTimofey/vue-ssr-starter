@@ -8,6 +8,9 @@ div.innerHTML = sprite;
 if (document.body.childNodes && document.body.childNodes.length) document.body.insertBefore(div, document.body.childNodes[0]);
 else document.body.appendChild(div);
 
+// fix route hash
+window.__INITIAL_STATE__.route.hash = location.hash;
+
 // create app
 const app = createApp();
 
