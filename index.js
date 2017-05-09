@@ -7,14 +7,14 @@ const favicon = require('serve-favicon');
 const serialize = require('serialize-javascript');
 const vueSR = require('vue-server-renderer');
 
-const app = express();
-const port = process.env.PORT || 8080;
-const production = process.env.NODE_ENV === 'production';
-const layoutFile = path.resolve('./dist/index.html');
-
 // environment parameters
 const envFile = path.resolve(process.cwd(), '.env.js');
 const env = fs.existsSync(envFile) ? require(envFile) : {};
+
+const app = express();
+const port = env.port || process.env.PORT || 8080;
+const production = process.env.NODE_ENV === 'production';
+const layoutFile = path.resolve('./dist/index.html');
 
 let layout, renderer;
 
