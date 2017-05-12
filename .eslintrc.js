@@ -99,7 +99,6 @@ module.exports = {
 		'func-style': [1, 'declaration', { allowArrowFunctions: true }],
 		'indent': [1, 'tab'],
 		'key-spacing': 1,
-		'linebreak-style': [1, 'unix'],
 		'new-cap': 2,
 		'new-parens': 2,
 		'no-mixed-spaces-and-tabs': 2,
