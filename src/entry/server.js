@@ -1,7 +1,12 @@
 import createApp from './app';
+import http from 'src/http';
 
 export default context => {
 	const app = createApp(context);
+
+	// replace relative baseURL with app URL
+	if (!/^https?:\/\//.text(http.defaults.baseURL))
+		http.defaults.baseURL = context.protocol + '://' + context.hostname + http.defaults.baseURL;
 
 	return new Promise(resolve => {
 		app.$router.onReady(() => {
