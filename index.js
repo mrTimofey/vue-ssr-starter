@@ -48,9 +48,9 @@ function parseLayout(html) {
 			htmlAttrs = ' data-meta-ssr' + (htmlAttrs ? (' ' + htmlAttrs) : '');
 			bodyAttrs = bodyAttrs ? (' ' + bodyAttrs.replace('data-meta=""', '')) : '';
 			return start + htmlAttrs +
-					head + headMeta +
-					body + bodyAttrs +
-					afterBody;
+				head + headMeta +
+				body + bodyAttrs +
+				afterBody;
 		},
 		// after app layout
 		end
@@ -87,8 +87,9 @@ app.get('*', (req, res) => {
 	if (!renderer || !layout) return res.end('Compiling app, refresh in a moment...');
 	res.setHeader('Content-Type', 'text/html');
 
-	const context = { url: req.url };
+	const context = req;
 	const stream = renderer.renderToStream(context);
+	let body = '';
 
 	stream.once('data', () => {
 		// get head data from the vue-meta plugin
@@ -98,30 +99,36 @@ app.get('*', (req, res) => {
 			bodyAttrs
 		} = context.meta.inject();
 
-		res.write(layout[0](
+		body += layout[0](
 			// <head> ...
 			[meta, title, link, style, script, noscript].reduce((acc, el) => acc + el.text(), ''),
 			// <html ATTRS>
 			htmlAttrs.text(),
 			// <body ATTRS>
 			bodyAttrs.text()
-		));
+		);
 	});
 
 	stream.on('data', chunk => {
-		res.write(chunk);
+		body += chunk;
 	});
 
 	stream.on('end', () => {
-		if (context.initialState) {
-			res.write(`<script>window.__INITIAL_STATE__=${serialize(context.initialState)}</script>`);
-		}
+		let status = context.statusCode || 200;
+
 		if (context.initialState.serverError) {
 			// let application handle server error if possible
 			console.error((new Date()).toUTCString() + ': data prefetching error');
 			console.error(context.initialState.serverError);
-			res.status(500);
+			status = 500;
 		}
+		res.status(status);
+		res.write(body);
+
+		if (context.initialState) {
+			res.write(`<script>window.__INITIAL_STATE__=${serialize(context.initialState)}</script>`);
+		}
+
 		res.end(layout[1]);
 	});
 
