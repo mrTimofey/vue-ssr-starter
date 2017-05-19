@@ -28,15 +28,15 @@ Includes:
 	* `filters/` - vue filters registered implicitly via `Vue.filter()`
 	* `directives/` - vue directives registered implicitly via `Vue.directive()`
 	* `entry/` - main entry points
-		* `app` - shared between server and client, exports root component instance, mixes it with `app.vue`
+		* `app` - shared between server and client, exports a factory function returning root component instance, mixes it with `app.vue`
 		* `client` - client entry
 		* `server` - server entry
-	* `store/` - Vuex storage, `index` must return a configured Vuex store instance
-	* `app.vue` - root component, implicitly mixed with `entry\app`
-	* `http` - exports http client instance (Axios) which is implicitly injected as `Vue.http` and `Vue.prototype.$http`
+	* `store/` - Vuex storage, `index` returns a factory function returning configured Vuex store instance
+	* `app.vue` - aplication root component, implicitly mixed with `entry\app`
+	* `http` - exports http client instance (Axios)
 	* `layout.pug` - application HTML layout
-	* `router` - exports vue-router instance
-	* `vars.styl` - globally included file with stylus variables
+	* `router` - exports a factory function returning vue-router instance
+	* `vars.styl` - globally included stylus file (for variables, mixins, etc.)
 
 ## Commands
 
