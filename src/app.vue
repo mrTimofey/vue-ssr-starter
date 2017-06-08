@@ -1,16 +1,9 @@
 <script>
 	import { mapGetters } from 'vuex';
-	import 'src/app.styl';
-	import 'src/footer.css';
+	import 'src/styles/reset.styl';
 
 	export default {
 		name: 'App',
-		prefetch() {
-			// imitate some async activity
-			return new Promise(resolve => {
-				resolve();
-			});
-		},
 		head: {
 			title: 'App',
 			titleTemplate: '%s | App',
@@ -21,10 +14,10 @@
 		computed: mapGetters(['serverError'])
 	};
 </script>
-<template lang="pug" src="src/app.pug"></template>
-<style lang="stylus">
-	footer
-		fixed false 0 0 0
-		background blue
-</style>
-<style lang="stylus" src="src/header.styl"></style>
+<template lang="pug">
+	p.server-error(v-if="serverError")!='Something went wrong...'
+		template(v-if="serverError.message")
+			br
+			!='{{ serverError.message }}'
+	router-view(v-else)
+</template>

@@ -24,7 +24,7 @@ export default {
 		if (this.$options.prefetch) update(this, next);
 		else next();
 	},
-	// trigger only on client
+	// trigger only on client (beforeMount is not triggered on server)
 	beforeMount() {
 		if (this.$root._isMounted && this.$options.prefetch) update(this);
 	}
