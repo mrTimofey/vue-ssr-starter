@@ -7,12 +7,17 @@ Vue.use(Vuex);
 // we should return factory for SSR (runInNewContext: false)
 export default () => new Vuex.Store({
 	state: {
-		serverError: false
+		serverError: false,
+		items: []
 	},
 	getters: {
+		items: state => state.items,
 		serverError: state => state.serverError
 	},
 	mutations: {
+		setItems(state, items) {
+			Vue.set(state, 'items', items);
+		},
 		fireServerError(state, err) {
 			state.serverError = err || true;
 		},
@@ -20,5 +25,11 @@ export default () => new Vuex.Store({
 			state.serverError = false;
 		}
 	},
-	actions: {}
+	actions: {
+		fetchItems({ commit }) {
+			return http.get('https://randomuser.me/api/', { params: { results: 10 } }).then(res => {
+				commit('setItems', res.data.results);
+			});
+		}
+	}
 });
