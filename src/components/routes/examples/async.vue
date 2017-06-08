@@ -7,10 +7,11 @@
 		},
 		head() {
 			return {
-				// dynamic head title
+				// test dynamic head title
 				title: this.prefetching ? 'Loading...' : ('Items fetched: ' + this.items.length)
 			};
 		},
+		// test async loading from the external API
 		prefetch: store => store.dispatch('fetchItems')
 	};
 </script>

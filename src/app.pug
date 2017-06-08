@@ -1,10 +1,13 @@
+//- test absolute include
 include /src/mixins
 #app
 	header
 		.logos
 			router-link(to="/")
+				//- test module require src
 				img(src="~assets/i/webpack.svg")
 				img(src="~assets/i/vue.png")
+				//- test icon insertion
 				icon(name="webpack")
 		nav
 			b!='Examples: '
@@ -14,6 +17,7 @@ include /src/mixins
 			!=' | '
 			router-link(to="/whatever") 404
 			!=' | '
+			//- test module require href
 			a(href="~assets/docs/example.txt" download) Download
 	hr
 	main

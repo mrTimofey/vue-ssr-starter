@@ -11,7 +11,6 @@ else document.body.appendChild(div);
 // fix route hash
 window.__INITIAL_STATE__.route.hash = location.hash;
 
-// create app
 const app = createApp();
 
 app.$router.beforeEach((from, to, next) => {
