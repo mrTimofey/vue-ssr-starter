@@ -1,3 +1,6 @@
+**The aim of this branch is just to test this repository with many use cases.
+Use master branch instead!**
+
 # Webpack, Vue, SSR project template
 
 Includes:
