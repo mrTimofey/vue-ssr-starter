@@ -25,14 +25,17 @@ for (let name of requirePage.keys()) {
 	if (!component.mixins) component.mixins = [];
 	component.mixins.push(prefetchMixin);
 
-	// generate component name automatically
-	if (!component.name) component.name = filenameToCamelCase(name);
-
 	if (route.path === '/404') {
+		// generate component name automatically
+		if (!component.name) component.name = 'NotFound';
+
 		route.path = '*';
 		route404 = route;
 	}
 	else {
+		// generate component name automatically
+		if (!component.name) component.name = filenameToCamelCase(name);
+
 		// let components create their own sub routes
 		if (component.routes) route.children = component.routes;
 		// map route parameters to component props by default
