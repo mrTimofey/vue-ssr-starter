@@ -74,14 +74,6 @@ if (process.env.NODE_ENV === 'production') {
 			})
 		}
 	);
-
-	// prevent url and file loaders emitting twice with server bundle
-	for (let rule of clientConfig.module.rules) {
-		let loaders = /file-loader|url-loader/;
-		if (loaders.test(rule.loader)) {
-			rule.options.emitFile = false;
-		}
-	}
 }
 else {
 	clientConfig.devtool = '#sourcemap';

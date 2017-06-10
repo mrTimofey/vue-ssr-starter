@@ -86,7 +86,7 @@ exports.config = () => ({
 				test: /\.(woff|woff2|eot|otf|ttf)$/,
 				loader: 'file-loader',
 				options: {
-					name: 'fonts/[name].[ext]'
+					name: 'fonts/[name].[ext]?[hash:6]'
 				}
 			},
 			{
