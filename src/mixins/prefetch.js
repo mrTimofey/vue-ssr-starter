@@ -1,6 +1,6 @@
 function update(comp, next) {
-	const promise = comp.$options.prefetch(comp.$store);
-	if (!promise) return next();
+	const promise = comp.$options.prefetch(comp.$store, comp.$route.params, comp.$route);
+	if (!promise) return next ? next() : undefined;
 	comp.prefetching = true;
 	promise
 		.then(() => {
