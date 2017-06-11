@@ -15,7 +15,7 @@ export default context => {
 
 			if (typeof app.$options.prefetch === 'function') prefetchComponents.unshift(app.$options);
 
-			Promise.all(prefetchComponents.map(comp => comp.prefetch(app.$store)))
+			Promise.all(prefetchComponents.map(comp => comp.prefetch(app.$store, app.$route.params, app.$route)))
 			.then(() => {
 				context.meta = app.$meta();
 				context.initialState = app.$store.state;
