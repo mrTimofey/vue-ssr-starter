@@ -116,7 +116,7 @@ app.get('*', (req, res) => {
 	stream.on('end', () => {
 		let status = context.statusCode || 200;
 
-		if (context.initialState.serverError) {
+		if (context.initialVuexState && context.initialVuexState.serverError) {
 			// let application handle server error if possible
 			console.error((new Date()).toUTCString() + ': data prefetching error');
 			console.error(context.initialState.serverError);
