@@ -28,6 +28,7 @@ export default context => {
 					context.initialVuexState = app.$store.state;
 					context.initialComponentsState = compData;
 					if (app.$route.meta && app.$route.meta.statusCode) context.statusCode = app.$route.meta.statusCode;
+					else if (app.$store.getters.serverError) context.statusCode = 500;
 					resolve(app);
 				})
 				.catch(err => {
