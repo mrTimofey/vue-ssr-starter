@@ -18,6 +18,9 @@ Includes:
 * `index.js` - application server
 * `assets/` - application static assets (images, fonts, icons etc.)
 	* `sprite.svg` - generated sprites file, `require('assets/sprite.svg')` will return file contents string
+	* `docs/` - downloadable static content
+	* `fonts/` - guess what
+	* `i/` - static images (backgrounds, patterns etc.)
 	* `icons/` - contains SVG icons for the sprite
 * `build/` - code related to project building
 	* `setup-dev-server` - development server setup with hot reloading
