@@ -61,6 +61,8 @@ Every component within `src/components/routes` directory can use some special fe
 * `component.routeParams`, String - additional route suffix. Usually used to provide dynamic route segments.
 	You can use any string allowed for the vue-router path definition. All dynamic segments are automatically mapped
 	to component `props`.
+* `component.routeMeta`, Object - `route.meta`. Include `statusCode` here to modify an HTTP status returned with SSR.
+	404 route includes 404 status code by default.
 * `component.prefetch({vuex store instance}, {vue-router route params}, {vue-router matched route instance})`, function.
 	Returns a promise. Allows some async routine before actual application rendering on server side. 
 	Automatically called on client side from a `beforeMount` and `beforeRouteChange` hooks as well.
