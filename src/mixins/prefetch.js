@@ -1,19 +1,20 @@
-function update(comp, next) {
-	const promise = comp.$options.prefetch({
-		store: comp.$store,
-		props: comp.$route.params,
-		route: comp.$route
+function update(vm, next) {
+	const promise = vm.$options.prefetch({
+		store: vm.$store,
+		props: vm.$route.params,
+		route: vm.$route
 	});
 	if (!promise) return next ? next() : undefined;
-	comp.prefetching = true;
+	vm.prefetching = true;
 	promise
 		.then(data => {
-			comp.prefetching = false;
+			vm.prefetching = false;
+			Object.assign(vm.$data, data);
 			if (next) next();
 		})
 		.catch(err => {
-			comp.prefetching = false;
-			comp.$store.commit('fireServerError', err);
+			vm.prefetching = false;
+			vm.$store.commit('fireServerError', err);
 			if (next) next(err);
 		});
 }
@@ -23,6 +24,11 @@ export default {
 		// let component know when prefetching is done
 		prefetching: false
 	}),
+	created() {
+		// add prefetched data only after hydration (just after SSR)
+		if (this.$root._isMounted || !this.$options.prefetchedData) return;
+		Object.assign(this.$data, this.$options.prefetchedData);
+	},
 	// on route parameter change
 	beforeRouteUpdate(to, from, next) {
 		if (this.$options.prefetch) update(this, next);

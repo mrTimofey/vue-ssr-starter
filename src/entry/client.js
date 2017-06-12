@@ -24,11 +24,13 @@ if (window.__INITIAL_VUEX_STATE__) {
 	delete window.__INITIAL_VUEX_STATE__;
 }
 
-if (window.__INITITAL_COMP_STATE__) {
-	const comps = app.$router.getMatchedComponents().filter(comp => typeof comp.prefetch === 'function');
-	for (let i in comps)
-		if (window.__INITITAL_COMP_STATE__[i]) comps[i].prefetchedData = window.__INITITAL_COMP_STATE__[i];
-	delete window.__INITITAL_COMP_STATE__;
+if (window.__INITIAL_COMP_STATE__) {
+	app.$router.onReady(() => {
+		const comps = app.$router.getMatchedComponents().filter(comp => typeof comp.prefetch === 'function');
+		for (let i in comps)
+			if (window.__INITIAL_COMP_STATE__[i]) comps[i].prefetchedData = window.__INITIAL_COMP_STATE__[i];
+		delete window.__INITIAL_COMP_STATE__;
+	});
 }
 
 app.$mount(document.body.querySelector('[data-server-rendered]'));

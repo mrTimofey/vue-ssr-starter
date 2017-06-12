@@ -64,11 +64,12 @@ Every component within `src/components/routes` directory can use some special fe
 * `component.routeMeta`, Object - `route.meta`. Include `statusCode` here to modify an HTTP status returned with SSR.
 	404 route includes 404 status code by default.
 * `component.prefetch({ store, props, route })`, function
-	(store - vuex store instance, props - route params, route - current route object).
+	(`store` - vuex store instance, `props` - route params, `route` - current route object).
 	
-	Returns a promise. Allows some async routine before actual application rendering on server side.
-	To pass any data to component resolve promise with data.
-	Automatically called on client side from a `beforeMount` and `beforeRouteChange` hooks as well.
+	Must return a promise. Allows some async routine before actual application rendering on server side.
+	To pass any data to component: resolve promise with needed data and add corresponding `component.data` fields with
+	their initial values to prevent *...property or method not defined...* error.
+	Automatically called on client side from `beforeMount` and `beforeRouteChange` hooks as well.
 	See `src/mixins/prefetch` mixin.
 
 	**IMPORTANT: there is no component context within `prefetch` function because component instance is not created yet!**
@@ -80,6 +81,5 @@ Every component within `src/components/routes` directory can use some special fe
 
 ## Development checklist
 
-* SSR component data hydration with the `prefetch`
 * SSR configurable cache
 * basic Nginx + Phusion Passenger configuration example
