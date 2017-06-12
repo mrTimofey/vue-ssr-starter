@@ -1,5 +1,9 @@
 <script>
 	export default {
+		routeMeta: {
+			// just testing
+			statusCode: 201
+		},
 		head: {
 			title: 'Home'
 		}
