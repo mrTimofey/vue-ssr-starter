@@ -10,24 +10,32 @@ export default context => {
 
 	return new Promise(resolve => {
 		app.$router.onReady(() => {
-			const prefetchComponents = app.$router.getMatchedComponents()
+			// router matched components with prefetch
+			const comps = app.$router.getMatchedComponents()
 				.filter(comp => typeof comp.prefetch === 'function');
+			// prefetch call arguments
+			const args = {
+				store: app.$store,
+				props: app.$route.params,
+				route: app.$route
+			};
 
-			if (typeof app.$options.prefetch === 'function') prefetchComponents.unshift(app.$options);
+			if (typeof app.$options.prefetch === 'function') comps.unshift(app.$options);
 
-			Promise.all(prefetchComponents.map(comp => comp.prefetch(app.$store, app.$route.params, app.$route)))
-			.then(() => {
-				context.meta = app.$meta();
-				context.initialState = app.$store.state;
-				resolve(app);
-			})
-			.catch(err => {
-				// let the application deal with errors
-				context.meta = app.$meta();
-				app.$store.commit('fireServerError', err);
-				context.initialState = app.$store.state;
-				resolve(app);
-			});
+			Promise.all(comps.map(comp => comp.prefetch(args)))
+				.then(compData => {
+					context.meta = app.$meta();
+					context.initialVuexState = app.$store.state;
+					context.initialComponentsState = compData;
+					resolve(app);
+				})
+				.catch(err => {
+					// let the application deal with errors
+					context.meta = app.$meta();
+					app.$store.commit('fireServerError', err);
+					context.initialStoreState = app.$store.state;
+					resolve(app);
+				});
 		});
 		app.$router.push(context.url);
 	});
