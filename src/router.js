@@ -18,7 +18,9 @@ for (let name of requirePage.keys()) {
 			// generate route path based on file path
 			path: name.substr(1, name.length - 5).replace(/\/index$/, '/') +
 				// allow components adding their own route parameters
-				(component.routePath ? ('/' + component.routePath) : '')
+				(component.routePath ? ('/' + component.routePath) : ''),
+			// add meta fields if there are any
+			meta: component.routeMeta
 		};
 
 	// prefetch data for all route components
@@ -30,7 +32,8 @@ for (let name of requirePage.keys()) {
 		if (!component.name) component.name = 'NotFound';
 
 		route.path = '*';
-		route.meta = { statusCode: 404 };
+		if (!route.meta) route.meta = { statusCode: 404 };
+		else if (!route.meta.statusCode) route.meta.statusCode = 404;
 		route404 = route;
 	}
 	else {
