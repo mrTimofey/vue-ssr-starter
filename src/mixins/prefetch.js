@@ -3,7 +3,7 @@ function update(comp, next) {
 	if (!promise) return next ? next() : undefined;
 	comp.prefetching = true;
 	promise
-		.then(() => {
+		.then(data => {
 			comp.prefetching = false;
 			if (next) next();
 		})

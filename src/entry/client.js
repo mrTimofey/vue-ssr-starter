@@ -9,15 +9,19 @@ if (document.body.childNodes && document.body.childNodes.length) document.body.i
 else document.body.appendChild(div);
 
 // fix route hash
-window.__INITIAL_STATE__.route.hash = location.hash;
+if (window.__INITIAL_VUEX_STATE__) window.__INITIAL_VUEX_STATE__.route.hash = location.hash;
 
 const app = createApp();
 
 app.$router.beforeEach((from, to, next) => {
+	// clear server error before next route activating
 	if (app.$store.getters.serverError) app.$store.commit('clearServerError');
 	next();
 });
 
-app.$store.replaceState(window.__INITIAL_STATE__);
-delete window.__INITIAL_STATE__;
+if (window.__INITIAL_VUEX_STATE__) {
+	app.$store.replaceState(window.__INITIAL_VUEX_STATE__);
+	delete window.__INITIAL_VUEX_STATE__;
+}
+
 app.$mount(document.body.querySelector('[data-server-rendered]'));

@@ -7,7 +7,7 @@ Includes:
 
 * Webpack 2
 * Buble
-* Vue 2 with SSR, Vuex and Vue-loader
+* Vue 2 with SSR, Vuex and vue-loader
 * Stylus with kouto-swiss
 * Axios
 * Pug
@@ -53,3 +53,24 @@ npm run build
 # production server on localhost:8080
 npm start
 ```
+
+## SSR related component features
+
+Every component within `src/components/routes` directory can use some special features providing full SSR support:
+
+* `component.routeParams`, String - additional route suffix. Usually used to provide dynamic route segments.
+	You can use any string allowed for the vue-router path definition. All dynamic segments are automatically mapped
+	to component `props`.
+* `component.prefetch({vuex store instance}, {vue-router route params}, {vue-router matched route instance})`, function.
+	Returns a promise. Allows some async routine before actual application rendering on server side. 
+	Automatically called on client side from a `beforeMount` and `beforeRouteChange` hooks as well.
+	See `src/mixins/prefetch` mixin.
+	
+	**IMPORTANT: there is no component context within `prefetch` function because component instance is not created yet!
+	Also there is no way to provide any component data directly - you can only use a vuex store.**
+
+## Development checklist
+
+* SSR component data hydration with the `prefetch`
+* SSR configurable cache
+* basic Nginx + Phusion Passenger configuration example

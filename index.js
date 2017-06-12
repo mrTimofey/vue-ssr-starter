@@ -125,9 +125,10 @@ app.get('*', (req, res) => {
 		res.status(status);
 		res.write(body);
 
-		if (context.initialState) {
-			res.write(`<script>window.__INITIAL_STATE__=${serialize(context.initialState)}</script>`);
-		}
+		if (context.initialVuexState)
+			res.write(`<script>window.__INITIAL_VUEX_STATE__=${serialize(context.initialVuexState)}</script>`);
+		if (context.initialComponentsState)
+			res.write(`<script>window.__INITIAL_COMP_STATE__=${serialize(context.initialComponentsState)}</script>`);
 
 		res.end(layout[1]);
 	});
