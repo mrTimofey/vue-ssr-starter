@@ -63,7 +63,8 @@ Every component within `src/components/routes` directory can use some special fe
 	to component `props`.
 * `component.routeMeta`, Object - `route.meta`. Include `statusCode` here to modify an HTTP status returned with SSR.
 	404 route includes 404 status code by default.
-* `component.prefetch({vuex store instance}, {vue-router route params}, {vue-router matched route instance})`, function.
+* `component.prefetch({ store, props, route })`, function
+	(store - vuex store instance, props - route params, route - current route object).
 	Returns a promise. Allows some async routine before actual application rendering on server side. 
 	Automatically called on client side from a `beforeMount` and `beforeRouteChange` hooks as well.
 	See `src/mixins/prefetch` mixin.
