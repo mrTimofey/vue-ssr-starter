@@ -11,8 +11,7 @@ export default context => {
 	return new Promise(resolve => {
 		app.$router.onReady(() => {
 			// router matched components with prefetch
-			const comps = app.$router.getMatchedComponents()
-				.filter(comp => typeof comp.prefetch === 'function');
+			const comps = app.$router.getMatchedComponents().filter(comp => typeof comp.prefetch === 'function');
 			// prefetch call arguments
 			const args = {
 				store: app.$store,
@@ -20,13 +19,23 @@ export default context => {
 				route: app.$route
 			};
 
-			if (typeof app.$options.prefetch === 'function') comps.unshift(app.$options);
+			const prefetches = comps.map(comp => {
+				const data = comp.prefetch(args);
+				comp.prefetchedData = data;
+				return data;
+			});
 
-			Promise.all(comps.map(comp => comp.prefetch(args)))
+			if (typeof app.$options.prefetch === 'function') prefetches.push(app.$options.prefetch({
+				store: app.$store,
+				route: app.$route
+			}));
+
+			Promise.all(prefetches)
 				.then(compData => {
 					context.meta = app.$meta();
 					context.initialVuexState = app.$store.state;
-					context.initialComponentsState = compData;
+					// do not include root component here
+					context.initialComponentStates = compData.slice(0, comps.length);
 					if (app.$route.meta && app.$route.meta.statusCode) context.statusCode = app.$route.meta.statusCode;
 					else if (app.$store.getters.serverError) context.statusCode = 500;
 					resolve(app);

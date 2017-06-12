@@ -62,12 +62,18 @@ Every component within `src/components/routes` directory can use some special fe
 	404 route includes 404 status code by default.
 * `component.prefetch({ store, props, route })`, function
 	(store - vuex store instance, props - route params, route - current route object).
-	Returns a promise. Allows some async routine before actual application rendering on server side. 
+	
+	Returns a promise. Allows some async routine before actual application rendering on server side.
+	To pass any data to component resolve promise with data.
 	Automatically called on client side from a `beforeMount` and `beforeRouteChange` hooks as well.
 	See `src/mixins/prefetch` mixin.
-	
-	**IMPORTANT: there is no component context within `prefetch` function because component instance is not created yet!
-	Also there is no way to provide any component data directly - you can only use a vuex store.**
+
+	**IMPORTANT: there is no component context within `prefetch` function because component instance is not created yet!**
+
+`prefetch` also works on the root component (`src/app.vue`) with some restrictions:
+
+* no `props` field in the argument;
+* no way to pass component data (only store can be affected).
 
 ## Development checklist
 
