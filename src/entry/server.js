@@ -27,6 +27,7 @@ export default context => {
 					context.meta = app.$meta();
 					context.initialVuexState = app.$store.state;
 					context.initialComponentsState = compData;
+					if (app.$route.meta && app.$route.meta.statusCode) context.statusCode = app.$route.meta.statusCode;
 					resolve(app);
 				})
 				.catch(err => {
@@ -34,6 +35,7 @@ export default context => {
 					context.meta = app.$meta();
 					app.$store.commit('fireServerError', err);
 					context.initialStoreState = app.$store.state;
+					context.statusCode = 500;
 					resolve(app);
 				});
 		});

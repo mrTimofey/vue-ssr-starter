@@ -30,6 +30,7 @@ for (let name of requirePage.keys()) {
 		if (!component.name) component.name = 'NotFound';
 
 		route.path = '*';
+		route.meta = { statusCode: 404 };
 		route404 = route;
 	}
 	else {

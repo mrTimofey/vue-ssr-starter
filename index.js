@@ -120,7 +120,6 @@ app.get('*', (req, res) => {
 			// let application handle server error if possible
 			console.error((new Date()).toUTCString() + ': data prefetching error');
 			console.error(context.initialState.serverError);
-			status = 500;
 		}
 		res.status(status);
 		res.write(body);
