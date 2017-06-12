@@ -12,7 +12,7 @@
 			};
 		},
 		// test async loading from the external API
-		prefetch: store => store.dispatch('fetchItems')
+		prefetch: ({ store }) => store.dispatch('fetchItems')
 	};
 </script>
 <template lang="pug">
