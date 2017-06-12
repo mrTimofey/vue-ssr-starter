@@ -56,8 +56,9 @@ npm start
 Every component within `src/components/routes` directory can use some special features providing full SSR support:
 
 * `component.routeParams`, String - additional route suffix. Usually used to provide dynamic route segments.
-	You can use any string allowed for the vue-router path definition.
-* `component.prefetch({vuex store instance}, {vur-router route params}, {vue-router matched route instance})`, function.
+	You can use any string allowed for the vue-router path definition. All dynamic segments are automatically mapped
+	to component `props`.
+* `component.prefetch({vuex store instance}, {vue-router route params}, {vue-router matched route instance})`, function.
 	Returns a promise. Allows some async routine before actual application rendering on server side. 
 	Automatically called on client side from a `beforeMount` and `beforeRouteChange` hooks as well.
 	See `src/mixins/prefetch` mixin.
