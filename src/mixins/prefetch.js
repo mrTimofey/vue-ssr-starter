@@ -26,8 +26,8 @@ export default {
 	}),
 	created() {
 		// add prefetched data only after hydration (just after SSR)
-		if (this.$root._isMounted || !this.$options.prefetchedData) return;
-		Object.assign(this.$data, this.$options.prefetchedData);
+		if (this.$root._isMounted || !this.constructor.extendOptions.prefetchedData) return;
+		Object.assign(this.$data, this.constructor.extendOptions.prefetchedData);
 	},
 	// on route parameter change
 	beforeRouteUpdate(to, from, next) {
