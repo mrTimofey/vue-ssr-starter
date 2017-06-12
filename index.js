@@ -119,7 +119,7 @@ app.get('*', (req, res) => {
 		if (context.initialVuexState && context.initialVuexState.serverError) {
 			// let application handle server error if possible
 			console.error((new Date()).toUTCString() + ': data prefetching error');
-			console.error(context.initialState.serverError);
+			console.error(context.initialVuexState.serverError);
 		}
 		res.status(status);
 		res.write(body);
