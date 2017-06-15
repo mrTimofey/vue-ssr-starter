@@ -82,6 +82,10 @@ Every component within `src/components/routes` directory can use some special fe
 * no `props` field in the argument;
 * no way to pass component data (only store can be affected).
 
+Root application component (`app.vue`) has a `serverPrefetched` property.
+It is always set to `true` on client side and after all prefetching is done on server side.
+It is not reactive until you explicitly declare it in component`s data.
+
 ## Development checklist
 
 * SSR configurable cache
