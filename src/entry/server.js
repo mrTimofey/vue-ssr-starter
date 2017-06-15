@@ -2,12 +2,14 @@ import createApp from './app';
 import http from 'src/http';
 
 function init(app, context) {
+	app.serverPrefetched = true;
 	context.meta = app.$meta();
 	context.initialVuexState = app.$store.state;
 }
 
 export default context => {
 	const app = createApp(context);
+	app.serverPrefetched = false;
 
 	// replace relative baseURL with app URL
 	if (!/^https?:\/\//.test(http.defaults.baseURL))

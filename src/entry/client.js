@@ -14,6 +14,8 @@ if (window.__INITIAL_VUEX_STATE__) window.__INITIAL_VUEX_STATE__.route.hash = lo
 // create app
 const app = createApp();
 
+app.serverPrefetched = true;
+
 app.$router.beforeEach((from, to, next) => {
 	// clear server error before next route activating
 	if (app.$store.getters.serverError) app.$store.commit('clearServerError');
