@@ -66,4 +66,10 @@ for (let name of requirePage.keys()) {
 if (route404) routes.push(route404);
 
 // we should return factory for SSR (runInNewContext: false)
-export default () => new Router({ routes, mode: 'history' });
+export default () => new Router({
+	routes,
+	mode: 'history',
+	scrollBehavior(to, from, saved) {
+		return to.path === from.path ? saved : { x: 0, y: 0 };
+	}
+});
