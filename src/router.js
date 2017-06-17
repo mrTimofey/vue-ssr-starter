@@ -36,7 +36,7 @@ for (let name of requirePage.keys()) {
 
 	if (route.path === '/404') {
 		// generate component name automatically
-		if (!component.name) component.name = 'NotFound';
+		if (!component.name) component.name = 'NotFoundPage';
 
 		route.path = '*';
 		if (!route.meta) route.meta = { statusCode: 404 };
@@ -46,7 +46,7 @@ for (let name of requirePage.keys()) {
 	else {
 		if (route.path === '') route.path = '/';
 		// generate component name automatically
-		if (!component.name) component.name = filenameToCamelCase(name);
+		if (!component.name) component.name = filenameToCamelCase(name) + 'Page';
 
 		// let components create their own sub routes
 		if (component.routes) route.children = component.routes;
