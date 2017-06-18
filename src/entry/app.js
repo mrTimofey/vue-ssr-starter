@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Meta from 'vue-meta';
 import { sync } from 'vuex-router-sync';
 
-import { filenameToCamelCase } from 'src/utils';
+import { filenameToCamelCase, requireAll } from 'src/utils';
 
 import createStore from 'src/store';
 import createRouter from 'src/router';
@@ -16,28 +16,19 @@ Vue.use(Meta, {
 });
 
 // shared components
-const requireComp = require.context('src/components/shared/', true, /\.(vue|js)$/);
-for (let name of requireComp.keys()) {
-	let component = requireComp(name);
-	if (component.default) component = component.default;
-	Vue.component(filenameToCamelCase(name), component);
-}
+requireAll(require.context('src/components/shared/', true, /\.(vue|js)$/), (module, name) => {
+	Vue.component(filenameToCamelCase(name), module);
+});
 
 // filters
-const requireFilter = require.context('src/filters/', true, /\.js$/);
-for (let name of requireFilter.keys()) {
-	let filter = requireFilter(name);
-	if (filter.default) filter = filter.default;
-	Vue.filter(filenameToCamelCase(name, true), filter);
-}
+requireAll(require.context('src/filters/', true, /\.js$/), (module, name) => {
+	Vue.filter(filenameToCamelCase(name), module);
+});
 
 // directives
-const requireDirective = require.context('src/directives/', true, /\.js$/);
-for (let name of requireDirective.keys()) {
-	let directive = requireDirective(name);
-	if (directive.default) directive = directive.default;
-	Vue.directive(filenameToCamelCase(name, true), directive);
-}
+requireAll(require.context('src/directives/', true, /\.js$/), (module, name) => {
+	Vue.directive(filenameToCamelCase(name), module);
+});
 
 // we should return factory for SSR (runInNewContext: false)
 export default context => {

@@ -2,30 +2,24 @@ import Vue from 'vue';
 import Router from 'vue-router';
 import prefetchMixin from 'src/mixins/prefetch';
 
-import { filenameToCamelCase } from 'src/utils';
+import { filenameToCamelCase, requireAll } from 'src/utils';
 
 Vue.use(Router);
 
-// register all components in directory as routes (excepting files/folders starting from "_")
-const requirePage = require.context('src/components/routes/', true, /^(?:(?!\/?_).)+\.(vue|js)$/);
 const routes = [];
 let route404, pathMap;
 
 if (process.env.NODE_ENV !== 'production') pathMap = {};
 
-for (let name of requirePage.keys()) {
-	let component = requirePage(name);
-	if (component.default) component = component.default;
+// register all components in directory as routes (excepting files/folders starting from "_")
+requireAll(require.context('src/components/routes/', true, /^(?:(?!\/?_).)+\.(vue|js)$/), (component, name) => {
 	const route = {
 		component,
 		// generate route path based on file path
-		path: name.substr(1)
-		// remove file extension
-		.replace(/\.[a-zA-Z0-9]+$/, '')
-		// remove /index
-		.replace(/\/index$/, '') +
-		// allow components adding their own route parameters
-		(component.routePath ? ('/' + component.routePath) : ''),
+		// remove file extension and '/index'
+		path: name.substr(1).replace(/(\/index)?\.[a-zA-Z0-9]+$/, '') +
+			// allow components adding their own route parameters
+			(component.routePath ? ('/' + component.routePath) : ''),
 		// add meta fields if there are any
 		meta: component.routeMeta
 	};
@@ -60,7 +54,7 @@ for (let name of requirePage.keys()) {
 		}
 		routes.push(route);
 	}
-}
+});
 
 // catch-all route (404)
 if (route404) routes.push(route404);
