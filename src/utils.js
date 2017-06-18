@@ -1,7 +1,7 @@
 /**
  * Converts
  * @param {string} str string to process
- * @param {bool} lowerFirst lowercase first letter (uppercase by default)
+ * @param {bool} [lowerFirst] lowercase first letter (uppercase by default)
  * @returns {string} processed string
  */
 export function filenameToCamelCase(str, lowerFirst) {
@@ -23,7 +23,7 @@ export function filenameToCamelCase(str, lowerFirst) {
  * Require all modules from require.context, applies callback to each module or returns name => module mappings
  * if callback is omitted.
  * @param {Object} requireFile require.context call result
- * @param {Function} cb<{string} name, module> callback function, optional
+ * @param {Function} [cb]<{string} name, module> callback function, optional
  * @returns {Object|undefined} module name => module mapping or nothing if callback is omitted
  */
 export function requireAll(requireFile, cb) {
