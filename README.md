@@ -28,15 +28,17 @@ Includes:
 	* `webpack/` - webpack config, `base` - common, `server` for server with SSR, `client` for browser
 * `dist/` - production build files
 * `src/`
-	* `components/` - vue components
-		* `routes/` - components here are implicitly attached to routes same with componets\` file names (excluding leading `_` in file or folder names and `404.vue` which will be used as a catch-all route)
-		* `shared/` - comonents registered implicitly via `Vue.component()`
-	* `filters/` - vue filters registered implicitly via `Vue.filter()`
-	* `directives/` - vue directives registered implicitly via `Vue.directive()`
 	* `entry/` - main entry points
 		* `app` - shared between server and client, exports a factory function returning root component instance, mixes it with `app.vue`
 		* `client` - client entry
 		* `server` - server entry
+	* `components/` - vue components
+		* `shared/` - comonents registered implicitly via `Vue.component()`
+	* `pages/` - components here are implicitly attached to routes same with componets\` file names
+		(excluding leading `_` in file or folder names and `404.vue` which will be used as a catch-all route)
+	* `filters/` - vue filters registered implicitly via `Vue.filter()`
+	* `directives/` - vue directives registered implicitly via `Vue.directive()`
+	* `mixins/` - vue mixins
 	* `store/` - Vuex storage, `index` returns a factory function returning configured Vuex store instance
 	* `app.vue` - aplication root component, implicitly mixed with `entry\app`
 	* `http` - exports http client instance (Axios)
@@ -59,7 +61,7 @@ npm start
 
 ## SSR related component features
 
-Every component within `src/components/routes` directory can use some special features providing full SSR support:
+Every component within `src/pages` directory can use some special features providing full SSR support:
 
 * `component.routeParams`, String - additional route suffix. Usually used to provide dynamic route segments.
 	You can use any string allowed for the vue-router path definition. All dynamic segments are automatically mapped
