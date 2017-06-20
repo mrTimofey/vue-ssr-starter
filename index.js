@@ -16,6 +16,10 @@ const port = env.port || process.env.PORT || 8080;
 const production = process.env.NODE_ENV === 'production';
 const layoutFile = path.resolve('./dist/index.html');
 
+let pe;
+if (!production) pe = new (require('pretty-error'))();
+const formatError = production ? err => err.stack : err => pe.render(err);
+
 let layout, renderer;
 
 /**
@@ -133,9 +137,10 @@ app.get('*', (req, res) => {
 	});
 
 	stream.on('error', err => {
-		console.error((new Date()).toUTCString() + ': page render error');
-		console.error(err);
-		res.status(500).end('Something went wrong...');
+		res.status(500);
+		console.error(new Date().toISOString());
+		console.error(formatError(err));
+		res.end(production ? 'Something went wrong...' : `<pre>${err.stack}\n\n<b>Watch console for more information</b></pre>`);
 	});
 });
 
