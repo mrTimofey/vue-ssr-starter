@@ -1,7 +1,7 @@
-const { config } = require('./base');
+const { createConfig } = require('./base');
 const webpack = require('webpack');
 
-const baseConfig = config();
+const baseConfig = createConfig();
 
 const serverConfig = Object.assign({}, baseConfig, {
 	target: 'node',
@@ -20,9 +20,16 @@ const serverConfig = Object.assign({}, baseConfig, {
 	]
 });
 
+const vueLoader = serverConfig.module.rules.find(({ loader }) => loader === 'vue-loader');
+
+// ignore styles, they are already loaded by the client side builder
 serverConfig.module.rules.push({
 	test: /\.(styl|css)$/,
 	use: 'null-loader'
 });
+
+for (let loader of ['stylus', 'css']) {
+	vueLoader.options.loaders[loader] = 'null-loader';
+}
 
 module.exports = serverConfig;
