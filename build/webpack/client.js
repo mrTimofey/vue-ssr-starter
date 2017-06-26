@@ -1,9 +1,39 @@
-const { config, options } = require('./base');
+const { createConfig, options } = require('./base');
 const webpack = require('webpack');
 const HTMLPlugin = require('html-webpack-plugin');
 const ExtractText = require('extract-text-webpack-plugin');
 
-const baseConfig = config();
+const baseConfig = createConfig();
+
+const styleLoaders = [
+	{
+		test: /\.styl$/,
+		use: [
+			{
+				loader: 'css-loader',
+				options: options.cssAfterPreprocessor
+			},
+			{
+				loader: 'stylus-loader',
+				options: options.stylus
+			}
+		]
+	},
+	{
+		test: /\.css$/,
+		use: [
+			{
+				loader: 'css-loader',
+				options: options.css
+			}
+		]
+	}
+];
+
+const vueStyleLoaders = {
+	css: `css-loader?${options.css}`,
+	stylus: `css-loader?${options.cssAfterPreprocessor}!stylus-loader?${options.stylus}`
+};
 
 const clientConfig = Object.assign({}, baseConfig, {
 	entry: {
@@ -31,9 +61,12 @@ const clientConfig = Object.assign({}, baseConfig, {
 	])
 });
 
+const vueLoader = clientConfig.module.rules.find(({ loader }) => loader === 'vue-loader');
+
 if (process.env.NODE_ENV === 'production') {
 	clientConfig.plugins.push(
 		new ExtractText('styles.css?[hash:6]'),
+		new webpack.optimize.OccurrenceOrderPlugin(),
 		new webpack.optimize.UglifyJsPlugin({
 			comment: true,
 			compress: {
@@ -42,67 +75,34 @@ if (process.env.NODE_ENV === 'production') {
 		})
 	);
 
-	let vueConfig = clientConfig.module.rules.find(el => el.loader === 'vue-loader');
+	for (let loader of Object.keys(vueStyleLoaders)) {
+		vueLoader.options.loaders[loader] = ExtractText.extract({
+			use: vueStyleLoaders[loader],
+			fallback: 'vue-style-loader'
+		});
+	}
 
-	vueConfig.options.loaders.stylus = ExtractText.extract({
-		use: vueConfig.options.loaders.stylus.replace('vue-style-loader!', ''),
-		fallback: 'vue-style-loader'
-	});
-
-	clientConfig.module.rules.push(
-		{
-			test: /\.styl$/,
+	clientConfig.module.rules.push(...styleLoaders.map(
+		loader => Object.assign({}, loader, {
 			use: ExtractText.extract({
-				use: [
-					{
-						loader: 'css-loader',
-						options: options.css
-					},
-					{
-						loader: 'stylus-loader',
-						options: options.stylus
-					}
-				],
+				use: loader.use,
 				fallback: 'style-loader'
 			})
-		},
-		{
-			test: /\.css$/,
-			use: ExtractText.extract({
-				loader: 'css-loader?' + options.css,
-				fallback: 'style-loader'
-			})
-		}
-	);
+		})
+	));
 }
 else {
 	clientConfig.devtool = '#sourcemap';
-	clientConfig.module.rules.push(
-		{
-			test: /\.styl$/,
-			use: [
-				'style-loader',
-				{
-					loader: 'css-loader',
-					options: options.css
-				},
-				{
-					loader: 'stylus-loader',
-					options: options.stylus
-				}
-			]
-		},
-		{
-			test: /\.css$/,
-			use: [
-				'style-loader',
-				{
-					loader: 'css-loader',
-					options: options.css
-				}
-			]
-		}
-	);
+
+	for (let loader of Object.keys(vueStyleLoaders)) {
+		vueLoader.options.loaders[loader] = 'vue-style-loader!' + vueStyleLoaders[loader];
+	}
+
+	clientConfig.module.rules.push(...styleLoaders.map(
+		loader => Object.assign({}, loader, {
+			use: ['style-loader', ...loader.use]
+		})
+	));
 }
 
 module.exports = clientConfig;

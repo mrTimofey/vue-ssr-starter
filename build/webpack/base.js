@@ -11,7 +11,7 @@ class Options {
 	}
 }
 
-// shared options
+// shared options to use in multiple loaders (vue-loader and others in general)
 const options = {
 	buble: new Options({
 		objectAssign: 'Object.assign',
@@ -24,9 +24,12 @@ const options = {
 		doctype: 'html',
 		basedir: process.cwd()
 	}),
-	css: new Options({
+	cssAfterPreprocessor: new Options({
 		minimize: true,
 		import: false
+	}),
+	css: new Options({
+		minimize: true
 	}),
 	stylus: new Options({
 		import: [
@@ -38,7 +41,7 @@ const options = {
 
 exports.options = options;
 
-exports.config = () => ({
+exports.createConfig = () => ({
 	devtool: false,
 	output: {
 		path: path.resolve(process.cwd(), 'dist'),
@@ -49,21 +52,20 @@ exports.config = () => ({
 		rules: [
 
 			// source files
+			// styles loading is different for server and client so let them define the loaders
 
 			{
 				test: /\.vue$/,
 				loader: 'vue-loader',
 				options: {
 					template: options.pug,
-					loaders: {
-						stylus: `vue-style-loader!css-loader?${options.css}!stylus-loader?${options.stylus}`
-					},
 					transformToRequire: {
 						img: 'src',
 						image: 'xlink:href',
 						a: 'href'
 					},
-					buble: options.buble
+					buble: options.buble,
+					loaders: {}
 				}
 			},
 			{
@@ -77,8 +79,6 @@ exports.config = () => ({
 				loader: 'pug-loader',
 				options: options.pug
 			},
-
-			// styles loading is different for server and client so let them define the loaders
 
 			// assets
 
