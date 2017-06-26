@@ -11,7 +11,7 @@
 </script>
 <template lang="pug">
 	//- test relative import
-	include ../../mixins.pug
+	include ../mixins.pug
 	article
 		// test mixins
 		+sayHi()
