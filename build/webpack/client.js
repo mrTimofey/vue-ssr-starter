@@ -66,7 +66,6 @@ const vueLoader = clientConfig.module.rules.find(({ loader }) => loader === 'vue
 if (process.env.NODE_ENV === 'production') {
 	clientConfig.plugins.push(
 		new ExtractText('styles.css?[hash:6]'),
-		new webpack.optimize.OccurrenceOrderPlugin(),
 		new webpack.optimize.UglifyJsPlugin({
 			comment: true,
 			compress: {
