@@ -3,3 +3,4 @@
 /node_modules/
 /npm-debug.log
 /.env.js
+/package-lock.json
