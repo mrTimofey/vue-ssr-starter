@@ -1,5 +1,5 @@
 <script>
-	import { mapGetters } from 'vuex';
+	import { mapGetters, mapActions } from 'vuex';
 	import 'src/styles/reset.styl';
 
 	export default {
@@ -11,7 +11,11 @@
 				lang: 'en'
 			}
 		},
-		computed: mapGetters(['serverError'])
+		computed: mapGetters(['serverError']),
+		methods: mapActions(['fetchUser']),
+		mounted() {
+			this.fetchUser();
+		}
 	};
 </script>
 <template lang="pug">
