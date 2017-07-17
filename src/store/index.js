@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import http from 'src/http';
+import http, { authorized, recallToken, logout } from 'src/http';
 
 Vue.use(Vuex);
 
@@ -8,16 +8,16 @@ Vue.use(Vuex);
 export default () => new Vuex.Store({
 	state: {
 		serverError: false,
+		// null if did not try to fetch, false if not authorized
+		user: null,
 		items: []
 	},
 	getters: {
-		items: state => state.items,
-		serverError: state => state.serverError
+		serverError: state => state.serverError,
+		user: state => state.user,
+		items: state => state.items
 	},
 	mutations: {
-		setItems(state, items) {
-			Vue.set(state, 'items', items);
-		},
 		fireServerError(state, err) {
 			state.serverError = err || true;
 		},
@@ -26,6 +26,23 @@ export default () => new Vuex.Store({
 		}
 	},
 	actions: {
+		fetchUser({ commit }) {
+			return new Promise((resolve, reject) => {
+				if (authorized()) return http.get('me')
+					.then(res => { commit('setUser', res.data); resolve(res); })
+					.catch(() => {
+						recallToken()
+							.then(res => { commit('setUser', res.data); resolve(res); })
+							.catch(err => { commit('setUser', false); if (err) reject(err); else resolve(); });
+					});
+				commit('setUser', false);
+				resolve();
+			});
+		},
+		logout({ commit }) {
+			logout();
+			commit('setUser', false);
+		},
 		fetchItems({ commit }) {
 			return http.get('https://randomuser.me/api/', { params: { results: 10 } }).then(res => {
 				commit('setItems', res.data.results);

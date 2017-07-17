@@ -1,5 +1,6 @@
 <script>
-	import { mapGetters } from 'vuex';
+	import { mapGetters, mapActions } from 'vuex';
+	import 'src/styles/reset.styl';
 	// test styl import
 	import 'src/app.styl';
 	// test css import
@@ -16,7 +17,11 @@
 				lang: 'en'
 			}
 		},
-		computed: mapGetters(['serverError'])
+		computed: mapGetters(['serverError']),
+		methods: mapActions(['fetchUser']),
+		mounted() {
+			this.fetchUser();
+		}
 	};
 </script>
 <!-- test external template -->

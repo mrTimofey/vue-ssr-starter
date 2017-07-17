@@ -21,7 +21,9 @@ requireAll(require.context('src/pages/', true, /^(?:(?!\/?_).)+\.(vue|js)$/), (c
 			// allow components adding their own route parameters
 			(component.routePath ? ('/' + component.routePath) : ''),
 		// add meta fields if there are any
-		meta: component.routeMeta
+		meta: component.routeMeta,
+		// sub routes
+		children: component.routes
 	};
 
 	// prefetch data for all route components
@@ -64,6 +66,9 @@ export default () => new Router({
 	routes,
 	mode: 'history',
 	scrollBehavior(to, from, saved) {
-		return to.path === from.path ? saved : { x: 0, y: 0 };
+		if (to.path === from.path) return saved;
+		// use to restore scroll position after prefetching within component code
+		if (saved) to.meta.scrollPosition = saved;
+		return saved || { x: 0, y: 0 };
 	}
 });

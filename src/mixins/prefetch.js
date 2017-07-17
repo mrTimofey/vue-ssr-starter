@@ -36,6 +36,14 @@ export default {
 	},
 	// trigger only on client (beforeMount is not triggered on server)
 	beforeMount() {
-		if (this.$root._isMounted && this.$options.prefetch) update(this);
+		if (this.$root._isMounted && this.$options.prefetch) update(this, () => {
+			// try to restore scroll position
+			if (this.$route.meta.scrollPosition) this.$nextTick(
+				() => {
+					window.scrollTo(this.$route.meta.scrollPosition.x, this.$route.meta.scrollPosition.y);
+					delete this.$route.meta.scrollPosition;
+				}
+			);
+		});
 	}
 };
