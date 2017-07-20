@@ -23,6 +23,12 @@ export default () => new Vuex.Store({
 		},
 		clearServerError(state) {
 			state.serverError = false;
+		},
+		setUser(state, user) {
+			state.user = user;
+		},
+		setItems(state, items) {
+			state.items = items;
 		}
 	},
 	actions: {
