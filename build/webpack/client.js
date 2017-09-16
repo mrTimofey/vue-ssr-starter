@@ -2,8 +2,21 @@ const { createConfig, options } = require('./base');
 const webpack = require('webpack');
 const HTMLPlugin = require('html-webpack-plugin');
 const ExtractText = require('extract-text-webpack-plugin');
+const path = require('path');
 
 const baseConfig = createConfig();
+
+const nameAllPlugin = {
+	apply(compiler) {
+		compiler.plugin('compilation', compilation => {
+			compilation.plugin('before-module-ids', modules => {
+				modules.forEach(module => {
+					if (module.id === null) module.id = module.identifier();
+				});
+			});
+		});
+	}
+};
 
 const styleLoaders = [
 	{
@@ -52,12 +65,24 @@ const clientConfig = Object.assign({}, baseConfig, {
 			'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
 			'process.env.VUE_ENV': '"client"'
 		}),
-		new webpack.optimize.CommonsChunkPlugin({
-			names: ['vendor']
-		}),
 		new HTMLPlugin({
 			template: 'src/layout.pug'
-		})
+		}),
+		/**
+		 * fix vendor hash invalidation
+		 * @see https://medium.com/webpack/predictable-long-term-caching-with-webpack-d3eee1d3fa31
+ 		 */
+		new webpack.NamedModulesPlugin(),
+		new webpack.NamedChunksPlugin(chunk =>
+			chunk.name || chunk.modules.map(m => path.relative(m.context || '', m.request || '')).join('_')),
+		new webpack.optimize.CommonsChunkPlugin({
+			name: 'vendor',
+			minChunks: Infinity
+		}),
+		new webpack.optimize.CommonsChunkPlugin({
+			name: 'runtime'
+		}),
+		nameAllPlugin
 	])
 });
 

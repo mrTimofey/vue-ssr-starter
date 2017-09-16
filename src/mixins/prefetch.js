@@ -1,8 +1,9 @@
-function update(vm, next) {
+function update(vm, next, route) {
+	if (!route) route = vm.$route;
 	const promise = vm.$options.prefetch({
 		store: vm.$store,
-		props: vm.$route.params,
-		route: vm.$route
+		props: route.params,
+		route
 	});
 	if (!promise) return next ? next() : undefined;
 	vm.prefetching = true;
@@ -31,7 +32,7 @@ export default {
 	},
 	// on route parameter change
 	beforeRouteUpdate(to, from, next) {
-		if (this.$options.prefetch && to.path !== from.path) update(this, next);
+		if (this.$options.prefetch && to.path !== from.path) update(this, next, to);
 		else next();
 	},
 	// trigger only on client (beforeMount is not triggered on server)
