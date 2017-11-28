@@ -68,12 +68,16 @@ export function logout() {
  * @return {Promise} axios request
  */
 export function recallToken() {
-	return new Promise((resolve, reject) => {
-		if (!window.localStorage.rememberToken) return reject();
-		http.post('auth/recall', { token: window.localStorage.rememberToken })
-			.then(res => { authorize(res.data); resolve(res); })
-			.catch(err => { logout(); reject(err); });
-	});
+	if (!window.localStorage.rememberToken) return Promise.reject();
+	return http.post('auth/recall', { token: window.localStorage.rememberToken })
+		.then(res => {
+			authorize(res.data);
+			return res;
+		})
+		.catch(err => {
+			logout();
+			throw err;
+		});
 }
 
 /**
