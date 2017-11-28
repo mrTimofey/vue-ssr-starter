@@ -46,7 +46,8 @@ exports.createConfig = () => ({
 	output: {
 		path: path.resolve(process.cwd(), 'dist'),
 		publicPath: '/dist/',
-		filename: '[name].js?[chunkhash:6]'
+		filename: '[name].js?[chunkhash:6]',
+		chunkFilename: '[name].js?[chunkhash:6]'
 	},
 	module: {
 		rules: [
