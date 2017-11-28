@@ -25,17 +25,15 @@ export default () => new Vuex.Store({
 	},
 	actions: {
 		fetchUser({ commit }) {
-			return new Promise((resolve, reject) => {
-				if (authorized()) return http.get('me')
-					.then(res => { commit('setUser', res.data); resolve(res); })
-					.catch(() => {
-						recallToken()
-							.then(res => { commit('setUser', res.data); resolve(res); })
-							.catch(err => { commit('setUser', false); if (err) reject(err); else resolve(); });
-					});
-				commit('setUser', false);
-				resolve();
-			});
+			if (authorized()) return http.get('me')
+				.catch(err => err.response && err.response.status === 401 ? recallToken() : Promise.reject(err))
+				.then(res => commit('setUser', res.data))
+				.catch(err => {
+					commit('setUser', false);
+					throw err;
+				});
+			commit('setUser', false);
+			return Promise.reject();
 		},
 		logout({ commit }) {
 			logout();
