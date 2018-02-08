@@ -18,7 +18,7 @@ include /src/mixins
 			router-link(to="/whatever") 404
 			!=' | '
 			//- test module require href
-			a(href="~assets/docs/example.txt" download) Download
+			a(:href="txt" download) Download
 	hr
 	main
 		p.server-error(v-if="serverError")!='Something went wrong... '

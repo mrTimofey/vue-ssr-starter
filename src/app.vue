@@ -6,6 +6,8 @@
 	// test css import
 	import 'src/footer.css';
 
+	import txt from 'assets/docs/example.txt';
+
 	export default {
 		name: 'App',
 		// test async
@@ -17,6 +19,9 @@
 				lang: 'en'
 			}
 		},
+		data: () => ({
+			txt
+		}),
 		computed: mapGetters(['serverError']),
 		methods: mapActions(['fetchUser']),
 		mounted() {
