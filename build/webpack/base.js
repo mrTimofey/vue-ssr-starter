@@ -60,11 +60,6 @@ exports.createConfig = () => ({
 				loader: 'vue-loader',
 				options: {
 					template: options.pug,
-					transformToRequire: {
-						img: 'src',
-						image: 'xlink:href',
-						a: 'href'
-					},
 					buble: options.buble,
 					loaders: {}
 				}
