@@ -1,20 +1,21 @@
 /* eslint-disable no-console */
-const fs = require('fs');
-const path = require('path');
-const express = require('express');
-const favicon = require('serve-favicon');
-// serializes any data including functions
-const serialize = require('serialize-javascript');
-const vueSR = require('vue-server-renderer');
+const fs = require('fs'),
+	path = require('path'),
+	express = require('express'),
+	favicon = require('serve-favicon'),
+	// serializes any data including functions
+	serialize = require('serialize-javascript'),
+	vueSR = require('vue-server-renderer');
 
 // environment parameters
-const envFile = path.resolve(process.cwd(), '.env.js');
-const env = fs.existsSync(envFile) ? require(envFile) : {};
+const envFile = path.resolve(process.cwd(), '.env.js'),
+	env = fs.existsSync(envFile) ? require(envFile) : {};
 
-const app = express();
-const port = env.port || process.env.PORT || 8080;
-const production = process.env.NODE_ENV === 'production';
-const layoutFile = path.resolve('./dist/index.html');
+// application variables
+const app = express(),
+	port = env.port || process.env.PORT || 8080,
+	production = process.env.NODE_ENV === 'production',
+	layoutFile = path.resolve('./dist/index.html');
 
 let pe;
 if (!production) pe = new (require('pretty-error'))();
