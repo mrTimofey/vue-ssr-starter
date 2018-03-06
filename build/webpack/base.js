@@ -99,11 +99,30 @@ exports.createConfig = () => ({
 			{
 				test: /\.(png|jpe?g|gif|svg)$/,
 				exclude: /sprite\.svg$/,
-				loader: 'url-loader',
-				options: {
-					limit: 256,
-					name: 'i/[name].[ext]?[hash:6]'
-				}
+				loaders: [
+					{
+						loader: 'url-loader',
+						options: {
+							limit: 256,
+							name: 'i/[name].[ext]?[hash:6]'
+						}
+					},
+					{
+						loader: 'image-webpack-loader',
+						options: {
+							optipng: {
+								optimizationLevel: 7
+							},
+							gifsicle: {
+								interlaced: false
+							},
+							mozjpeg: {
+								quality: 85,
+								progressive: true
+							}
+						}
+					}
+				]
 			},
 			{
 				test: /\.(pdf|docx?|pptx?|rtf|txt)$/,
