@@ -68,21 +68,13 @@ const clientConfig = Object.assign({}, baseConfig, {
 		new HTMLPlugin({
 			template: 'src/layout.pug'
 		}),
-		/**
-		 * fix vendor hash invalidation
-		 * @see https://medium.com/webpack/predictable-long-term-caching-with-webpack-d3eee1d3fa31
- 		 */
-		new webpack.NamedModulesPlugin(),
-		new webpack.NamedChunksPlugin(chunk =>
-			chunk.name || chunk.modules.map(m => path.relative(m.context || '', m.request || '')).join('_')),
 		new webpack.optimize.CommonsChunkPlugin({
 			name: 'vendor',
 			minChunks: Infinity
 		}),
 		new webpack.optimize.CommonsChunkPlugin({
 			name: 'runtime'
-		}),
-		nameAllPlugin
+		})
 	])
 });
 
