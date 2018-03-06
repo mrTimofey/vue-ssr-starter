@@ -2,21 +2,8 @@ const { createConfig, options } = require('./base');
 const webpack = require('webpack');
 const HTMLPlugin = require('html-webpack-plugin');
 const ExtractText = require('extract-text-webpack-plugin');
-const path = require('path');
 
 const baseConfig = createConfig();
-
-const nameAllPlugin = {
-	apply(compiler) {
-		compiler.plugin('compilation', compilation => {
-			compilation.plugin('before-module-ids', modules => {
-				modules.forEach(module => {
-					if (module.id === null) module.id = module.identifier();
-				});
-			});
-		});
-	}
-};
 
 const styleLoaders = [
 	{
