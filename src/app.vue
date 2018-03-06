@@ -35,7 +35,7 @@
 <style lang="stylus">
 	footer
 		fixed false 0 0 0
-		background blue
+		background $blue
 </style>
 <!-- test external -->
 <style lang="stylus" src="src/header.styl"></style>
