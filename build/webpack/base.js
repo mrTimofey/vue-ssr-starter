@@ -60,8 +60,15 @@ exports.createConfig = () => ({
 				loader: 'vue-loader',
 				options: {
 					template: options.pug,
-					buble: options.buble,
-					loaders: {}
+					loaders: {
+						stylus: `css-loader?${options.css}!stylus-loader?${options.stylus}`,
+						js: [
+							{
+								loader: 'buble-loader',
+								options: options.buble
+							}
+						]
+					}
 				}
 			},
 			{
@@ -112,6 +119,9 @@ exports.createConfig = () => ({
 			'node_modules',
 			process.cwd()
 		]
+	},
+	resolveLoader: {
+		modules: ['node_modules', __dirname]
 	},
 	performance: {
 		hints: process.env.NODE_ENV === 'production' ? 'warning' : false
