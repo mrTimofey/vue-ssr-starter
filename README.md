@@ -41,7 +41,7 @@ Includes:
 	* `http` - exports http client instance (Axios)
 	* `layout.pug` - application HTML layout
 	* `router` - exports a factory function returning vue-router instance
-	* `vars.styl` - globally included stylus file (for variables, mixins, etc.)
+	* `vars.styl` - globally included stylus file (for variables, mixins, etc.)``
 
 ## Commands
 

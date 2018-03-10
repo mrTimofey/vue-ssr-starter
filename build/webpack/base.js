@@ -1,5 +1,5 @@
-const path = require('path');
-const qs = require('qs');
+const path = require('path'),
+	qs = require('qs');
 
 // allows options to represent both object and query string
 class Options {
@@ -138,9 +138,6 @@ exports.createConfig = () => ({
 			'node_modules',
 			process.cwd()
 		]
-	},
-	resolveLoader: {
-		modules: ['node_modules', __dirname]
 	},
 	performance: {
 		hints: process.env.NODE_ENV === 'production' ? 'warning' : false

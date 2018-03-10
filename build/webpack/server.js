@@ -1,5 +1,5 @@
-const { createConfig } = require('./base');
-const webpack = require('webpack');
+const { createConfig } = require('./base'),
+	webpack = require('webpack');
 
 const baseConfig = createConfig();
 
