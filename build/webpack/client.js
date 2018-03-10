@@ -1,7 +1,7 @@
-const { createConfig, options } = require('./base');
-const webpack = require('webpack');
-const HTMLPlugin = require('html-webpack-plugin');
-const ExtractText = require('extract-text-webpack-plugin');
+const { createConfig, options } = require('./base'),
+	webpack = require('webpack'),
+	HTMLPlugin = require('html-webpack-plugin'),
+	ExtractText = require('extract-text-webpack-plugin');
 
 const baseConfig = createConfig();
 

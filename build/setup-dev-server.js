@@ -1,9 +1,10 @@
 /* eslint-disable no-console */
-const path = require('path');
-const webpack = require('webpack');
-const MFS = require('memory-fs');
-const clientConfig = require('./webpack/client');
-const serverConfig = require('./webpack/server');
+const path = require('path'),
+	webpack = require('webpack'),
+	MFS = require('memory-fs');
+
+const clientConfig = require('./webpack/client'),
+	serverConfig = require('./webpack/server');
 
 module.exports = (app, opts) => {
 	// modify client config to work with hot middleware

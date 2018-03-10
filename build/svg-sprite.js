@@ -1,9 +1,11 @@
 /* eslint-disable no-console */
-const fs = require('fs');
-const path = require('path');
-const SVGSpriter = require('svg-sprite');
-const spritesDir = path.resolve(process.cwd(), 'assets', 'icons');
-const outputDir = path.resolve(process.cwd(), 'assets');
+const fs = require('fs'),
+	path = require('path'),
+	SVGSpriter = require('svg-sprite');
+
+const spritesDir = path.resolve(process.cwd(), 'assets', 'icons'),
+	outputDir = path.resolve(process.cwd(), 'assets');
+
 const transform = {
 	cleanupAttrs: true,
 	removeDoctype: true,
