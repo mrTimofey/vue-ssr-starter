@@ -54,13 +54,6 @@ const clientConfig = Object.assign({}, baseConfig, {
 		}),
 		new HTMLPlugin({
 			template: 'src/layout.pug'
-		}),
-		new webpack.optimize.CommonsChunkPlugin({
-			name: 'vendor',
-			minChunks: Infinity
-		}),
-		new webpack.optimize.CommonsChunkPlugin({
-			name: 'runtime'
 		})
 	])
 });
@@ -69,13 +62,7 @@ const vueLoader = clientConfig.module.rules.find(({ loader }) => loader === 'vue
 
 if (process.env.NODE_ENV === 'production') {
 	clientConfig.plugins.push(
-		new ExtractText('styles.css?[hash:6]'),
-		new webpack.optimize.UglifyJsPlugin({
-			comment: true,
-			compress: {
-				warnings: false
-			}
-		})
+		new ExtractText('styles.css?[hash:6]')
 	);
 
 	for (let loader of Object.keys(vueStyleLoaders)) {
