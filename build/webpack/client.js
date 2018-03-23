@@ -1,4 +1,4 @@
-const { createConfig, options } = require('./base'),
+const { options, createConfig } = require('./base'),
 	webpack = require('webpack'),
 	HTMLPlugin = require('html-webpack-plugin'),
 	ExtractText = require('extract-text-webpack-plugin');
@@ -55,6 +55,55 @@ const clientConfig = Object.assign({}, baseConfig, {
 		}
 	}
 });
+
+clientConfig.module.rules = (baseConfig.module.rules || []).concat([
+	{
+		test: /sprite\.svg$/,
+		loader: 'raw-loader'
+	},
+	{
+		test: options.fonts.test,
+		loader: 'file-loader',
+		options: {
+			name: options.fonts.name
+		}
+	},
+	{
+		test: options.images.test,
+		exclude: /sprite\.svg$/,
+		loaders: [
+			{
+				loader: 'url-loader',
+				options: {
+					limit: options.images.limit,
+					name: options.images.name
+				}
+			},
+			{
+				loader: 'image-webpack-loader',
+				options: {
+					optipng: {
+						optimizationLevel: 7
+					},
+					gifsicle: {
+						interlaced: false
+					},
+					mozjpeg: {
+						quality: 85,
+						progressive: true
+					}
+				}
+			}
+		]
+	},
+	{
+		test: options.docs.test,
+		loader: 'file-loader',
+		options: {
+			name: options.docs.name
+		}
+	}
+]);
 
 const vueLoader = clientConfig.module.rules.find(({ loader }) => loader === 'vue-loader');
 
