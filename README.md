@@ -5,7 +5,7 @@ Use master branch instead!**
 
 Includes:
 
-* Webpack 3
+* Webpack 4
 * Buble
 * Vue 2 with SSR, Vuex and vue-loader
 * Stylus with kouto-swiss
