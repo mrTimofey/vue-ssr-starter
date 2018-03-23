@@ -43,6 +43,7 @@ exports.options = options;
 
 exports.createConfig = () => ({
 	devtool: false,
+	mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
 	output: {
 		path: path.resolve(process.cwd(), 'dist'),
 		publicPath: '/dist/',

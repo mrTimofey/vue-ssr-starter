@@ -8,7 +8,7 @@ const clientConfig = require('./webpack/client'),
 
 module.exports = (app, opts) => {
 	// modify client config to work with hot middleware
-	clientConfig.entry.app = ['webpack-hot-middleware/client', clientConfig.entry.app];
+	clientConfig.entry = ['webpack-hot-middleware/client', clientConfig.entry];
 	clientConfig.output.filename = '[name].js';
 	clientConfig.plugins.push(
 		new webpack.HotModuleReplacementPlugin(),
