@@ -1,4 +1,4 @@
-const { createConfig } = require('./base'),
+const { options, createConfig } = require('./base'),
 	webpack = require('webpack');
 
 const baseConfig = createConfig();
@@ -20,15 +20,41 @@ const serverConfig = Object.assign({}, baseConfig, {
 	])
 });
 
+serverConfig.module.rules = (baseConfig.module.rules || []).concat([
+	{
+		test: options.fonts.test,
+		loader: 'file-loader',
+		options: {
+			name: options.fonts.name,
+			emitFile: false
+		}
+	},
+	{
+		test: options.images.test,
+		loader: 'url-loader',
+		options: {
+			limit: options.images.limit,
+			name: options.images.name,
+			emitFile: false
+		}
+	},
+	{
+		test: options.docs.test,
+		loader: 'file-loader',
+		options: {
+			name: options.docs.name,
+			emitFile: false
+		}
+	},
+	{
+		test: /\.(styl|css|less|sass|scss|sss)$/,
+		loader: 'null-loader'
+	}
+]);
+
 const vueLoader = serverConfig.module.rules.find(({ loader }) => loader === 'vue-loader');
 
-// ignore styles, they are already loaded by the client side builder
-serverConfig.module.rules.push({
-	test: /\.(styl|css)$/,
-	use: 'null-loader'
-});
-
-for (let loader of ['stylus', 'css']) {
+for (let loader of ['stylus', 'css', 'sass', 'scss', 'less', 'postcss']) {
 	vueLoader.options.loaders[loader] = 'null-loader';
 }
 

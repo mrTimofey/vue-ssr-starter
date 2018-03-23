@@ -36,7 +36,20 @@ const options = {
 			path.resolve(process.cwd(), 'node_modules/kouto-swiss/index.styl'),
 			path.resolve(process.cwd(), 'src/shared.styl')
 		]
-	})
+	}),
+	fonts: {
+		test: /\.(woff|woff2|eot|otf|ttf)$/,
+		name: 'fonts/[name].[ext]?[hash:6]'
+	},
+	images: {
+		test: /\.(png|jpe?g|gif|svg)$/,
+		limit: 256,
+		name: 'i/[name].[ext]?[hash:6]'
+	},
+	docs: {
+		test: /\.(pdf|docx?|pptx?|rtf|txt)$/,
+		name: 'docs/[name].[ext]?[hash:6]'
+	}
 };
 
 exports.options = options;
@@ -54,7 +67,6 @@ exports.createConfig = () => ({
 		rules: [
 
 			// source files
-			// styles loading is different for server and client so let them define the loaders
 
 			{
 				test: /\.vue$/,
@@ -82,55 +94,6 @@ exports.createConfig = () => ({
 				test: /\.pug$/,
 				loader: 'pug-loader',
 				options: options.pug
-			},
-
-			// assets
-
-			{
-				test: /\.(woff|woff2|eot|otf|ttf)$/,
-				loader: 'file-loader',
-				options: {
-					name: 'fonts/[name].[ext]?[hash:6]'
-				}
-			},
-			{
-				test: /sprite\.svg$/,
-				loader: 'raw-loader'
-			},
-			{
-				test: /\.(png|jpe?g|gif|svg)$/,
-				exclude: /sprite\.svg$/,
-				loaders: [
-					{
-						loader: 'url-loader',
-						options: {
-							limit: 256,
-							name: 'i/[name].[ext]?[hash:6]'
-						}
-					},
-					{
-						loader: 'image-webpack-loader',
-						options: {
-							optipng: {
-								optimizationLevel: 7
-							},
-							gifsicle: {
-								interlaced: false
-							},
-							mozjpeg: {
-								quality: 85,
-								progressive: true
-							}
-						}
-					}
-				]
-			},
-			{
-				test: /\.(pdf|docx?|pptx?|rtf|txt)$/,
-				loader: 'file-loader',
-				options: {
-					name: 'docs/[name].[ext]?[hash:6]'
-				}
 			}
 		]
 	},
