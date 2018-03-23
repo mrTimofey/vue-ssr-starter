@@ -36,17 +36,7 @@ const vueStyleLoaders = {
 };
 
 const clientConfig = Object.assign({}, baseConfig, {
-	entry: {
-		app: './src/entry/client.js',
-		vendor: [
-			'axios',
-			'vue',
-			'vue-router',
-			'vue-meta',
-			'vuex',
-			'vuex-router-sync'
-		]
-	},
+	entry: './src/entry/client.js',
 	plugins: (baseConfig.plugins || []).concat([
 		new webpack.DefinePlugin({
 			'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
@@ -55,7 +45,15 @@ const clientConfig = Object.assign({}, baseConfig, {
 		new HTMLPlugin({
 			template: 'src/layout.pug'
 		})
-	])
+	]),
+	optimization: {
+		runtimeChunk: {
+			name: 'rtm'
+		},
+		splitChunks: {
+			chunks: 'all'
+		}
+	}
 });
 
 const vueLoader = clientConfig.module.rules.find(({ loader }) => loader === 'vue-loader');
