@@ -116,15 +116,15 @@ function addStyleRules(extract = false) {
 			(extract ? MiniCssExtractPlugin.loader : 'vue-style-loader') + '!' + vueStyleLoaders[loader];
 
 	if (extract) clientConfig.plugins.push(
-		new MiniCssExtractPlugin()
+		new MiniCssExtractPlugin({ filename: '[name].css?[hash:6]' })
 	);
 }
 
 if (process.env.NODE_ENV === 'production') {
-	addStyleRules();
+	addStyleRules(true);
 }
 else {
-	addStyleRules(true);
+	addStyleRules();
 	clientConfig.devtool = '#sourcemap';
 }
 
