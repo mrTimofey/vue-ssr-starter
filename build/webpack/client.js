@@ -1,34 +1,9 @@
 const { options, createConfig } = require('./base'),
 	webpack = require('webpack'),
 	HTMLPlugin = require('html-webpack-plugin'),
-	ExtractText = require('extract-text-webpack-plugin');
+	MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const baseConfig = createConfig();
-
-const styleLoaders = [
-	{
-		test: /\.styl$/,
-		use: [
-			{
-				loader: 'css-loader',
-				options: options.cssAfterPreprocessor
-			},
-			{
-				loader: 'stylus-loader',
-				options: options.stylus
-			}
-		]
-	},
-	{
-		test: /\.css$/,
-		use: [
-			{
-				loader: 'css-loader',
-				options: options.css
-			}
-		]
-	}
-];
 
 const vueStyleLoaders = {
 	css: `css-loader?${options.css}`,
@@ -107,39 +82,50 @@ clientConfig.module.rules = (baseConfig.module.rules || []).concat([
 
 const vueLoader = clientConfig.module.rules.find(({ loader }) => loader === 'vue-loader');
 
-if (process.env.NODE_ENV === 'production') {
-	clientConfig.plugins.push(
-		new ExtractText('styles.css?[hash:6]')
-	);
-
-	for (let loader of Object.keys(vueStyleLoaders)) {
-		vueLoader.options.loaders[loader] = ExtractText.extract({
-			use: vueStyleLoaders[loader],
-			fallback: 'vue-style-loader'
-		});
+function addStyleRules(extract = false) {
+	for (let rule of [
+		{
+			test: /\.styl$/,
+			use: [
+				{
+					loader: 'css-loader',
+					options: options.cssAfterPreprocessor
+				},
+				{
+					loader: 'stylus-loader',
+					options: options.stylus
+				}
+			]
+		},
+		{
+			test: /\.css$/,
+			use: [
+				{
+					loader: 'css-loader',
+					options: options.css
+				}
+			]
+		}
+	]) {
+		rule.use = [extract ? MiniCssExtractPlugin.loader : 'style-loader', ...rule.use];
+		clientConfig.module.rules.push(rule);
 	}
 
-	clientConfig.module.rules.push(...styleLoaders.map(
-		loader => Object.assign({}, loader, {
-			use: ExtractText.extract({
-				use: loader.use,
-				fallback: 'style-loader'
-			})
-		})
-	));
+	for (let loader of Object.keys(vueStyleLoaders))
+		vueLoader.options.loaders[loader] =
+			(extract ? MiniCssExtractPlugin.loader : 'vue-style-loader') + '!' + vueStyleLoaders[loader];
+
+	if (extract) clientConfig.plugins.push(
+		new MiniCssExtractPlugin()
+	);
+}
+
+if (process.env.NODE_ENV === 'production') {
+	addStyleRules();
 }
 else {
+	addStyleRules(true);
 	clientConfig.devtool = '#sourcemap';
-
-	for (let loader of Object.keys(vueStyleLoaders)) {
-		vueLoader.options.loaders[loader] = 'vue-style-loader!' + vueStyleLoaders[loader];
-	}
-
-	clientConfig.module.rules.push(...styleLoaders.map(
-		loader => Object.assign({}, loader, {
-			use: ['style-loader', ...loader.use]
-		})
-	));
 }
 
 module.exports = clientConfig;
