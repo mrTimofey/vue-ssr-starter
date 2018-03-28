@@ -24,8 +24,8 @@ export default () => new Vuex.Store({
 		clearServerError(state) {
 			state.serverError = false;
 		},
-		setUser(state, user) {
-			state.user = user;
+		setUser(state, data) {
+			state.user = data;
 		},
 		setItems(state, items) {
 			state.items = items;
@@ -41,7 +41,6 @@ export default () => new Vuex.Store({
 					throw err;
 				});
 			commit('setUser', false);
-			return Promise.reject();
 		},
 		logout({ commit }) {
 			logout();
