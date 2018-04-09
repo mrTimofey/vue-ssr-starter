@@ -3,6 +3,8 @@ import http from 'src/http';
 
 function init(app, context) {
 	app.serverPrefetched = true;
+	if (app.$route && app.$route.meta && app.$route.meta.statusCode) context.statusCode = app.$route.meta.statusCode;
+	else if (app.$store && app.$store.getters.serverError) context.statusCode = 500;
 	context.meta = app.$meta();
 	context.initialVuexState = app.$store.state;
 }
@@ -40,8 +42,6 @@ export default context => {
 					// do not include root component here
 					context.initialComponentStates = compData.slice(0, comps.length);
 					for (let i in comps) comps[i].prefetchedData = context.initialComponentStates[i];
-					if (app.$route.meta && app.$route.meta.statusCode) context.statusCode = app.$route.meta.statusCode;
-					else if (app.$store.getters.serverError) context.statusCode = 500;
 					resolve(app);
 				})
 				.catch(err => {
