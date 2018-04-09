@@ -3,9 +3,10 @@
 Includes:
 
 * Webpack 4
-* Buble
+* [polka](https://github.com/lukeed/polka) web-server
+* [buble](https://github.com/Rich-Harris/buble) transpiler (light-weight babel)
 * Vue 2 with SSR, Vuex and vue-loader
-* Stylus with kouto-swiss
+* Stylus with [kouto-swiss](http://kouto-swiss.io/)
 * Axios
 * Pug
 * SVG sprites builder

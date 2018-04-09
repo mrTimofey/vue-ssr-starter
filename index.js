@@ -1,8 +1,9 @@
 /* eslint-disable no-console */
 const fs = require('fs'),
 	path = require('path'),
-	express = require('express'),
-	favicon = require('serve-favicon'),
+	polka = require('polka'),
+	serveStatic = require('serve-static'),
+	serveFavicon = require('serve-favicon'),
 	// serializes any data including functions
 	serialize = require('serialize-javascript'),
 	vueSR = require('vue-server-renderer');
@@ -12,7 +13,7 @@ const envFile = path.resolve(process.cwd(), '.env.js'),
 	env = fs.existsSync(envFile) ? require(envFile) : {};
 
 // application variables
-const app = express(),
+const app = polka(),
 	port = env.port || process.env.PORT || 8080,
 	production = process.env.NODE_ENV === 'production',
 	layoutFile = path.resolve('./dist/index.html');
@@ -80,8 +81,8 @@ else {
 }
 
 app.get('/dist/server-bundle.js', (req, res, next) => { next(); });
-app.use('/dist', express.static('./dist'));
-app.use(favicon(path.join(process.cwd(), 'favicon.ico')));
+app.use('/dist', serveStatic('./dist'));
+app.use(serveFavicon(path.join(process.cwd(), 'favicon.ico')));
 
 // optional api proxy
 if (env.apiProxy) {
@@ -119,14 +120,12 @@ app.get('*', (req, res) => {
 	});
 
 	stream.on('end', () => {
-		let status = context.statusCode || 200;
-
 		if (context.initialVuexState && context.initialVuexState.serverError) {
 			// let application handle server error if possible
 			console.error((new Date()).toUTCString() + ': data prefetching error');
 			console.error(context.initialVuexState.serverError);
 		}
-		res.status(status);
+		res.statusCode = context.statusCode || 200;
 		res.write(body);
 
 		if (context.initialVuexState)
@@ -138,7 +137,7 @@ app.get('*', (req, res) => {
 	});
 
 	stream.on('error', err => {
-		res.status(500);
+		res.statusCode = 500;
 		console.error(new Date().toISOString());
 		console.error(formatError(err));
 		res.end(production ? 'Something went wrong...' : `<pre>${err.stack}\n\n<b>Watch console for more information</b></pre>`);
