@@ -68,7 +68,7 @@ export function logout() {
  * @return {Promise} axios request
  */
 export function recallToken() {
-	if (!window.localStorage.rememberToken) return Promise.reject();
+	if (!window.localStorage.rememberToken) return Promise.resolve();
 	return http.post('auth/recall', { token: window.localStorage.rememberToken })
 		.then(res => {
 			authorize(res.data);
