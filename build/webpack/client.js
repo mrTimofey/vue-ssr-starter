@@ -1,4 +1,4 @@
-const { options, createConfig } = require('./base'),
+const { options, env, createConfig } = require('./base'),
 	webpack = require('webpack'),
 	HTMLPlugin = require('html-webpack-plugin'),
 	MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -15,7 +15,8 @@ const clientConfig = Object.assign({}, baseConfig, {
 	plugins: (baseConfig.plugins || []).concat([
 		new webpack.DefinePlugin({
 			'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
-			'process.env.VUE_ENV': '"client"'
+			'process.env.VUE_ENV': '"client"',
+			apiBaseURL: JSON.stringify(env.apiBaseURL && env.apiBaseURL.client || null)
 		}),
 		new HTMLPlugin({
 			template: 'src/layout.pug'

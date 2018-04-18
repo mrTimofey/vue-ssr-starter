@@ -1,5 +1,10 @@
-const path = require('path'),
+const fs = require('fs'),
+	path = require('path'),
 	qs = require('qs');
+
+// environment parameters
+const envFile = path.resolve(process.cwd(), '.env.js'),
+	env = fs.existsSync(envFile) ? require(envFile) : {};
 
 // allows options to represent both object and query string
 class Options {
@@ -53,6 +58,8 @@ const options = {
 };
 
 exports.options = options;
+
+exports.env = env;
 
 exports.createConfig = () => ({
 	devtool: false,

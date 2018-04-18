@@ -11,7 +11,8 @@ module.exports = {
 	globals: {
 		document: true,
 		navigator: true,
-		window: true
+		window: true,
+		apiBaseURL: true
 	},
 	env: {
 		browser: true,

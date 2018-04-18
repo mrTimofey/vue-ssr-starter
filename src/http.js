@@ -2,7 +2,7 @@
 import Axios from 'axios';
 
 const http = Axios.create({
-	baseURL: '/api/',
+	baseURL: apiBaseURL,
 	headers: {
 		'X-Requested-With': 'XMLHttpRequest',
 		'Accept': 'application/json'

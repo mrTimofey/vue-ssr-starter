@@ -86,7 +86,9 @@ app.use(serveFavicon(path.join(process.cwd(), 'favicon.ico')));
 
 // optional api proxy
 if (env.apiProxy) {
-	app.use(env.apiProxy.prefix, require('http-proxy-middleware')(env.apiProxy));
+	const proxy = require('http-proxy-middleware')(env.apiProxy);
+	for (let prefix of (Array.isArray(env.apiProxy.prefix) ? env.apiProxy.prefix : [env.apiProxy.prefix]))
+		app.use(prefix, proxy);
 }
 
 app.get('*', (req, res) => {
