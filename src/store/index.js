@@ -28,7 +28,7 @@ export default () => new Vuex.Store({
 	},
 	actions: {
 		fetchUser({ commit }) {
-			if (authorized()) return http.get('me')
+			if (authorized()) return http.get('auth')
 				.catch(err => err.response && err.response.status === 401 ? recallToken() : Promise.reject(err))
 				.then(res => res && commit('setUser', res.data))
 				.catch(err => {
