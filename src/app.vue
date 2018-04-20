@@ -1,7 +1,7 @@
 <script>
 	import { mapGetters, mapActions } from 'vuex';
-	import 'src/styles/reset.styl';
 	// test styl import
+	import 'src/styles/reset.styl';
 	import 'src/app.styl';
 	// test css import
 	import 'src/footer.css';
@@ -10,7 +10,7 @@
 
 	export default {
 		name: 'App',
-		// test async
+		// test async prefetch
 		prefetch: () => new Promise(resolve => setTimeout(resolve, 200)),
 		head: {
 			title: 'App',
@@ -37,5 +37,5 @@
 		fixed false 0 0 0
 		background $blue
 </style>
-<!-- test external -->
+<!-- test external style -->
 <style lang="stylus" src="src/header.styl"></style>
