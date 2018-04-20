@@ -1,4 +1,4 @@
-const { options, createConfig } = require('./base'),
+const { options, env, createConfig } = require('./base'),
 	webpack = require('webpack');
 
 const baseConfig = createConfig();
@@ -15,7 +15,8 @@ const serverConfig = Object.assign({}, baseConfig, {
 		new webpack.DefinePlugin({
 			'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
 			'process.env.VUE_ENV': '"server"',
-			window: 'undefined'
+			window: 'undefined',
+			apiBaseURL: JSON.stringify(env.apiBaseURL && env.apiBaseURL.server || 'http://localhost:8000')
 		})
 	])
 });

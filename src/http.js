@@ -2,6 +2,7 @@
 import Axios from 'axios';
 
 const http = Axios.create({
+	baseURL: apiBaseURL,
 	headers: {
 		'X-Requested-With': 'XMLHttpRequest',
 		'Accept': 'application/json'
@@ -57,7 +58,7 @@ export function authorized() {
  */
 export function logout() {
 	if (!window) return;
-	if (authorized()) http.post('auth/logout');
+	if (authorized()) http.delete('auth');
 	window.localStorage.removeItem('apiToken');
 	window.localStorage.removeItem('rememberToken');
 	delete http.defaults.headers['Authorization'];
@@ -68,8 +69,9 @@ export function logout() {
  * @return {Promise} axios request
  */
 export function recallToken() {
-	if (!window.localStorage.rememberToken) return Promise.reject();
-	return http.post('auth/recall', { token: window.localStorage.rememberToken })
+	if (!window.localStorage.rememberToken) return Promise.resolve();
+	// eslint-disable-next-line
+	return http.post('auth', { remember_token: window.localStorage.rememberToken })
 		.then(res => {
 			authorize(res.data);
 			return res;
