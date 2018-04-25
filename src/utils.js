@@ -45,12 +45,10 @@ export function requireAll(requireFile, cb) {
  * @returns {Promise} promise
  */
 export function promiseMapAll(obj) {
-	return new Promise((resolve, reject) => {
-		Promise.all(Object.values(obj)).then(values => {
-			const map = {},
-				keys = Object.keys(obj);
-			for (let i in keys) map[keys[i]] = values[i];
-			resolve(map);
-		}).catch(reject);
+	return Promise.all(Object.values(obj)).then(values => {
+		const map = {},
+			keys = Object.keys(obj);
+		for (let i in keys) map[keys[i]] = values[i];
+		return map;
 	});
 }
