@@ -20,7 +20,7 @@ include /src/mixins
 			//- test module require href
 			a(:href="txt" download) Download
 	hr
-	main
-		server-error(v-if="serverError" :error="serverError")
-		transition(v-else name="page-load"): router-view
+	main: transition(name="page-load")
+		server-error(v-if="serverError" :error="serverError" key="error")
+		router-view(v-else)
 	footer: +pageFooter(new Date().getFullYear())
