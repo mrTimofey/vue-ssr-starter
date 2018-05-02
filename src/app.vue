@@ -3,7 +3,6 @@
 	import 'src/styles/reset.styl';
 
 	import ServerError from 'src/components/server-error.vue';
-	import NotFound from 'src/components/not-found.vue';
 
 	export default {
 		name: 'App',
@@ -19,7 +18,7 @@
 		mounted() {
 			this.fetchUser();
 		},
-		components: { ServerError, NotFound }
+		components: { ServerError, }
 	};
 </script>
 <template lang="pug">
