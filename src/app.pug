@@ -21,9 +21,6 @@ include /src/mixins
 			a(:href="txt" download) Download
 	hr
 	main
-		p.server-error(v-if="serverError")!='Something went wrong... '
-			template(v-if="serverError.message")
-				br
-				!='{{ serverError.message }}'
+		server-error(v-if="serverError" :error="serverError")
 		transition(v-else name="page-load"): router-view
 	footer: +pageFooter(new Date().getFullYear())

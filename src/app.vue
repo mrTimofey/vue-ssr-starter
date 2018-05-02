@@ -8,6 +8,8 @@
 
 	import txt from 'assets/docs/example.txt';
 
+	import ServerError from 'src/components/server-error.vue';
+
 	export default {
 		name: 'App',
 		// test async prefetch
@@ -26,7 +28,8 @@
 		methods: mapActions(['fetchUser']),
 		mounted() {
 			this.fetchUser();
-		}
+		},
+		components: { ServerError }
 	};
 </script>
 <!-- test external template -->
