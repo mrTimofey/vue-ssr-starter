@@ -1,0 +1,14 @@
+<script>
+	import NotFound from 'src/components/not-found.vue';
+	export default {
+		props: ['error'],
+		components: { NotFound }
+	};
+</script>
+<template lang="pug">
+	not-found(v-if="error.response && error.response.status === 404 || error.statusCode === 404" :message="err.message")
+	p.server-error(v-else)!='Something went wrong...'
+		template(v-if="error.message")
+			br
+			| {{ error.message }}
+</template>
