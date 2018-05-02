@@ -37,7 +37,7 @@ const transform = {
 	convertShapeToPath: true,
 	transformsWithOnePath: { floatPrecision: 1 },
 	removeDimensions: true,
-	removeAttrs: { attrs: 'fill|stroke' },
+	removeAttrs: { attrs:  ['fill', 'stroke']},
 	removeStyleElement: true,
 	collapseGroups: true
 };
