@@ -3,6 +3,7 @@ import http from 'src/http';
 
 function init(app, context, err) {
 	app.serverPrefetched = true;
+	if (!err) err = app.$store.getters.serverError;
 	if (err) context.statusCode = err.statusCode || err.response && err.response.status || 500;
 	else if (app.$route && app.$route.meta && app.$route.meta.statusCode) context.statusCode = app.$route.meta.statusCode;
 	context.meta = app.$meta();
@@ -30,9 +31,13 @@ export default context => {
 				},
 				errors = [];
 
-			const prefetches = comps.map(comp => comp.prefetch(args).catch(err => {
-				errors.push(err);
-			}));
+			const prefetches = comps.map(comp => {
+				const prefetch = comp.prefetch(args);
+				if (prefetch && prefetch.catch) prefetch.catch(err => {
+					errors.push(err);
+				});
+				return prefetch;
+			});
 
 			if (typeof app.$options.prefetch === 'function') prefetches.push(app.$options.prefetch({
 				store: app.$store,
