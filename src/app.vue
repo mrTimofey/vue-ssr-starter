@@ -2,6 +2,9 @@
 	import { mapGetters, mapActions } from 'vuex';
 	import 'src/styles/reset.styl';
 
+	import ServerError from 'src/components/server-error.vue';
+	import NotFound from 'src/components/not-found.vue';
+
 	export default {
 		name: 'App',
 		head: {
@@ -15,13 +18,11 @@
 		methods: mapActions(['fetchUser']),
 		mounted() {
 			this.fetchUser();
-		}
+		},
+		components: { ServerError, NotFound }
 	};
 </script>
 <template lang="pug">
-	p.server-error(v-if="serverError")!='Something went wrong...'
-		template(v-if="serverError.message")
-			br
-			!='{{ serverError.message }}'
+	server-error(v-if="serverError" :error="serverError")
 	router-view(v-else)
 </template>

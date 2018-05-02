@@ -9,14 +9,15 @@ function update(vm, next, route) {
 	vm.prefetching = true;
 	promise
 		.then(data => {
-			vm.prefetching = false;
 			Object.assign(vm.$data, data);
 			if (next) next();
 		})
 		.catch(err => {
-			vm.prefetching = false;
 			vm.$store.commit('fireServerError', err);
 			if (next) next(err);
+		})
+		.then(() => {
+			vm.prefetching = false;
 		});
 }
 

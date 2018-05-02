@@ -37,6 +37,9 @@ export default () => new Vuex.Store({
 				});
 			commit('setUser', false);
 		},
+		show404({ commit }, message = null) {
+			commit('fireServerError', { statusCode: 404, message });
+		},
 		logout({ commit }) {
 			logout();
 			commit('setUser', false);
