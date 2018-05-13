@@ -97,8 +97,7 @@ export class ListDataFetcher {
 			 * @see https://github.com/axios/axios#cancellation
 			 */
 			cancelToken: window && new CancelToken(c => { this.cancelLast = window && c; }),
-			params: this.paramsCallback ? this.paramsCallback({ ...args, route, props }) : {},
-			headers: { 'Accept-Language': props.locale }
+			params: this.paramsCallback ? this.paramsCallback({ ...args, route, props }) : {}
 		}).then(res => {
 			this.cancelLast = null;
 			// noinspection JSUnresolvedVariable, JSCheckFunctionSignatures
