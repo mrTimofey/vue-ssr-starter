@@ -12,7 +12,7 @@ else document.body.appendChild(div);
 if (window.__INITIAL_VUEX_STATE__) window.__INITIAL_VUEX_STATE__.route.hash = location.hash;
 
 // create app
-const app = createApp();
+const app = createApp(window.location);
 
 app.serverPrefetched = true;
 
