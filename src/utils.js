@@ -102,12 +102,12 @@ export class ListDataFetcher {
 			this.cancelLast = null;
 			// noinspection JSUnresolvedVariable, JSCheckFunctionSignatures
 			return {
-				items: res.data.list,
+				items: res.data.items,
 				pagination: {
-					total: parseInt(res.data.page.total) || 0,
-					currentPage: parseInt(res.data.page.current_page) || 0,
-					lastPage: parseInt(res.data.page.last_page) || 0,
-					perPage: parseInt(res.data.page.per_page) || 0
+					total: parseInt(res.data.pagination.total) || 0,
+					currentPage: parseInt(res.data.pagination.current_page) || 0,
+					lastPage: parseInt(res.data.pagination.last_page) || 0,
+					perPage: parseInt(res.data.pagination.per_page) || 0
 				}
 			};
 		}).catch(err => {

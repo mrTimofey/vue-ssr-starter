@@ -6,22 +6,34 @@
 
 	export default {
 		name: 'App',
-		head: {
-			title: 'App',
-			titleTemplate: '%s | App',
-			htmlAttrs: {
-				lang: 'en'
+		head() {
+			let title = 'Loading...';
+			if (this.serverError) {
+				if (this.serverError.response && this.serverError.response.status === 404)
+					title = '404 Page not found';
+				else title = this.serverError.message ||
+					this.serverError.response && this.serverError.response.data.message ||
+					'Something went wrong...';
 			}
+			return {
+				title,
+				titleTemplate: '%s | App',
+				htmlAttrs: {
+					lang: 'en'
+				}
+			};
 		},
 		computed: mapGetters(['serverError']),
 		methods: mapActions(['fetchUser']),
 		mounted() {
 			this.fetchUser();
 		},
-		components: { ServerError, }
+		components: { ServerError }
 	};
 </script>
 <template lang="pug">
-	server-error(v-if="serverError" :error="serverError")
-	router-view(v-else)
+	#wrapper
+		main
+			server-error(v-if="serverError" :error="serverError")
+			router-view(v-else)
 </template>
