@@ -52,3 +52,65 @@ export function promiseMapAll(obj) {
 		return map;
 	});
 }
+
+/**
+ * Mix all resolved promise data objects into a single object.
+ * @param {Array<Promise|Object>} ar promises or data array
+ * @returns {Promise<Object>} mixed promise
+ */
+export function promiseMixAll(ar) {
+	return Promise.all(ar).then(data => data.reduce((all, data) => Object.assign(all, data), {}));
+}
+
+export class ListDataFetcher {
+	/**
+	 * Create new instance.
+	 * @param {string} url target API url
+	 * @param {function({ route: Object, props: Object })} paramsCallback callback to make params object
+	 */
+	constructor(url, paramsCallback = null) {
+		this.url = url;
+		this.paramsCallback = paramsCallback;
+	}
+
+	/**
+	 * Send new http request and cancel previous one if there is any
+	 * @param {Object} route vue-router route object
+	 * @param {Object} props route component props
+	 * @param {Object|null} args optional additional arguments passed to paramsCallback
+	 * @returns {Promise<{
+	 * 		items: Array,
+	 * 		pagination: { total: number, currentPage: number, latPage: number, perPage: number }
+	 * 	}|null>} request promise, resolves with null if request is cancelled due to sending a new one
+	 */
+	fetch(route, props, args = null) {
+		// cancel previous request
+		if (this.cancelLast) {
+			this.cancelLast();
+			this.cancelLast = null;
+		}
+		return http.get(this.url, {
+			/**
+			 * Do some magical shit to make this request cancellable to prevent data overlap
+			 * @see https://github.com/axios/axios#cancellation
+			 */
+			cancelToken: window && new CancelToken(c => { this.cancelLast = window && c; }),
+			params: this.paramsCallback ? this.paramsCallback({ ...args, route, props }) : {},
+			headers: { 'Accept-Language': props.locale }
+		}).then(res => {
+			this.cancelLast = null;
+			// noinspection JSUnresolvedVariable, JSCheckFunctionSignatures
+			return {
+				items: res.data.list,
+				pagination: {
+					total: parseInt(res.data.page.total) || 0,
+					currentPage: parseInt(res.data.page.current_page) || 0,
+					lastPage: parseInt(res.data.page.last_page) || 0,
+					perPage: parseInt(res.data.page.per_page) || 0
+				}
+			};
+		}).catch(err => {
+			if (!err.isCancelError) throw err;
+		});
+	}
+}
