@@ -1,3 +1,5 @@
+import http, { CancelToken } from 'src/http';
+
 /**
  * Converts
  * @param {string} str string to process
