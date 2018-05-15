@@ -87,19 +87,16 @@ export class ListDataFetcher {
 	 */
 	fetch(route, props, args = null) {
 		// cancel previous request
-		if (this.cancelLast) {
-			this.cancelLast();
-			this.cancelLast = null;
-		}
+		this.cancel();
 		return http.get(this.url, {
 			/**
 			 * Do some magical shit to make this request cancellable to prevent data overlap
 			 * @see https://github.com/axios/axios#cancellation
 			 */
-			cancelToken: window && new CancelToken(c => { this.cancelLast = window && c; }),
+			cancelToken: window && new CancelToken(c => { this._cancelLast = window && c; }),
 			params: this.paramsCallback ? this.paramsCallback({ ...args, route, props }) : {}
 		}).then(res => {
-			this.cancelLast = null;
+			this._cancelLast = null;
 			// noinspection JSUnresolvedVariable, JSCheckFunctionSignatures
 			return {
 				items: res.data.items,
@@ -113,5 +110,16 @@ export class ListDataFetcher {
 		}).catch(err => {
 			if (!err.isCancelError) throw err;
 		});
+	}
+
+	/**
+	 * Cancel last request if there is any.
+	 * @returns {void}
+	 */
+	cancel() {
+		if (this._cancelLast) {
+			this._cancelLast();
+			this._cancelLast = null;
+		}
 	}
 }
