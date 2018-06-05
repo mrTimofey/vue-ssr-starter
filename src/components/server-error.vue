@@ -7,7 +7,7 @@
 </script>
 <template lang="pug">
 	not-found(v-if="error.response && error.response.status === 404 || error.statusCode === 404")
-	p.server-error(v-else)!='Что-то пошло не так...'
+	p.server-error(v-else)!='Something went wrong...'
 		template(v-if="error.message")
 			br
 			| {{ error.message }}
