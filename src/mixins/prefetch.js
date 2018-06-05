@@ -7,9 +7,10 @@ function update(vm, next, route) {
 	});
 	if (!promise) return next ? next() : undefined;
 	vm.prefetching = true;
+	vm._prefetchPromise = promise;
 	promise
 		.then(data => {
-			Object.assign(vm.$data, data);
+			if (data && vm._prefetchPromise === promise) Object.assign(vm.$data, data);
 			if (next) next();
 		})
 		.catch(err => {
@@ -17,7 +18,7 @@ function update(vm, next, route) {
 			if (next) next(err);
 		})
 		.then(() => {
-			vm.prefetching = false;
+			if (vm._prefetchPromise === promise) vm.prefetching = false;
 		});
 }
 
@@ -33,12 +34,15 @@ export default {
 	},
 	// on route parameter change
 	beforeRouteUpdate(to, from, next) {
-		if (this.$options.prefetch && to.path !== from.path) update(this, next, to);
+		if (this.$options.prefetch && to.path !== from.path) {
+			update(this, null, to);
+			next();
+		}
 		else next();
 	},
 	// trigger only on client (beforeMount is not triggered on server)
 	beforeMount() {
-		if (this.$root._isMounted && this.$options.prefetch) update(this, () => {
+		if (this.$root._isMounted && this.$options.prefetch || this.constructor.extendOptions.noSSR) update(this, () => {
 			// try to restore scroll position
 			if (this.$route.meta.scrollPosition) this.$nextTick(
 				() => {

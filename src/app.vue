@@ -14,12 +14,22 @@
 		name: 'App',
 		// test async prefetch
 		prefetch: () => new Promise(resolve => setTimeout(resolve, 200)),
-		head: {
-			title: 'App',
-			titleTemplate: '%s | App',
-			htmlAttrs: {
-				lang: 'en'
+		head() {
+			let title = 'Loading...';
+			if (this.serverError) {
+				if (this.serverError.response && this.serverError.response.status === 404)
+					title = '404 Page not found';
+				else title = this.serverError.message ||
+					this.serverError.response && this.serverError.response.data.message ||
+					'Something went wrong...';
 			}
+			return {
+				title,
+				titleTemplate: '%s | App',
+				htmlAttrs: {
+					lang: 'en'
+				}
+			};
 		},
 		data: () => ({
 			txt

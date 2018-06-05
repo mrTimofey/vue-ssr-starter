@@ -10,6 +10,10 @@ const http = Axios.create({
 });
 
 http.interceptors.response.use(null, baseErr => {
+	if (Axios.isCancel(baseErr)) {
+		baseErr.isCancelError = true;
+		throw baseErr;
+	}
 	const err = {};
 	// prevent circular stringify error
 	if (baseErr.response) {
@@ -26,7 +30,7 @@ http.interceptors.response.use(null, baseErr => {
 	err.message = baseErr.message;
 	err.stack = baseErr.stack;
 	err.response = baseErr.response;
-	return Promise.reject(err);
+	throw err;
 });
 
 /**
@@ -92,3 +96,4 @@ export function getApiToken() {
 
 authorize();
 export default http;
+export const CancelToken = Axios.CancelToken;

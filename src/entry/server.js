@@ -33,7 +33,7 @@ export default context => {
 
 			const prefetches = comps.map(comp => {
 				const prefetch = comp.prefetch(args);
-				if (prefetch && prefetch.catch) prefetch.catch(err => {
+				if (prefetch && prefetch.catch) return prefetch.catch(err => {
 					errors.push(err);
 				});
 				return prefetch;

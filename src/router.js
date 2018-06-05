@@ -66,7 +66,7 @@ export default () => new Router({
 	routes,
 	mode: 'history',
 	scrollBehavior(to, from, saved) {
-		if (to.path === from.path) return saved;
+		if (to.path === from.path || to.meta && to.meta.keepScrollPosition) return saved;
 		// use to restore scroll position after prefetching within component code
 		if (saved) to.meta.scrollPosition = saved;
 		return saved || { x: 0, y: 0 };

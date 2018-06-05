@@ -14,7 +14,7 @@ const envFile = path.resolve(process.cwd(), '.env.js'),
 
 // application variables
 const app = polka(),
-	port = env.port || process.env.PORT || 8080,
+	port = process.env.PORT || env.port || 8080,
 	production = process.env.NODE_ENV === 'production',
 	layoutFile = path.resolve('./dist/index.html');
 
@@ -85,11 +85,7 @@ app.use('/dist', serveStatic('./dist'));
 app.use(serveFavicon(path.join(process.cwd(), 'favicon.ico')));
 
 // optional api proxy
-if (env.apiProxy) {
-	const proxy = require('http-proxy-middleware')(env.apiProxy);
-	for (let prefix of (Array.isArray(env.apiProxy.prefix) ? env.apiProxy.prefix : [env.apiProxy.prefix]))
-		app.use(prefix, proxy);
-}
+if (env.apiProxy) app.use(require('http-proxy-middleware')(env.apiProxy.prefix, env.apiProxy));
 
 app.get('*', (req, res) => {
 	if (!renderer || !layout) return res.end('Compiling app, refresh in a moment...');

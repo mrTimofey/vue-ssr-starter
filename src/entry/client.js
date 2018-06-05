@@ -11,7 +11,8 @@ else document.body.appendChild(div);
 // fix route hash
 if (window.__INITIAL_VUEX_STATE__) window.__INITIAL_VUEX_STATE__.route.hash = location.hash;
 
-const app = createApp();
+// create app
+const app = createApp(window.location);
 
 app.serverPrefetched = true;
 

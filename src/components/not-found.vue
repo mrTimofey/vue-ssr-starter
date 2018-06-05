@@ -1,3 +1,3 @@
 <template lang="pug" functional>
-	p {{ props.message || '404 Page not found' }}
+	.not-found: p {{ props.message || 'Page not found :(' }}
 </template>
