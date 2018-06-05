@@ -1,19 +1,14 @@
 const { options, env, createConfig } = require('./base'),
-	webpack = require('webpack'),
+	{ DefinePlugin } = require('webpack'),
 	HTMLPlugin = require('html-webpack-plugin'),
 	MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const baseConfig = createConfig();
 
-const vueStyleLoaders = {
-	css: `css-loader?${options.css}`,
-	stylus: `css-loader?${options.cssAfterPreprocessor}!stylus-loader?${options.stylus}`
-};
-
 const clientConfig = Object.assign({}, baseConfig, {
 	entry: './src/entry/client.js',
 	plugins: (baseConfig.plugins || []).concat([
-		new webpack.DefinePlugin({
+		new DefinePlugin({
 			'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
 			'process.env.VUE_ENV': '"client"',
 			apiBaseURL: JSON.stringify(env.apiBaseURL && env.apiBaseURL.client || null)
@@ -81,8 +76,6 @@ clientConfig.module.rules = (baseConfig.module.rules || []).concat([
 	}
 ]);
 
-const vueLoader = clientConfig.module.rules.find(({ loader }) => loader === 'vue-loader');
-
 function addStyleRules(extract = false) {
 	for (let rule of [
 		{
@@ -108,13 +101,9 @@ function addStyleRules(extract = false) {
 			]
 		}
 	]) {
-		rule.use = [extract ? MiniCssExtractPlugin.loader : 'style-loader', ...rule.use];
+		rule.use = [extract ? MiniCssExtractPlugin.loader : 'vue-style-loader', ...rule.use];
 		clientConfig.module.rules.push(rule);
 	}
-
-	for (let loader of Object.keys(vueStyleLoaders))
-		vueLoader.options.loaders[loader] =
-			(extract ? MiniCssExtractPlugin.loader : 'vue-style-loader') + '!' + vueStyleLoaders[loader];
 
 	if (extract) clientConfig.plugins.push(
 		new MiniCssExtractPlugin({ filename: '[name].css?[hash:6]' })

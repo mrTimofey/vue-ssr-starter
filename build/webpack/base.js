@@ -1,7 +1,8 @@
 const fs = require('fs'),
 	path = require('path'),
 	qs = require('qs'),
-	WebpackBar = require('webpackbar');
+	WebpackBarPlugin = require('webpackbar'),
+	{ VueLoaderPlugin } = require('vue-loader');
 
 // environment parameters
 const envFile = path.resolve(process.cwd(), '.env.js'),
@@ -78,30 +79,32 @@ exports.createConfig = () => ({
 
 			{
 				test: /\.vue$/,
-				loader: 'vue-loader',
-				options: {
-					template: options.pug,
-					loaders: {
-						stylus: `css-loader?${options.css}!stylus-loader?${options.stylus}`,
-						js: [
-							{
-								loader: 'buble-loader',
-								options: options.buble
-							}
-						]
-					}
-				}
+				loader: 'vue-loader'
 			},
 			{
 				test: /\.js$/,
 				loader: 'buble-loader',
-				exclude: /node_modules/,
+				// needed for vue-loader to correctly import modules' components
+				exclude: file => /node_modules/.test(file) && !/\.vue\.js/.test(file),
 				options: options.buble
 			},
 			{
 				test: /\.pug$/,
-				loader: 'pug-loader',
-				options: options.pug
+				oneOf: [
+					// this applies to <template lang="pug"> in Vue components
+					{
+						resourceQuery: /^\?vue/,
+						loader: 'pug-plain-loader',
+						options: options.pug
+					},
+					// this applies to pug imports inside JavaScript
+					{
+						use: ['raw-loader', {
+							loader: 'pug-plain-loader',
+							options: options.pug
+						}]
+					}
+				]
 			}
 		]
 	},
@@ -115,6 +118,7 @@ exports.createConfig = () => ({
 		hints: process.env.NODE_ENV === 'production' ? 'warning' : false
 	},
 	plugins: [
-		new WebpackBar()
+		new WebpackBarPlugin(),
+		new VueLoaderPlugin()
 	]
 });

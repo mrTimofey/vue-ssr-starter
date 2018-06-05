@@ -1,5 +1,5 @@
 const { options, env, createConfig } = require('./base'),
-	webpack = require('webpack');
+	{ DefinePlugin } = require('webpack');
 
 const baseConfig = createConfig();
 
@@ -12,7 +12,7 @@ const serverConfig = Object.assign({}, baseConfig, {
 	}),
 	externals: Object.keys(require('../../package.json').dependencies),
 	plugins: (baseConfig.plugins || []).concat([
-		new webpack.DefinePlugin({
+		new DefinePlugin({
 			'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
 			'process.env.VUE_ENV': '"server"',
 			window: 'undefined',
@@ -52,11 +52,5 @@ serverConfig.module.rules = (baseConfig.module.rules || []).concat([
 		loader: 'null-loader'
 	}
 ]);
-
-const vueLoader = serverConfig.module.rules.find(({ loader }) => loader === 'vue-loader');
-
-for (let loader of ['stylus', 'css', 'sass', 'scss', 'less', 'postcss']) {
-	vueLoader.options.loaders[loader] = 'null-loader';
-}
 
 module.exports = serverConfig;
