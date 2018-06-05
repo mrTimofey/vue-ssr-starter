@@ -79,7 +79,7 @@ clientConfig.module.rules = (baseConfig.module.rules || []).concat([
 function addStyleRules(extract = false) {
 	for (let rule of [
 		{
-			test: /\.styl$/,
+			test: /\.styl(us)?$/,
 			use: [
 				{
 					loader: 'css-loader',
