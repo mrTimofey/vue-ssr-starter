@@ -14,7 +14,7 @@ const envFile = path.resolve(process.cwd(), '.env.js'),
 
 // application variables
 const app = polka(),
-	port = env.port || process.env.PORT || 8080,
+	port = process.env.PORT || env.port || 8080,
 	production = process.env.NODE_ENV === 'production',
 	layoutFile = path.resolve('./dist/index.html');
 

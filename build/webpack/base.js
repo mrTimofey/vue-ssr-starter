@@ -1,6 +1,7 @@
 const fs = require('fs'),
 	path = require('path'),
-	qs = require('qs');
+	qs = require('qs'),
+	WebpackBar = require('webpackbar');
 
 // environment parameters
 const envFile = path.resolve(process.cwd(), '.env.js'),
@@ -112,5 +113,8 @@ exports.createConfig = () => ({
 	},
 	performance: {
 		hints: process.env.NODE_ENV === 'production' ? 'warning' : false
-	}
+	},
+	plugins: [
+		new WebpackBar()
+	]
 });
