@@ -48,7 +48,7 @@ serverConfig.module.rules = (baseConfig.module.rules || []).concat([
 		}
 	},
 	{
-		test: /\.(styl|css|less|sass|scss|sss)$/,
+		test: /\.(styl(us)?|css|less|sass|scss|sss)$/,
 		loader: 'null-loader'
 	}
 ]);
