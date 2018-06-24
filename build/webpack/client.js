@@ -36,6 +36,7 @@ clientConfig.module.rules = (baseConfig.module.rules || []).concat([
 		test: options.fonts.test,
 		loader: 'file-loader',
 		options: {
+			context: 'assets',
 			name: options.fonts.name
 		}
 	},
@@ -46,6 +47,7 @@ clientConfig.module.rules = (baseConfig.module.rules || []).concat([
 			{
 				loader: 'url-loader',
 				options: {
+					context: 'assets',
 					limit: options.images.limit,
 					name: options.images.name
 				}
@@ -71,6 +73,7 @@ clientConfig.module.rules = (baseConfig.module.rules || []).concat([
 		test: options.docs.test,
 		loader: 'file-loader',
 		options: {
+			context: 'assets',
 			name: options.docs.name
 		}
 	}

@@ -25,27 +25,17 @@ serverConfig.module.rules = (baseConfig.module.rules || []).concat([
 	{
 		test: options.fonts.test,
 		loader: 'file-loader',
-		options: {
-			name: options.fonts.name,
-			emitFile: false
-		}
+		options: { emitFile: false }
 	},
 	{
 		test: options.images.test,
 		loader: 'url-loader',
-		options: {
-			limit: options.images.limit,
-			name: options.images.name,
-			emitFile: false
-		}
+		options: { limit: options.images.limit, emitFile: false }
 	},
 	{
 		test: options.docs.test,
 		loader: 'file-loader',
-		options: {
-			name: options.docs.name,
-			emitFile: false
-		}
+		options: { emitFile: false }
 	},
 	{
 		test: /\.(styl(us)?|css|less|sass|scss|sss)$/,
