@@ -32,12 +32,9 @@ const options = {
 		basedir: process.cwd()
 	}),
 	cssAfterPreprocessor: new Options({
-		minimize: true,
 		import: false
 	}),
-	css: new Options({
-		minimize: true
-	}),
+	css: new Options({}),
 	stylus: new Options({
 		import: [
 			path.resolve(process.cwd(), 'node_modules/kouto-swiss/index.styl'),
