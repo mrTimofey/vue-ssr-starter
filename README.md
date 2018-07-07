@@ -14,6 +14,31 @@ Includes:
 * Pug
 * SVG sprites builder
 
+## Getting started
+
+```bash
+npm i
+
+# development server on localhost:8080
+npm run dev
+
+# production build
+npm run build
+
+# production server on localhost:8080
+npm start
+```
+
+## .env configuration
+
+You can configure application port, HTTP proxy and base path for API.
+
+```bash
+cp .env.example.js .env.js
+
+# modify .env.js file, see the file itself for more information
+```
+
 ## Application structure
 
 * `index.js` - application server
@@ -35,7 +60,7 @@ Includes:
 		* `server` - server entry
 	* `components/` - vue components
 		* `shared/` - comonents registered implicitly via `Vue.component()`
-	* `pages/` - components here are implicitly attached to routes same with componets\` file names
+	* `pages/` - components here are implicitly attached to routes same with componets\' file names
 		(excluding leading `_` in file or folder names and `404.vue` which will be used as a catch-all route)
 	* `filters/` - vue filters registered implicitly via `Vue.filter()`
 	* `directives/` - vue directives registered implicitly via `Vue.directive()`
@@ -45,20 +70,7 @@ Includes:
 	* `http` - exports http client instance (Axios)
 	* `layout.pug` - application HTML layout
 	* `router` - exports a factory function returning vue-router instance
-	* `vars.styl` - globally included stylus file (for variables, mixins, etc.)``
-
-## Commands
-
-```
-# development server on localhost:8080
-npm run dev
-
-# production build
-npm run build
-
-# production server on localhost:8080
-npm start
-```
+	* `vars.styl` - globally included stylus file (for variables, mixins, etc.)
 
 ## SSR related component features
 

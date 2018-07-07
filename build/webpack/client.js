@@ -1,7 +1,6 @@
 const { options, env, createConfig } = require('./base'),
 	{ DefinePlugin } = require('webpack'),
-	HTMLPlugin = require('html-webpack-plugin'),
-	MiniCssExtractPlugin = require('mini-css-extract-plugin');
+	HTMLPlugin = require('html-webpack-plugin');
 
 const baseConfig = createConfig();
 
@@ -36,6 +35,7 @@ clientConfig.module.rules = (baseConfig.module.rules || []).concat([
 		test: options.fonts.test,
 		loader: 'file-loader',
 		options: {
+			context: 'assets',
 			name: options.fonts.name
 		}
 	},
@@ -46,6 +46,7 @@ clientConfig.module.rules = (baseConfig.module.rules || []).concat([
 			{
 				loader: 'url-loader',
 				options: {
+					context: 'assets',
 					limit: options.images.limit,
 					name: options.images.name
 				}
@@ -71,12 +72,13 @@ clientConfig.module.rules = (baseConfig.module.rules || []).concat([
 		test: options.docs.test,
 		loader: 'file-loader',
 		options: {
+			context: 'assets',
 			name: options.docs.name
 		}
 	}
 ]);
 
-function addStyleRules(extract = false) {
+function addStyleRules(loader) {
 	for (let rule of [
 		{
 			test: /\.styl(us)?$/,
@@ -101,17 +103,29 @@ function addStyleRules(extract = false) {
 			]
 		}
 	]) {
-		rule.use = [extract ? MiniCssExtractPlugin.loader : 'vue-style-loader', ...rule.use];
+		rule.use = [loader || 'vue-style-loader', ...rule.use];
 		clientConfig.module.rules.push(rule);
 	}
-
-	if (extract) clientConfig.plugins.push(
-		new MiniCssExtractPlugin({ filename: '[name].css?[hash:6]' })
-	);
 }
 
 if (process.env.NODE_ENV === 'production') {
-	addStyleRules(true);
+	const MiniCssExtractPlugin = require('mini-css-extract-plugin'),
+		OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin'),
+		UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+	addStyleRules(MiniCssExtractPlugin.loader);
+	clientConfig.plugins.push(
+		new MiniCssExtractPlugin({ filename: '[name].css?[hash:6]' })
+	);
+	if (!clientConfig.optimization) clientConfig.optimization = {};
+	clientConfig.optimization.minimizer = [
+		new UglifyJsPlugin({
+			cache: true,
+			parallel: true
+		}),
+		new OptimizeCSSAssetsPlugin({
+			assetNameRegExp: /\.css(\?.*)?$/
+		})
+	];
 }
 else {
 	addStyleRules();

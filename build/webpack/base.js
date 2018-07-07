@@ -32,12 +32,9 @@ const options = {
 		basedir: process.cwd()
 	}),
 	cssAfterPreprocessor: new Options({
-		minimize: true,
 		import: false
 	}),
-	css: new Options({
-		minimize: true
-	}),
+	css: new Options({}),
 	stylus: new Options({
 		import: [
 			path.resolve(process.cwd(), 'node_modules/kouto-swiss/index.styl'),
@@ -46,16 +43,16 @@ const options = {
 	}),
 	fonts: {
 		test: /\.(woff|woff2|eot|otf|ttf)$/,
-		name: 'fonts/[name].[ext]?[hash:6]'
+		name: '[path][name].[ext]?[hash:6]'
 	},
 	images: {
 		test: /\.(png|jpe?g|gif|svg)$/,
 		limit: 256,
-		name: 'i/[name].[ext]?[hash:6]'
+		name: '[path][name].[ext]?[hash:6]'
 	},
 	docs: {
 		test: /\.(pdf|docx?|pptx?|rtf|txt)$/,
-		name: 'docs/[name].[ext]?[hash:6]'
+		name: '[path][name].[ext]?[hash:6]'
 	}
 };
 

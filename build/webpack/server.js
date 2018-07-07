@@ -26,25 +26,28 @@ serverConfig.module.rules = (baseConfig.module.rules || []).concat([
 		test: options.fonts.test,
 		loader: 'file-loader',
 		options: {
-			name: options.fonts.name,
-			emitFile: false
+			context: 'assets',
+			emitFile: false,
+			name: options.fonts.name
 		}
 	},
 	{
 		test: options.images.test,
 		loader: 'url-loader',
 		options: {
+			context: 'assets',
 			limit: options.images.limit,
-			name: options.images.name,
-			emitFile: false
+			emitFile: false,
+			name: options.images.name
 		}
 	},
 	{
 		test: options.docs.test,
 		loader: 'file-loader',
 		options: {
-			name: options.docs.name,
-			emitFile: false
+			context: 'assets',
+			emitFile: false,
+			name: options.docs.name
 		}
 	},
 	{
