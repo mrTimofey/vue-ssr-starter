@@ -4,6 +4,7 @@ module.exports = {
 		sourceType: 'module',
 		ecmaFeatures: {
 			impliedStrict: true,
+			experimentalObjectRestSpread: true
 		}
 	},
 	root: true,
