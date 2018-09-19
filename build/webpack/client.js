@@ -111,14 +111,14 @@ function addStyleRules(loader) {
 if (process.env.NODE_ENV === 'production') {
 	const MiniCssExtractPlugin = require('mini-css-extract-plugin'),
 		OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin'),
-		UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+		MinifyPlugin = require('terser-webpack-plugin');
 	addStyleRules(MiniCssExtractPlugin.loader);
 	clientConfig.plugins.push(
 		new MiniCssExtractPlugin({ filename: '[name].css?[hash:6]' })
 	);
 	if (!clientConfig.optimization) clientConfig.optimization = {};
 	clientConfig.optimization.minimizer = [
-		new UglifyJsPlugin({
+		new MinifyPlugin({
 			cache: true,
 			parallel: true
 		}),
