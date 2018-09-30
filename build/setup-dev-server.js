@@ -10,25 +10,25 @@ module.exports = (app, opts) => {
 	// modify client config to work with hot middleware
 	clientConfig.entry = ['webpack-hot-middleware/client', clientConfig.entry];
 	clientConfig.output.filename = '[name].js';
-	clientConfig.plugins.push(
-		new webpack.HotModuleReplacementPlugin(),
-		new webpack.NoEmitOnErrorsPlugin()
-	);
+	if (!clientConfig.plugins) clientConfig.plugins = [];
+	clientConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
+	if (!clientConfig.optimization) clientConfig.optimization = {};
+	clientConfig.optimization.noEmitOnErrors = true;
 
 	// dev middleware
-	const clientCompiler = webpack(clientConfig);
-	const devMiddleware = require('webpack-dev-middleware')(clientCompiler, {
-		publicPath: clientConfig.output.publicPath,
-		stats: {
-			colors: true,
-			chunks: false
-		}
-	});
+	const clientCompiler = webpack(clientConfig),
+		devMiddleware = require('webpack-dev-middleware')(clientCompiler, {
+			publicPath: clientConfig.output.publicPath,
+			stats: {
+				colors: true,
+				chunks: false
+			}
+		});
 
 	app.use(devMiddleware);
-	clientCompiler.plugin('done', () => {
-		const fs = devMiddleware.fileSystem;
-		const filePath = path.join(clientConfig.output.path, 'index.html');
+	clientCompiler.hooks.done.tap('done', () => {
+		const fs = devMiddleware.fileSystem,
+			filePath = path.join(clientConfig.output.path, 'index.html');
 		if (fs.existsSync(filePath)) {
 			const index = fs.readFileSync(filePath, 'utf-8');
 			opts.layoutUpdated(index);
@@ -39,9 +39,9 @@ module.exports = (app, opts) => {
 	app.use(require('webpack-hot-middleware')(clientCompiler));
 
 	// watch and update server renderer
-	const serverCompiler = webpack(serverConfig);
-	const mfs = new MFS();
-	const outputPath = path.join(serverConfig.output.path, serverConfig.output.filename);
+	const serverCompiler = webpack(serverConfig),
+		mfs = new MFS(),
+		outputPath = path.join(serverConfig.output.path, serverConfig.output.filename);
 	serverCompiler.outputFileSystem = mfs;
 	serverCompiler.watch({}, (err, stats) => {
 		if (err) throw err;
