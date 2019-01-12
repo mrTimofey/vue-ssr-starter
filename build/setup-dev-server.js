@@ -17,37 +17,34 @@ module.exports = (app, opts) => {
 
 	// dev middleware
 	const clientCompiler = webpack(clientConfig),
+		serverCompiler = webpack(serverConfig),
 		devMiddleware = require('webpack-dev-middleware')(clientCompiler, {
 			publicPath: clientConfig.output.publicPath,
 			stats: {
 				colors: true,
 				chunks: false
 			}
-		});
+		}),
+		hotMiddleware = require('webpack-hot-middleware')(clientCompiler),
+		mfs = new MFS(),
+		layoutPath = path.join(clientConfig.output.path, 'index.html'),
+		serverBundlePath = path.join(serverConfig.output.path, 'vue-ssr-server-bundle.json');
 
 	app.use(devMiddleware);
+	app.use(hotMiddleware);
+
+	serverCompiler.outputFileSystem = mfs;
+
 	clientCompiler.hooks.done.tap('done', () => {
-		const fs = devMiddleware.fileSystem,
-			filePath = path.join(clientConfig.output.path, 'index.html');
-		if (fs.existsSync(filePath)) {
-			const index = fs.readFileSync(filePath, 'utf-8');
-			opts.layoutUpdated(index);
-		}
+		if (devMiddleware.fileSystem.existsSync(layoutPath))
+			opts.layoutUpdated(devMiddleware.fileSystem.readFileSync(layoutPath, 'utf-8'));
 	});
 
-	// hot middleware
-	app.use(require('webpack-hot-middleware')(clientCompiler));
-
-	// watch and update server renderer
-	const serverCompiler = webpack(serverConfig),
-		mfs = new MFS(),
-		outputPath = path.join(serverConfig.output.path, serverConfig.output.filename);
-	serverCompiler.outputFileSystem = mfs;
 	serverCompiler.watch({}, (err, stats) => {
 		if (err) throw err;
 		stats = stats.toJson();
 		stats.errors.forEach(err => console.error(err));
 		stats.warnings.forEach(err => console.warn(err));
-		opts.bundleUpdated(mfs.readFileSync(outputPath, 'utf-8'));
+		opts.bundleUpdated(JSON.parse(mfs.readFileSync(serverBundlePath, 'utf-8')));
 	});
 };

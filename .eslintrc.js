@@ -1,6 +1,8 @@
 module.exports = {
+	extends: ['plugin:vue/recommended'],
+	parser: 'vue-eslint-parser',
 	parserOptions: {
-		ecmaVersion: 8,
+		ecmaVersion: 9,
 		sourceType: 'module',
 		ecmaFeatures: {
 			impliedStrict: true,
@@ -20,10 +22,7 @@ module.exports = {
 		node: true,
 		es6: true
 	},
-	// required to lint *.vue files
-	plugins: [
-		'html'
-	],
+	plugins: ['vue'],
 	// add your custom rules here
 	rules: {
 		'no-console': 1,
@@ -135,6 +134,17 @@ module.exports = {
 		'object-shorthand': 1,
 		'prefer-arrow-callback': 1,
 		'require-yield': 2,
-		'template-curly-spacing': 1
-	}
+		'template-curly-spacing': 1,
+		'vue/component-name-in-template-casing': [1, 'kebab-case'],
+		'vue/script-indent': [1, 'tab', { baseIndent: 1 }],
+		'vue/require-default-prop': 0
+	},
+	'overrides': [
+		{
+			'files': ['*.vue'],
+			'rules': {
+				'indent': 'off'
+			}
+		}
+	]
 };

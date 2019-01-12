@@ -1,15 +1,19 @@
 const { options, env, createConfig } = require('./base'),
-	{ DefinePlugin } = require('webpack');
+	{ DefinePlugin } = require('webpack'),
+	WebpackBarPlugin = require('webpackbar'),
+	VueSSRServerPlugin = require('vue-server-renderer/server-plugin');
 
 const baseConfig = createConfig();
 
-const serverConfig = Object.assign({}, baseConfig, {
+const serverConfig = {
+	...baseConfig,
 	target: 'node',
 	entry: './src/entry/server.js',
-	output: Object.assign({}, baseConfig.output, {
+	output: {
+		...baseConfig.output,
 		filename: 'server-bundle.js',
 		libraryTarget: 'commonjs2'
-	}),
+	},
 	externals: Object.keys(require('../../package.json').dependencies),
 	plugins: (baseConfig.plugins || []).concat([
 		new DefinePlugin({
@@ -17,9 +21,14 @@ const serverConfig = Object.assign({}, baseConfig, {
 			'process.env.VUE_ENV': '"server"',
 			window: 'undefined',
 			apiBaseURL: JSON.stringify(env.apiBaseURL && env.apiBaseURL.server || 'http://localhost:8000')
+		}),
+		new VueSSRServerPlugin(),
+		new WebpackBarPlugin({
+			name: 'server',
+			color: 'yellow'
 		})
 	])
-});
+};
 
 serverConfig.module.rules = (baseConfig.module.rules || []).concat([
 	{

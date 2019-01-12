@@ -1,8 +1,10 @@
 <script>
 	import NotFound from 'src/components/not-found.vue';
 	export default {
-		props: ['error'],
-		components: { NotFound }
+		components: { NotFound },
+		props: {
+			error: null
+		}
 	};
 </script>
 <template lang="pug">

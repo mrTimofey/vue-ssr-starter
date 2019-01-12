@@ -23,12 +23,12 @@
 				}
 			};
 		},
+		components: { ServerError },
 		computed: mapGetters(['serverError']),
-		methods: mapActions(['fetchUser']),
 		mounted() {
 			this.fetchUser();
 		},
-		components: { ServerError }
+		methods: mapActions(['fetchUser'])
 	};
 </script>
 <template lang="pug">
