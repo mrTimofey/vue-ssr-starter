@@ -31,15 +31,15 @@
 				}
 			};
 		},
+		components: { ServerError },
 		data: () => ({
 			txt
 		}),
 		computed: mapGetters(['serverError']),
-		methods: mapActions(['fetchUser']),
 		mounted() {
 			this.fetchUser();
 		},
-		components: { ServerError }
+		methods: mapActions(['fetchUser'])
 	};
 </script>
 <!-- test external template -->
