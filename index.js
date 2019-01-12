@@ -65,9 +65,14 @@ function parseLayout(html) {
 
 if (production) {
 	layout = parseLayout(fs.readFileSync(layoutFile, 'utf-8'));
-	renderer = vueSR.createBundleRenderer(fs.readFileSync(path.resolve('./dist/server-bundle.js'), 'utf-8'), {
-		runInNewContext: false
+	renderer = vueSR.createBundleRenderer(path.resolve('./dist/vue-ssr-server-bundle.json'), {
+		runInNewContext: false,
+		clientManifest: require('./dist/vue-ssr-client-manifest.json')
 	});
+	app.get('/dist/vue-ssr-server-bundle.json', (req, res, next) => { next(); });
+	app.get('/dist/vue-ssr-client-manifest.json', (req, res, next) => { next(); });
+	app.get('/dist/server-bundle.js', (req, res, next) => { next(); });
+	app.use('/dist', serveStatic('./dist'));
 }
 else {
 	require('./build/setup-dev-server')(app, {
@@ -80,8 +85,6 @@ else {
 	});
 }
 
-app.get('/dist/server-bundle.js', (req, res, next) => { next(); });
-app.use('/dist', serveStatic('./dist'));
 app.use(serveFavicon(path.join(process.cwd(), 'favicon.ico')));
 
 // optional api proxy
@@ -91,33 +94,43 @@ app.get('*', (req, res) => {
 	if (!renderer || !layout) return res.end('Compiling app, refresh in a moment...');
 	res.setHeader('Content-Type', 'text/html');
 
-	const context = req;
-	const stream = renderer.renderToStream(context);
-	let body = '';
+	const context = req,
+		stream = renderer.renderToStream(context);
+
+	let body = '',
+		errorOccurred = false;
 
 	stream.once('data', () => {
-		// get head data from the vue-meta plugin
-		const {
-			meta, title, link, style, script, noscript,
-			htmlAttrs,
-			bodyAttrs
-		} = context.meta.inject();
+		try {
+			// get head data from the vue-meta plugin
+			const {
+				meta, title, link, style, script, noscript,
+				htmlAttrs,
+				bodyAttrs
+			} = context.meta.inject();
 
-		body += layout[0](
-			// <head> ...
-			[meta, title, link, style, script, noscript].reduce((acc, el) => acc + el.text(), ''),
-			// <html ATTRS>
-			htmlAttrs.text(),
-			// <body ATTRS>
-			bodyAttrs.text()
-		);
+			body += layout[0](
+				// <head> ...
+				[meta, title, link, style, script, noscript].reduce((acc, el) => acc + el.text(), '') +
+				context.renderResourceHints() + context.renderStyles(),
+				// <html ATTRS>
+				htmlAttrs.text(),
+				// <body ATTRS>
+				bodyAttrs.text()
+			);
+		}
+		catch(err) {
+			stream.destroy(err);
+		}
 	});
 
 	stream.on('data', chunk => {
+		if (errorOccurred) return;
 		body += chunk;
 	});
 
 	stream.on('end', () => {
+		if (errorOccurred) return;
 		if (context.initialVuexState && context.initialVuexState.serverError) {
 			// let application handle server error if possible
 			console.error((new Date()).toUTCString() + ': data prefetching error');
@@ -131,10 +144,12 @@ app.get('*', (req, res) => {
 		if (context.initialComponentStates)
 			res.write(`<script>window.__INITIAL_COMP_STATE__=${serialize(context.initialComponentStates)}</script>`);
 
+		res.write(context.renderScripts());
 		res.end(layout[1]);
 	});
 
 	stream.on('error', err => {
+		errorOccurred = true;
 		res.statusCode = 500;
 		console.error(new Date().toISOString());
 		console.error(formatError(err));

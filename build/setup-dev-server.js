@@ -10,44 +10,41 @@ module.exports = (app, opts) => {
 	// modify client config to work with hot middleware
 	clientConfig.entry = ['webpack-hot-middleware/client', clientConfig.entry];
 	clientConfig.output.filename = '[name].js';
-	clientConfig.plugins.push(
-		new webpack.HotModuleReplacementPlugin(),
-		new webpack.NoEmitOnErrorsPlugin()
-	);
+	if (!clientConfig.plugins) clientConfig.plugins = [];
+	clientConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
+	if (!clientConfig.optimization) clientConfig.optimization = {};
+	clientConfig.optimization.noEmitOnErrors = true;
 
 	// dev middleware
-	const clientCompiler = webpack(clientConfig);
-	const devMiddleware = require('webpack-dev-middleware')(clientCompiler, {
-		publicPath: clientConfig.output.publicPath,
-		stats: {
-			colors: true,
-			chunks: false
-		}
-	});
+	const clientCompiler = webpack(clientConfig),
+		serverCompiler = webpack(serverConfig),
+		devMiddleware = require('webpack-dev-middleware')(clientCompiler, {
+			publicPath: clientConfig.output.publicPath,
+			stats: {
+				colors: true,
+				chunks: false
+			}
+		}),
+		hotMiddleware = require('webpack-hot-middleware')(clientCompiler),
+		mfs = new MFS(),
+		layoutPath = path.join(clientConfig.output.path, 'index.html'),
+		serverBundlePath = path.join(serverConfig.output.path, 'vue-ssr-server-bundle.json');
 
 	app.use(devMiddleware);
-	clientCompiler.plugin('done', () => {
-		const fs = devMiddleware.fileSystem;
-		const filePath = path.join(clientConfig.output.path, 'index.html');
-		if (fs.existsSync(filePath)) {
-			const index = fs.readFileSync(filePath, 'utf-8');
-			opts.layoutUpdated(index);
-		}
+	app.use(hotMiddleware);
+
+	serverCompiler.outputFileSystem = mfs;
+
+	clientCompiler.hooks.done.tap('done', () => {
+		if (devMiddleware.fileSystem.existsSync(layoutPath))
+			opts.layoutUpdated(devMiddleware.fileSystem.readFileSync(layoutPath, 'utf-8'));
 	});
 
-	// hot middleware
-	app.use(require('webpack-hot-middleware')(clientCompiler));
-
-	// watch and update server renderer
-	const serverCompiler = webpack(serverConfig);
-	const mfs = new MFS();
-	const outputPath = path.join(serverConfig.output.path, serverConfig.output.filename);
-	serverCompiler.outputFileSystem = mfs;
 	serverCompiler.watch({}, (err, stats) => {
 		if (err) throw err;
 		stats = stats.toJson();
 		stats.errors.forEach(err => console.error(err));
 		stats.warnings.forEach(err => console.warn(err));
-		opts.bundleUpdated(mfs.readFileSync(outputPath, 'utf-8'));
+		opts.bundleUpdated(JSON.parse(mfs.readFileSync(serverBundlePath, 'utf-8')));
 	});
 };

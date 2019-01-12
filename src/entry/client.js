@@ -36,4 +36,7 @@ if (window.__INITIAL_COMP_STATE__) {
 	});
 }
 
-app.$mount(document.body.querySelector('[data-server-rendered]'));
+const rootEl = document.body.querySelector('[data-server-rendered]');
+if (rootEl) app.$mount(rootEl);
+// eslint-disable-next-line no-console
+else console.error('Couldn\'t mount root Vue element to `document.body.querySelector(\'[data-server-rendered]\')`');

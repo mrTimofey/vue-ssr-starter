@@ -59,7 +59,7 @@ cp .env.example.js .env.js
 		* `client` - client entry
 		* `server` - server entry
 	* `components/` - vue components
-		* `shared/` - comonents registered implicitly via `Vue.component()`
+		* `shared/` - components registered implicitly via `Vue.component()`
 	* `pages/` - components here are implicitly attached to routes same with componets\' file names
 		(excluding leading `_` in file or folder names and `404.vue` which will be used as a catch-all route)
 	* `filters/` - vue filters registered implicitly via `Vue.filter()`

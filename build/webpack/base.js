@@ -1,46 +1,24 @@
 const fs = require('fs'),
 	path = require('path'),
-	qs = require('qs'),
-	WebpackBarPlugin = require('webpackbar'),
 	{ VueLoaderPlugin } = require('vue-loader');
 
 // environment parameters
 const envFile = path.resolve(process.cwd(), '.env.js'),
 	env = fs.existsSync(envFile) ? require(envFile) : {};
 
-// allows options to represent both object and query string
-class Options {
-	constructor(options) {
-		for (let k of Object.keys(options)) this[k] = options[k];
-	}
-	toString() {
-		return qs.stringify(this, { encode: false, arrayFormat: 'brackets' }).replace(/=true/g, '');
-	}
-}
-
 // shared options to use in multiple loaders (vue-loader and others in general)
 const options = {
-	buble: new Options({
-		objectAssign: 'Object.assign',
+	buble: {
+		objectAssign: true,
 		transforms: {
 			dangerousForOf: true,
 			modules: false
 		}
-	}),
-	pug: new Options({
+	},
+	pug: {
 		doctype: 'html',
 		basedir: process.cwd()
-	}),
-	cssAfterPreprocessor: new Options({
-		import: false
-	}),
-	css: new Options({}),
-	stylus: new Options({
-		import: [
-			path.resolve(process.cwd(), 'node_modules/kouto-swiss/index.styl'),
-			path.resolve(process.cwd(), 'src/shared.styl')
-		]
-	}),
+	},
 	fonts: {
 		test: /\.(woff|woff2|eot|otf|ttf)$/,
 		name: '[path][name].[ext]?[hash:6]'
@@ -115,7 +93,6 @@ exports.createConfig = () => ({
 		hints: process.env.NODE_ENV === 'production' ? 'warning' : false
 	},
 	plugins: [
-		new WebpackBarPlugin(),
 		new VueLoaderPlugin()
 	]
 });
