@@ -1,12 +1,12 @@
 module.exports = {
-	extends: ['plugin:vue/recommended'],
 	parser: 'vue-eslint-parser',
 	parserOptions: {
+		parser: '@typescript-eslint/parser',
 		ecmaVersion: 9,
 		sourceType: 'module',
 		ecmaFeatures: {
 			impliedStrict: true,
-			experimentalObjectRestSpread: true
+			experimentalDecorators: true
 		}
 	},
 	root: true,
@@ -22,8 +22,11 @@ module.exports = {
 		node: true,
 		es6: true
 	},
-	plugins: ['vue'],
-	// add your custom rules here
+	plugins: [
+		'vue',
+		'@typescript-eslint'
+	],
+	extends: ['plugin:vue/recommended'],
 	rules: {
 		'no-console': 1,
 		'no-constant-condition': 2,
@@ -44,7 +47,7 @@ module.exports = {
 		'no-unsafe-finally': 2,
 		'no-unsafe-negation': 2,
 		'use-isnan': 1,
-		'valid-jsdoc': 1,
+		'valid-jsdoc': 0,
 		'valid-typeof': 2,
 		'array-callback-return': 1,
 		'block-scoped-var': 1,
@@ -54,7 +57,7 @@ module.exports = {
 		'no-case-declarations': 2,
 		'no-empty-function': 1,
 		'no-empty-pattern': 2,
-		'no-eq-null': 1,
+		'no-eq-null': 0,
 		'no-eval': 2,
 		'no-extra-bind': 2,
 		'no-floating-decimal': 2,
@@ -84,22 +87,28 @@ module.exports = {
 		'no-catch-shadow': 2,
 		'no-delete-var': 2,
 		'no-shadow-restricted-names': 2,
-		'no-undef': 1,
-		'no-unused-vars': 1,
+		'no-undef': 0,
+		'no-unused-vars': 0,
 		'no-use-before-define': 2,
 		'handle-callback-err': 1,
 		'block-spacing': [1, 'always'],
 		'brace-style': [1, 'stroustrup', { allowSingleLine: true }],
 		'camelcase': 1,
-		'comma-dangle': [1, 'never'],
+		'comma-dangle': ['error', {
+			"arrays": "always-multiline",
+			"objects": "always-multiline",
+			"imports": "never",
+			"exports": "never",
+			"functions": "ignore"
+		}],
 		'comma-spacing': 1,
 		'comma-style': 1,
 		'computed-property-spacing': 1,
 		'func-call-spacing': 1,
 		'func-style': [1, 'declaration', { allowArrowFunctions: true }],
-		'indent': [1, 'tab'],
+		'indent': 0,
 		'key-spacing': 1,
-		'new-cap': 2,
+		'new-cap': 0,
 		'new-parens': 2,
 		'no-mixed-spaces-and-tabs': 2,
 		'no-trailing-spaces': 2,
@@ -135,15 +144,28 @@ module.exports = {
 		'prefer-arrow-callback': 1,
 		'require-yield': 2,
 		'template-curly-spacing': 1,
+		'@typescript-eslint/array-type': [2, 'array'],
+		'@typescript-eslint/class-name-casing': 2,
+		'@typescript-eslint/indent': [1, 'tab'],
+		'@typescript-eslint/member-delimiter-style': [2, {
+			multiline: { delimiter: 'semi', requireLast: true },
+			singleline: { delimiter: 'comma', requireLast: false }
+		}],
+		'@typescript-eslint/no-array-constructor': 2,
+		'@typescript-eslint/no-extraneous-class': 1,
+		'@typescript-eslint/no-misused-new': 2,
+		'@typescript-eslint/no-unused-vars': 1,
+		'@typescript-eslint/no-use-before-define': 1,
 		'vue/component-name-in-template-casing': [1, 'kebab-case'],
 		'vue/script-indent': [1, 'tab', { baseIndent: 1 }],
 		'vue/require-default-prop': 0
 	},
-	'overrides': [
+	overrides: [
 		{
-			'files': ['*.vue'],
-			'rules': {
-				'indent': 'off'
+			files: ['*.vue'],
+			rules: {
+				indent: 0,
+				'@typescript-eslint/indent': 0
 			}
 		}
 	]
