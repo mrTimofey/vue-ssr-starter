@@ -6,8 +6,8 @@
     "dev": "node index",
     "start": "cross-env NODE_ENV=production node index",
     "build": "rimraf dist && npm run build:sprite && npm run build:client && npm run build:server",
-    "build:client": "cross-env NODE_ENV=production webpack --config build/webpack/client.js",
-    "build:server": "cross-env NODE_ENV=production webpack --config build/webpack/server.js",
+    "build:client": "cross-env NODE_ENV=production wp --config build/webpack/client.js",
+    "build:server": "cross-env NODE_ENV=production wp --config build/webpack/server.js",
     "build:sprite": "node build/svg-sprite.js"
   },
   "engines": {
@@ -61,9 +61,9 @@
     "vue-loader": "^15.5.1",
     "vue-template-compiler": "^2.5.22",
     "webpack": "^4.28.4",
-    "webpack-command": "^0.4.2",
     "webpack-dev-middleware": "^3.3.0",
     "webpack-hot-middleware": "^2.24.3",
+    "webpack-nano": "^0.6.1",
     "webpackbar": "^3.1.4"
   },
   "optionalDependencies": {
