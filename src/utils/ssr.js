@@ -1,7 +1,13 @@
-function prefetch(vm) {
-	if (!vm.$options.prefetch) return Promise.resolve();
+function update(vm, route) {
+	const fn = vm.$options.prefetch;
+	if (!fn) return Promise.resolve();
+	if (!route) route = vm.$route;
 	// res: undefined | null | object | Promise<object>
-	const res = vm.$options.prefetch.call(vm);
+	const res = fn({
+		route,
+		store: vm.$store,
+		props: route.params
+	});
 	if (!res) return Promise.resolve();
 	if (typeof res.then !== 'function') return Promise.resolve({ data: res });
 	vm._prefetchPromise = res;
@@ -15,7 +21,8 @@ function prefetch(vm) {
 			return { data };
 		})
 		.catch(err => {
-			if (!err) err = { statusCode: 500 };
+			if (typeof err === 'number') err = { statusCode: err };
+			else if (!err) err = { statusCode: 500 };
 			// let the app know if something goes wrong
 			vm.$store.commit('fireServerError', err);
 			return { err };
@@ -32,13 +39,10 @@ const data = () => ({ prefetching: false });
 
 export const serverMixin = {
 	data,
-	serverPrefetch() {
-		return prefetch(this).then(({ data } = {}) => {
-			if (!data || Object.keys(data).length === 0) return;
-			// save component data to the context to restore it on the client side while hydrating
-			if (!this.$ssrContext.componentStates) this.$ssrContext.componentStates = {};
-			this.$ssrContext.componentStates[this.$options.name] = data;
-		});
+	created() {
+		// fill data on component create
+		if (this.$ssrContext.componentStates && this.$ssrContext.componentStates[this.$options.name])
+			Object.assign(this.$data, this.$ssrContext.componentStates[this.$options.name]);
 	}
 };
 
@@ -52,23 +56,41 @@ export const clientMixin = {
 	},
 	// on route path change
 	beforeRouteUpdate(to, from, next) {
-		if (to.path !== from.path) prefetch(this).then(({ err }) => {
+		if (to.path !== from.path) update(this, to).then(({ err }) => {
 			next(err);
 		});
 		else next();
 	},
 	// trigger only on client (beforeMount is not triggered on server)
 	beforeMount() {
-		if (this.$root._isMounted && this.$options.prefetch || this.constructor.extendOptions.noSSR) prefetch(this).then(() => {
-			// try to restore scroll position
-			if (this.$route.meta.scrollPosition) this.$nextTick(
-				() => {
-					window.scrollTo(this.$route.meta.scrollPosition.x, this.$route.meta.scrollPosition.y);
-					delete this.$route.meta.scrollPosition;
-				}
-			);
-		});
+		if (this.$root._isMounted && this.$options.prefetch || this.constructor.extendOptions.noSSR)
+			update(this).then(() => {
+				// try to restore scroll position
+				if (this.$route.meta.scrollPosition) this.$nextTick(
+					() => {
+						window.scrollTo(this.$route.meta.scrollPosition.x, this.$route.meta.scrollPosition.y);
+						delete this.$route.meta.scrollPosition;
+					}
+				);
+			});
 	}
 };
 
 export const prefetchMixin = process.env.VUE_ENV === 'server' ? serverMixin : clientMixin;
+
+export function serverPrefetch(app, comp) {
+	const fn = comp ? comp.prefetch : app.$options.prefetch,
+		key = comp ? comp.name : false;
+	return fn ?
+		fn({
+			route: app.$route,
+			store: app.$store,
+			props: app.$route.params
+		}).then(({ data } = {}) => {
+			if (!key || !data || Object.keys(data).length === 0) return;
+			// save component data to the context to restore it on the client side while hydrating
+			if (!app.$ssrContext.componentStates) app.$ssrContext.componentStates = {};
+			app.$ssrContext.componentStates[key] = data;
+		}) :
+		Promise.resolve();
+}
