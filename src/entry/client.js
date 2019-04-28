@@ -8,13 +8,8 @@ div.innerHTML = sprite;
 if (document.body.childNodes && document.body.childNodes.length) document.body.insertBefore(div, document.body.childNodes[0]);
 else document.body.appendChild(div);
 
-// fix route hash
-if (window.__INITIAL_VUEX_STATE__) window.__INITIAL_VUEX_STATE__.route.hash = location.hash;
-
 // create app
 const app = createApp(window.location);
-
-app.serverPrefetched = true;
 
 app.$router.beforeEach((from, to, next) => {
 	// clear server error before next route activating
@@ -22,21 +17,21 @@ app.$router.beforeEach((from, to, next) => {
 	next();
 });
 
-if (window.__INITIAL_VUEX_STATE__) {
-	app.$store.replaceState(window.__INITIAL_VUEX_STATE__);
-	delete window.__INITIAL_VUEX_STATE__;
-}
-
-if (window.__INITIAL_COMP_STATE__) {
-	app.$router.onReady(() => {
-		const comps = app.$router.getMatchedComponents().filter(comp => typeof comp.prefetch === 'function');
-		for (let i in comps)
-			if (window.__INITIAL_COMP_STATE__[i]) comps[i].prefetchedData = window.__INITIAL_COMP_STATE__[i];
-		delete window.__INITIAL_COMP_STATE__;
-	});
+if (window.__STORE_STATE__) {
+	app.$store.replaceState(window.__STORE_STATE__);
+	delete window.__STORE_STATE__;
 }
 
 const rootEl = document.body.querySelector('[data-server-rendered]');
-if (rootEl) app.$mount(rootEl);
-// eslint-disable-next-line no-console
-else console.error('Couldn\'t mount root Vue element to `document.body.querySelector(\'[data-server-rendered]\')`');
+if (process.env.NODE_ENV === 'production') {
+	app.$mount(rootEl);
+}
+else {
+	if (rootEl) app.$mount(rootEl);
+	else {
+		const errorText = 'Couldn\'t mount root Vue element to `document.body.querySelector(\'[data-server-rendered]\')`';
+		// eslint-disable-next-line no-console
+		console.error(errorText);
+		document.body.innerHTML = `<div style="font-size:30px;color:red;text-align:center;margin:30px">${errorText}</div>`;
+	}
+}
