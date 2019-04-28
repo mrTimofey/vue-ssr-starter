@@ -22,14 +22,14 @@ export default context => {
 			// router matched components with prefetch
 			const errors = [],
 				prefetches = app.$router.getMatchedComponents().map(comp => {
-					const prefetch = serverPrefetch(app, comp);
+					const prefetch = serverPrefetch(app, context, comp);
 					if (prefetch && prefetch.catch) return prefetch.catch(err => {
 						errors.push(err);
 					});
 					return prefetch;
 				});
 
-			prefetches.push(serverPrefetch(app));
+			prefetches.push(serverPrefetch(app, context));
 
 			if (prefetches.length) Promise.all(prefetches).then(() => {
 				if (errors.length) app.$store.commit('fireServerError', errors[0]);
