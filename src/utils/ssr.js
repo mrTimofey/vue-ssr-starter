@@ -80,7 +80,7 @@ export const clientMixin = {
 
 export const prefetchMixin = process.env.VUE_ENV === 'server' ? serverMixin : clientMixin;
 
-export function serverPrefetch(app, comp) {
+export function serverPrefetch(app, context, comp) {
 	const fn = comp ? comp.prefetch : app.$options.prefetch,
 		key = comp ? comp.name : false;
 	return fn ?
@@ -88,11 +88,13 @@ export function serverPrefetch(app, comp) {
 			route: app.$route,
 			store: app.$store,
 			props: app.$route.params
-		}).then(({ data } = {}) => {
+		}).then((data) => {
 			if (!key || !data || Object.keys(data).length === 0) return;
 			// save component data to the context to restore it on the client side while hydrating
-			if (!app.$ssrContext.componentStates) app.$ssrContext.componentStates = {};
-			app.$ssrContext.componentStates[key] = data;
-		}).catch(err => onError(err, app)) :
+			if (!context.componentStates) context.componentStates = {};
+			context.componentStates[key] = data;
+		}).catch(err => {
+			onError(err, app);
+		}) :
 		Promise.resolve();
 }
