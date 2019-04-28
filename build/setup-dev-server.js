@@ -4,9 +4,13 @@ const path = require('path'),
 	MFS = require('memory-fs');
 
 const clientConfig = require('./webpack/client'),
-	serverConfig = require('./webpack/server');
+	serverConfig = require('./webpack/server'),
+	{ env } = require('./webpack/base');
 
 module.exports = (app, opts) => {
+	// optional api proxy
+	if (env.apiProxy) app.use(require('http-proxy-middleware')(env.apiProxy.prefix, env.apiProxy));
+
 	// modify client config to work with hot middleware
 	clientConfig.entry = ['webpack-hot-middleware/client', clientConfig.entry];
 	clientConfig.output.filename = '[name].js';
