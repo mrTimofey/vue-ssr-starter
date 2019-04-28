@@ -61,8 +61,10 @@ cp .env.example.js .env.js
 		(excluding leading `_` in file or folder names and `404.vue` which will be used as a catch-all route)
 	* `filters/` - vue filters registered implicitly via `Vue.filter()`
 	* `directives/` - vue directives registered implicitly via `Vue.directive()`
-	* `mixins/` - vue mixins
 	* `store/` - Vuex storage, `index` returns a factory function returning configured Vuex store instance
+	* `utils/` - common utility functions
+		* `index` - common utility functions
+		* `ssr` - SSR related functions and mixins
 	* `app.vue` - aplication root component, implicitly mixed with `entry\app`
 	* `http` - exports http client instance (Axios)
 	* `layout.pug` - application HTML layout
@@ -80,23 +82,19 @@ Every component within `src/pages` directory can use some special features provi
 	404 route includes 404 status code by default.
 * `component.prefetch({ store, props, route })`, function
 	(`store` - vuex store instance, `props` - route params, `route` - current route object).
-	
+
 	Must return a promise. Allows some async routine before actual application rendering on server side.
 	To pass any data to component: resolve promise with needed data and add corresponding `component.data` fields with
 	their initial values to prevent *...property or method not defined...* error.
 	Automatically called on client side from `beforeMount` and `beforeRouteChange` hooks as well.
-	See `src/mixins/prefetch` mixin.
+	See `src/utils/ssr` mixin.
+* Boolean `prefetching` data field indicates when prefetch is running.
 
 	**IMPORTANT: there is no component context within `prefetch` function because component instance is not created yet!**
 
 `prefetch` also works on the root component (`src/app.vue`) with some restrictions:
 
-* no `props` field in the argument;
 * no way to pass component data (only store can be affected).
-
-Root application component (`app.vue`) has a `serverPrefetched` property.
-It is always set to `true` on client side and after all prefetching is done on server side.
-It is not reactive until you explicitly declare it in component`s data.
 
 ## Development checklist
 
