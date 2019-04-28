@@ -67,7 +67,7 @@ cp .env.example.js .env.js
 	* `http` - exports http client instance (Axios)
 	* `layout.pug` - application HTML layout
 	* `router` - exports a factory function returning vue-router instance
-	* `vars.styl` - globally included stylus file (for variables, mixins, etc.)
+	* `shared.styl` - globally included stylus file (for variables, mixins, etc.)
 
 ## SSR related component features
 
