@@ -1,3 +1,11 @@
+function onError(err, app) {
+	if (typeof err === 'number') err = { statusCode: err };
+	else if (!err) err = { statusCode: 500 };
+	// let the app know if something goes wrong
+	app.$store.commit('fireServerError', err);
+	return { err };
+}
+
 function update(vm, route) {
 	const fn = vm.$options.prefetch;
 	if (!fn) return Promise.resolve();
@@ -20,13 +28,7 @@ function update(vm, route) {
 			Object.assign(vm.$data, data);
 			return { data };
 		})
-		.catch(err => {
-			if (typeof err === 'number') err = { statusCode: err };
-			else if (!err) err = { statusCode: 500 };
-			// let the app know if something goes wrong
-			vm.$store.commit('fireServerError', err);
-			return { err };
-		})
+		.catch(err => onError(err, vm.$root))
 		.then(obj => {
 			if (!obj) return;
 			vm.prefetching = false;
@@ -91,6 +93,6 @@ export function serverPrefetch(app, comp) {
 			// save component data to the context to restore it on the client side while hydrating
 			if (!app.$ssrContext.componentStates) app.$ssrContext.componentStates = {};
 			app.$ssrContext.componentStates[key] = data;
-		}) :
+		}).catch(err => onError(err, app)) :
 		Promise.resolve();
 }
