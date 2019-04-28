@@ -68,10 +68,6 @@ if (production) {
 		runInNewContext: false,
 		clientManifest: require('./dist/vue-ssr-client-manifest.json')
 	});
-	const passThrough = (req, res, next) => { next(); };
-	app.get('/dist/vue-ssr-server-bundle.json', passThrough);
-	app.get('/dist/vue-ssr-client-manifest.json', passThrough);
-	app.get('/dist/server-bundle.js', passThrough);
 	app.use('/dist', serveStatic('./dist'));
 }
 else {
