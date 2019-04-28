@@ -1,17 +1,19 @@
 <script>
 	export default {
 		routePath: ':id',
-		props: ['id'],
+		props: { id: String },
 		data: () => ({
 			name: 'loading...',
 			description: 'loading...'
 		}),
-		prefetch: ({ props }) => new Promise(resolve => setTimeout(() => {
-			resolve({
-				name: 'Name of ' + props.id,
-				description: 'something'
-			});
-		}, 200))
+		prefetch: ({ props }) => new Promise(resolve => {
+			setTimeout(() => {
+				resolve({
+					name: 'Name of ' + props.id,
+					description: 'something'
+				});
+			}, 200);
+		})
 	};
 </script>
 <template lang="pug">

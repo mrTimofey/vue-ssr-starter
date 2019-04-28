@@ -15,7 +15,8 @@ function prefetch(vm) {
 			return { data };
 		})
 		.catch(err => {
-			if (!err) err = { statusCode: 500 };
+			if (typeof err === 'number') err = { statusCode: err };
+			else if (!err) err = { statusCode: 500 };
 			// let the app know if something goes wrong
 			vm.$store.commit('fireServerError', err);
 			return { err };

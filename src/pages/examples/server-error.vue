@@ -1,9 +1,10 @@
 <script>
 	export default {
 		// test server error
-		prefetch: ({ store }) => store.commit('fireServerError', { message: 'Example error' })
+		prefetch: () => Promise.reject({ message: 'Example error' })
 	};
 </script>
 <template lang="pug">
-	p You will never see this text
+	p(v-if="prefetching") Loading...
+	p(v-else) You will never see this text
 </template>
