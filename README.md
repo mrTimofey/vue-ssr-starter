@@ -73,7 +73,7 @@ cp .env.example.js .env.js
 
 Every component within `src/pages` directory can use some special features providing full SSR support:
 
-* `component.routeParams`, String - additional route suffix. Usually used to provide dynamic route segments.
+* `component.routePath`, String - additional route suffix. Usually used to provide dynamic route segments.
 	You can use any string allowed for the vue-router path definition. All dynamic segments are automatically mapped
 	to component `props`.
 * `component.routeMeta`, Object - `route.meta`. Include `statusCode` here to modify an HTTP status returned with SSR.
