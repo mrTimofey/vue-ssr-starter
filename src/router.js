@@ -1,8 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import prefetchMixin from 'src/mixins/prefetch';
-
 import { filenameToCamelCase, requireAll } from 'src/utils';
+import { prefetchMixin } from 'src/utils/ssr';
 
 Vue.use(Router);
 
@@ -51,7 +50,7 @@ requireAll(require.context('src/pages/', true, /^(?:(?!\/?_).)+\.(vue|js)$/), (c
 
 		if (process.env.NODE_ENV !== 'production') {
 			if (pathMap[route.path])
-				throw new Error(`Duplicate path in vue router: ${route.path}, components are: ${pathMap[route.path]}, ${name}`);
+				throw new Error(`Duplicate path in vue-router: ${route.path}, components are: ${pathMap[route.path]}, ${name}`);
 			pathMap[route.path] = name;
 		}
 		routes.push(route);

@@ -4,7 +4,7 @@ const fs = require('fs'),
 	polka = require('polka'),
 	serveStatic = require('serve-static'),
 	serveFavicon = require('serve-favicon'),
-	// serializes any data including functions
+	// safely serializes any data including functions
 	serialize = require('serialize-javascript'),
 	vueSR = require('vue-server-renderer');
 
@@ -15,8 +15,7 @@ const envFile = path.resolve(process.cwd(), '.env.js'),
 // application variables
 const app = polka(),
 	port = process.env.PORT || env.port || 8080,
-	production = process.env.NODE_ENV === 'production',
-	layoutFile = path.resolve('./dist/index.html');
+	production = process.env.NODE_ENV === 'production';
 
 let pe;
 if (!production) pe = new (require('pretty-error'))();
@@ -64,14 +63,11 @@ function parseLayout(html) {
 }
 
 if (production) {
-	layout = parseLayout(fs.readFileSync(layoutFile, 'utf-8'));
+	layout = parseLayout(fs.readFileSync(path.resolve('./dist/index.html'), 'utf-8'));
 	renderer = vueSR.createBundleRenderer(path.resolve('./dist/vue-ssr-server-bundle.json'), {
 		runInNewContext: false,
 		clientManifest: require('./dist/vue-ssr-client-manifest.json')
 	});
-	app.get('/dist/vue-ssr-server-bundle.json', (req, res, next) => { next(); });
-	app.get('/dist/vue-ssr-client-manifest.json', (req, res, next) => { next(); });
-	app.get('/dist/server-bundle.js', (req, res, next) => { next(); });
 	app.use('/dist', serveStatic('./dist'));
 }
 else {
@@ -87,9 +83,6 @@ else {
 
 app.use(serveFavicon(path.join(process.cwd(), 'favicon.ico')));
 
-// optional api proxy
-if (env.apiProxy) app.use(require('http-proxy-middleware')(env.apiProxy.prefix, env.apiProxy));
-
 app.get('*', (req, res) => {
 	if (!renderer || !layout) return res.end('Compiling app, refresh in a moment...');
 	res.setHeader('Content-Type', 'text/html');
@@ -97,7 +90,7 @@ app.get('*', (req, res) => {
 	const context = req,
 		stream = renderer.renderToStream(context);
 
-	let body = '',
+	let body = [],
 		errorOccurred = false;
 
 	stream.once('data', () => {
@@ -109,7 +102,7 @@ app.get('*', (req, res) => {
 				bodyAttrs
 			} = context.meta.inject();
 
-			body += layout[0](
+			body.push(layout[0](
 				// <head> ...
 				[meta, title, link, style, script, noscript].reduce((acc, el) => acc + el.text(), '') +
 				context.renderResourceHints() + context.renderStyles(),
@@ -117,32 +110,38 @@ app.get('*', (req, res) => {
 				htmlAttrs.text(),
 				// <body ATTRS>
 				bodyAttrs.text()
-			);
+			));
 		}
-		catch(err) {
+		catch (err) {
 			stream.destroy(err);
 		}
 	});
 
 	stream.on('data', chunk => {
 		if (errorOccurred) return;
-		body += chunk;
+		body.push(chunk);
 	});
 
 	stream.on('end', () => {
 		if (errorOccurred) return;
-		if (context.initialVuexState && context.initialVuexState.serverError) {
+		if (context.storeState && context.storeState.serverError) {
 			// let application handle server error if possible
 			console.error((new Date()).toUTCString() + ': data prefetching error');
-			console.error(context.initialVuexState.serverError);
+			console.error(context.storeState.serverError);
 		}
 		res.statusCode = context.statusCode || 200;
-		res.write(body);
+		body.forEach(chunk => { res.write(chunk); });
+		let script = [];
 
-		if (context.initialVuexState)
-			res.write(`<script>window.__INITIAL_VUEX_STATE__=${serialize(context.initialVuexState)}</script>`);
-		if (context.initialComponentStates)
-			res.write(`<script>window.__INITIAL_COMP_STATE__=${serialize(context.initialComponentStates)}</script>`);
+		if (context.storeState)
+			script.push(`window.__STORE_STATE__=${serialize(context.storeState)};`);
+		if (context.componentStates)
+			script.push(`window.__COMP_STATES__=${serialize(context.componentStates)};`);
+		if (script.length) {
+			res.write('<script>');
+			script.forEach(chunk => { res.write(chunk); });
+			res.write('</script>');
+		}
 
 		res.write(context.renderScripts());
 		res.end(layout[1]);
