@@ -37,37 +37,47 @@ const transform = {
 	convertShapeToPath: true,
 	transformsWithOnePath: { floatPrecision: 1 },
 	removeDimensions: true,
-	removeAttrs: { attrs:  ['fill', 'stroke']},
+	removeAttrs: { attrs: ['fill', 'stroke']},
 	removeStyleElement: true,
-	collapseGroups: true
+	collapseGroups: true,
 };
 
 const spriter = new SVGSpriter({
 	dest: outputDir,
-	log: 'debug',
+	log: process.env.NODE_ENV === 'production' ? null : 'debug',
 	shape: {
 		id: {
-			generator: 'i-%s'
+			generator: 'i-%s',
 		},
 		transform: [
-			{ svgo: { plugins: Object.keys(transform).map(k => ({ [k]: transform[k] })) } },
-			{ svgo: { plugins: [
-				// collapseGroups is not recursive (
-				{ collapseGroups: true }
-			]} }
-		]
+			{
+				svgo: {
+					plugins: Object.keys(transform).map(k => ({
+						[k]: transform[k],
+					})),
+				},
+			},
+			{
+				svgo: {
+					plugins: [
+						// collapseGroups is not recursive (
+						{ collapseGroups: true },
+					],
+				},
+			},
+		],
 	},
 	svg: {
 		xmlDeclaration: false,
 		doctypeDeclaration: false,
-		dimensionAttributes: false
+		dimensionAttributes: false,
 	},
 	mode: {
 		symbol: {
 			dest: '.',
-			sprite: 'sprite.svg'
-		}
-	}
+			sprite: 'sprite.svg',
+		},
+	},
 });
 
 for (let f of fs.readdirSync(spritesDir)) {
@@ -82,7 +92,10 @@ spriter.compile((err, result) => {
 		if (!result.hasOwnProperty(mode)) continue;
 		for (let resource in result[mode]) {
 			if (!result[mode].hasOwnProperty(resource)) continue;
-			fs.writeFileSync(result[mode][resource].path, result[mode][resource].contents);
+			fs.writeFileSync(
+				result[mode][resource].path,
+				result[mode][resource].contents
+			);
 		}
 	}
 });

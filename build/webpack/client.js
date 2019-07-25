@@ -1,5 +1,5 @@
 const path = require('path'),
-	{ options, env, createConfig } = require('./base'),
+	{ staticFileLoaders, createConfig } = require('./base'),
 	{ DefinePlugin } = require('webpack'),
 	WebpackBarPlugin = require('webpackbar'),
 	HTMLPlugin = require('html-webpack-plugin'),
@@ -7,86 +7,73 @@ const path = require('path'),
 
 const baseConfig = createConfig();
 
-const clientConfig = {
-	...baseConfig,
-	entry: './src/entry/client.js',
+const clientConfig = Object.assign({}, baseConfig, {
+	entry: './src/entry/client.ts',
 	plugins: (baseConfig.plugins || []).concat([
 		new DefinePlugin({
 			'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
 			'process.env.VUE_ENV': '"client"',
-			apiBaseURL: JSON.stringify(env.apiBaseURL && env.apiBaseURL.client || null)
-		}),
-		new VueSSRClientPlugin(),
-		new HTMLPlugin({
-			template: 'src/layout.pug',
-			// assets injection is controlled by vue-server-renderer with manifest in production
-			inject: process.env.NODE_ENV !== 'production'
 		}),
 		new WebpackBarPlugin({
 			name: 'client',
-			color: 'green'
-		})
+			color: 'green',
+		}),
+		new HTMLPlugin({
+			template: 'src/layout.pug',
+			// assets injection is controlled by vue-server-renderer with manifest in production
+			inject: process.env.NODE_ENV !== 'production',
+		}),
 	]),
 	optimization: {
 		runtimeChunk: {
-			name: 'rtm'
+			name: 'rtm',
 		},
 		splitChunks: {
-			chunks: 'all'
-		}
-	}
-};
+			chunks: 'all',
+		},
+	},
+});
 
 clientConfig.module.rules = (baseConfig.module.rules || []).concat([
 	{
 		test: /sprite\.svg$/,
-		loader: 'raw-loader'
+		loader: 'raw-loader',
 	},
 	{
-		test: options.fonts.test,
 		loader: 'file-loader',
-		options: {
-			context: 'assets',
-			name: options.fonts.name
-		}
+		...staticFileLoaders.fonts,
 	},
 	{
-		test: options.images.test,
+		test: staticFileLoaders.images.test,
 		exclude: /sprite\.svg$/,
 		loaders: [
 			{
 				loader: 'url-loader',
-				options: {
-					context: 'assets',
-					limit: options.images.limit,
-					name: options.images.name
-				}
+				options: staticFileLoaders.images.options,
 			},
 			{
 				loader: 'image-webpack-loader',
 				options: {
 					optipng: {
-						optimizationLevel: 7
+						// optipng is really slow so disable it on dev
+						enabled: process.env.NODE_ENV === 'production',
+						optimizationLevel: 7,
 					},
 					gifsicle: {
-						interlaced: false
+						interlaced: false,
 					},
 					mozjpeg: {
 						quality: 85,
-						progressive: true
-					}
-				}
-			}
-		]
+						progressive: true,
+					},
+				},
+			},
+		],
 	},
 	{
-		test: options.docs.test,
 		loader: 'file-loader',
-		options: {
-			context: 'assets',
-			name: options.docs.name
-		}
-	}
+		...staticFileLoaders.docs,
+	},
 ]);
 
 function addStyleRules(finalLoader) {
@@ -102,29 +89,40 @@ function addStyleRules(finalLoader) {
 							path.resolve(process.cwd(), 'node_modules/kouto-swiss/index.styl'),
 							path.resolve(process.cwd(), 'src/shared.styl'),
 						],
-						sourceMap
+						sourceMap,
 					},
 				},
 			],
 		},
 		{
 			test: /\.css$/,
-			use: []
+			use: [],
 		},
 	]) {
 		rule.use = [
 			finalLoader || {
 				loader: 'vue-style-loader',
-				options: { sourceMap }
+				options: { sourceMap },
 			},
 			{
 				loader: 'css-loader',
-				options: { sourceMap }
+				options: { sourceMap },
 			},
-			...rule.use
+			...rule.use,
 		];
 		clientConfig.module.rules.push(rule);
 	}
+}
+
+function addDevHelpers() {
+	const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin'),
+		WebpackNotifier = require('fork-ts-checker-notifier-webpack-plugin');
+	clientConfig.plugins.push(
+		new ForkTsCheckerWebpackPlugin({
+			vue: true,
+		}),
+		new WebpackNotifier()
+	);
 }
 
 if (process.env.NODE_ENV === 'production') {
@@ -133,22 +131,26 @@ if (process.env.NODE_ENV === 'production') {
 		MinifyPlugin = require('terser-webpack-plugin');
 	addStyleRules(MiniCssExtractPlugin.loader);
 	clientConfig.plugins.push(
-		new MiniCssExtractPlugin({ filename: '[name].css?[hash:6]' })
+		new MiniCssExtractPlugin({ filename: '[name].css?[hash:6]' }),
+		new VueSSRClientPlugin(),
 	);
 	if (!clientConfig.optimization) clientConfig.optimization = {};
 	clientConfig.optimization.minimizer = [
 		new MinifyPlugin({
 			cache: true,
-			parallel: true
+			parallel: true,
 		}),
 		new OptimizeCSSAssetsPlugin({
-			assetNameRegExp: /\.css(\?.*)?$/
-		})
+			assetNameRegExp: /\.css(\?.*)?$/,
+		}),
 	];
+	clientConfig.optimization.moduleIds = 'hashed';
 }
 else {
+	if (process.env.NODE_ENV === 'development') addDevHelpers();
 	addStyleRules();
-	clientConfig.devtool = '#sourcemap';
+	clientConfig.devtool = 'inline-source-map';
+	clientConfig.optimization.moduleIds = 'named';
 }
 
 module.exports = clientConfig;

@@ -2,26 +2,35 @@
 const fs = require('fs'),
 	path = require('path'),
 	polka = require('polka'),
-	serveStatic = require('serve-static'),
-	serveFavicon = require('serve-favicon'),
-	// safely serializes any data including functions
 	serialize = require('serialize-javascript'),
 	vueSR = require('vue-server-renderer');
 
-// environment parameters
-const envFile = path.resolve(process.cwd(), '.env.js'),
-	env = fs.existsSync(envFile) ? require(envFile) : {};
+const port = process.env.APP_PORT || 3000,
+	config = {
+		port,
+		production: process.env.NODE_ENV === 'production',
+		apiBaseUrl: {
+			server: process.env.API_BASE_SSR || `http://localhost:${port}/`,
+			client: process.env.API_BASE_CLIENT || '/',
+		},
+		proxyEnabled: !!process.env.PROXY_ENABLED,
+		serveStatic: !!process.env.SERVE_STATIC,
+	};
 
 // application variables
 const app = polka(),
-	port = process.env.PORT || env.port || 8080,
-	production = process.env.NODE_ENV === 'production';
+	layoutFile = path.resolve('./dist/index.html'),
+	faviconPath = path.join(process.cwd(), 'favicon.ico');
 
-let pe;
-if (!production) pe = new (require('pretty-error'))();
-const formatError = production ? err => err.stack : err => pe.render(err);
+let formatError, layout, renderer;
 
-let layout, renderer;
+if (config.production) {
+	formatError = err => err.stack;
+}
+else {
+	const prettyError = new (require('pretty-error'))();
+	formatError = err => prettyError.render(err);
+}
 
 /**
  * Split layout HTML allowing server renderer to inject component output, store data, meta tags, etc.
@@ -58,17 +67,24 @@ function parseLayout(html) {
 				afterBody;
 		},
 		// after app layout
-		end
+		end,
 	];
 }
 
-if (production) {
-	layout = parseLayout(fs.readFileSync(path.resolve('./dist/index.html'), 'utf-8'));
+if (config.proxyEnabled) {
+	require('./build/setup-proxy')(app);
+}
+
+if (config.serveStatic) {
+	app.use('/dist', require('serve-static')('./dist'));
+}
+
+if (config.production) {
+	layout = parseLayout(fs.readFileSync(layoutFile, 'utf-8'));
 	renderer = vueSR.createBundleRenderer(path.resolve('./dist/vue-ssr-server-bundle.json'), {
 		runInNewContext: false,
-		clientManifest: require('./dist/vue-ssr-client-manifest.json')
+		clientManifest: require('./dist/vue-ssr-client-manifest.json'),
 	});
-	app.use('/dist', serveStatic('./dist'));
 }
 else {
 	require('./build/setup-dev-server')(app, {
@@ -77,20 +93,30 @@ else {
 		},
 		layoutUpdated(html) {
 			layout = parseLayout(html);
-		}
+		},
 	});
 }
 
-app.use(serveFavicon(path.join(process.cwd(), 'favicon.ico')));
+if (fs.existsSync(faviconPath)) {
+	app.use(require('serve-favicon')(faviconPath));
+}
 
 app.get('*', (req, res) => {
 	if (!renderer || !layout) return res.end('Compiling app, refresh in a moment...');
 	res.setHeader('Content-Type', 'text/html');
 
+	req.envConfig = {
+		apiBaseUrl: config.apiBaseUrl.server,
+	};
+
+	const clientEnvConfig = {
+		apiBaseUrl: config.apiBaseUrl.client,
+	};
+
 	const context = req,
 		stream = renderer.renderToStream(context);
 
-	let body = [],
+	let body = '',
 		errorOccurred = false;
 
 	stream.once('data', () => {
@@ -99,10 +125,10 @@ app.get('*', (req, res) => {
 			const {
 				meta, title, link, style, script, noscript,
 				htmlAttrs,
-				bodyAttrs
+				bodyAttrs,
 			} = context.meta.inject();
 
-			body.push(layout[0](
+			body += layout[0](
 				// <head> ...
 				[meta, title, link, style, script, noscript].reduce((acc, el) => acc + el.text(), '') +
 				context.renderResourceHints() + context.renderStyles(),
@@ -110,38 +136,32 @@ app.get('*', (req, res) => {
 				htmlAttrs.text(),
 				// <body ATTRS>
 				bodyAttrs.text()
-			));
+			);
 		}
-		catch (err) {
+		catch(err) {
 			stream.destroy(err);
 		}
 	});
 
 	stream.on('data', chunk => {
 		if (errorOccurred) return;
-		body.push(chunk);
+		body += chunk;
 	});
 
 	stream.on('end', () => {
 		if (errorOccurred) return;
-		if (context.storeState && context.storeState.serverError) {
+		if (context.initialVuexState && context.initialVuexState.serverError) {
 			// let application handle server error if possible
 			console.error((new Date()).toUTCString() + ': data prefetching error');
-			console.error(context.storeState.serverError);
+			console.error(context.initialVuexState.serverError);
 		}
 		res.statusCode = context.statusCode || 200;
-		body.forEach(chunk => { res.write(chunk); });
-		let script = [];
+		res.write(body);
 
-		if (context.storeState)
-			script.push(`window.__STORE_STATE__=${serialize(context.storeState)};`);
-		if (context.componentStates)
-			script.push(`window.__COMP_STATES__=${serialize(context.componentStates)};`);
-		if (script.length) {
-			res.write('<script>');
-			script.forEach(chunk => { res.write(chunk); });
-			res.write('</script>');
-		}
+		const injectData = { cnf: clientEnvConfig };
+		if (context.initialVuexState) injectData.state = context.initialVuexState;
+		if (context.initialComponentStates) injectData.cmp = context.initialComponentStates;
+		res.write(`<script>window.__APP__=${serialize(injectData)}</script>`);
 
 		res.write(context.renderScripts());
 		res.end(layout[1]);
@@ -152,8 +172,8 @@ app.get('*', (req, res) => {
 		res.statusCode = 500;
 		console.error(new Date().toISOString());
 		console.error(formatError(err));
-		res.end(production ? 'Something went wrong...' : `<pre>${err.stack}\n\n<b>Watch console for more information</b></pre>`);
+		res.end(config.production ? 'Something went wrong...' : `<pre>${err.stack}\n\n<b>Watch console for more information</b></pre>`);
 	});
 });
 
-app.listen(port);
+app.listen(config.port);

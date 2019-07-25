@@ -4,15 +4,12 @@ const path = require('path'),
 	MFS = require('memory-fs');
 
 const clientConfig = require('./webpack/client'),
-	serverConfig = require('./webpack/server'),
-	{ env } = require('./webpack/base');
+	serverConfig = require('./webpack/server');
 
 module.exports = (app, opts) => {
-	// optional api proxy
-	if (env.apiProxy) app.use(require('http-proxy-middleware')(env.apiProxy.prefix, env.apiProxy));
-
 	// modify client config to work with hot middleware
 	clientConfig.entry = ['webpack-hot-middleware/client', clientConfig.entry];
+	if (!clientConfig.output) clientConfig.output = {};
 	clientConfig.output.filename = '[name].js';
 	if (!clientConfig.plugins) clientConfig.plugins = [];
 	clientConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
@@ -26,8 +23,8 @@ module.exports = (app, opts) => {
 			publicPath: clientConfig.output.publicPath,
 			stats: {
 				colors: true,
-				chunks: false
-			}
+				chunks: false,
+			},
 		}),
 		hotMiddleware = require('webpack-hot-middleware')(clientCompiler),
 		mfs = new MFS(),
