@@ -3,8 +3,8 @@ const fs = require('fs'),
 	path = require('path'),
 	SVGSpriter = require('svg-sprite');
 
-const spritesDir = path.resolve(process.cwd(), 'assets', 'icons'),
-	outputDir = path.resolve(process.cwd(), 'assets');
+const spritesDir = path.resolve(process.cwd(), 'src', 'assets', 'svg-icons'),
+	outputDir = path.resolve(process.cwd(), 'src', 'assets');
 
 const transform = {
 	cleanupAttrs: true,

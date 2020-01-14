@@ -1,5 +1,5 @@
 import createApp from './app';
-import sprite from 'assets/sprite.svg';
+import sprite from 'src/assets/sprite.svg';
 
 // inject svg sprite
 const div = document.createElement('div');
