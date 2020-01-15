@@ -5,12 +5,13 @@
 	import 'src/footer.css';
 	import txt from 'assets/docs/example.txt';
 	import ServerError from 'src/components/server-error.vue';
+	import Icon from 'src/components/icon';
 
 	export default {
 		name: 'App',
 		// test async prefetch
 		prefetch: () => new Promise(resolve => setTimeout(resolve, 200)),
-		components: { ServerError },
+		components: { ServerError, Icon },
 		data: () => ({
 			txt,
 		}),
