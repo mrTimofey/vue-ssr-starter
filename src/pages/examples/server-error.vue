@@ -1,7 +1,7 @@
 <script>
 	export default {
 		// test server error
-		prefetch: () => Promise.reject({ message: 'Example error' })
+		prefetch: () => Promise.reject({ message: 'Example error' }),
 	};
 </script>
 <template lang="pug">

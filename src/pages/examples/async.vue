@@ -3,16 +3,16 @@
 
 	export default {
 		computed: {
-			...mapGetters(['items'])
+			...mapGetters(['items']),
 		},
 		head() {
 			return {
 				// test dynamic head title
-				title: this.prefetching ? 'Loading...' : ('Items fetched: ' + this.items.length)
+				title: this.prefetching ? 'Loading...' : ('Items fetched: ' + this.items.length),
 			};
 		},
 		// test async loading from the external API
-		prefetch: ({ store }) => store.dispatch('fetchItems')
+		prefetch: ({ store }) => store.dispatch('fetchItems'),
 	};
 </script>
 <template lang="pug">
