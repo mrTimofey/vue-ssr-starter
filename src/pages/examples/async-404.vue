@@ -1,10 +1,5 @@
 <script>
 	export default {
-		head() {
-			return {
-				title: '404 Not found',
-			};
-		},
 		prefetch: () => new Promise((resolve, reject) => {
 			setTimeout(() => {
 				reject(404);
