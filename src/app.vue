@@ -3,7 +3,7 @@
 	import 'src/styles/reset.styl';
 	import 'src/app.styl';
 	import 'src/footer.css';
-	import txt from 'assets/docs/example.txt';
+	import txt from 'src/assets/docs/example.txt';
 	import ServerError from 'src/components/server-error.vue';
 	import Icon from 'src/components/icon';
 
