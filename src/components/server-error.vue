@@ -3,8 +3,8 @@
 	export default {
 		components: { NotFound },
 		props: {
-			error: null
-		}
+			error: null,
+		},
 	};
 </script>
 <template lang="pug">

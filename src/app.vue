@@ -1,19 +1,24 @@
 <script>
 	import { mapGetters, mapActions } from 'vuex';
-	// test styl import
 	import 'src/styles/reset.styl';
 	import 'src/app.styl';
-	// test css import
 	import 'src/footer.css';
-
 	import txt from 'assets/docs/example.txt';
-
 	import ServerError from 'src/components/server-error.vue';
 
 	export default {
 		name: 'App',
 		// test async prefetch
 		prefetch: () => new Promise(resolve => setTimeout(resolve, 200)),
+		components: { ServerError },
+		data: () => ({
+			txt,
+		}),
+		computed: mapGetters(['serverError']),
+		mounted() {
+			this.fetchUser();
+		},
+		methods: mapActions(['fetchUser']),
 		head() {
 			let title = 'Loading...';
 			if (this.serverError) {
@@ -27,26 +32,17 @@
 				title,
 				titleTemplate: '%s | App',
 				htmlAttrs: {
-					lang: 'en'
+					lang: 'en',
 				},
 				meta: [
 					{ vmid: 'charset', charset: 'UTF-8' },
-					{ vmid: 'viewport', content: 'width=device-width,initial-scale=1,user-scalable=no,maximum-scale=1' }
-				]
+					{ vmid: 'viewport', content: 'width=device-width,initial-scale=1,user-scalable=no,maximum-scale=1' },
+				],
 			};
 		},
-		components: { ServerError },
-		data: () => ({
-			txt
-		}),
-		computed: mapGetters(['serverError']),
-		mounted() {
-			this.fetchUser();
-		},
-		methods: mapActions(['fetchUser'])
 	};
 </script>
-<!-- test external template -->
+
 <template lang="pug" src="src/app.pug"></template>
 <!-- test style -->
 <style lang="stylus">

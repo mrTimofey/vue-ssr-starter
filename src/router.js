@@ -1,33 +1,45 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import { filenameToCamelCase, requireAll } from 'src/utils';
+import Meta from 'vue-meta';
+import { filenameToCamelCase } from 'src/utils';
 import { prefetchMixin } from 'src/utils/ssr';
 
 Vue.use(Router);
+Vue.use(Meta, {
+	keyName: 'head',
+	attribute: 'data-meta',
+	ssrAttribute: 'data-meta-ssr',
+	tagIDKeyName: 'vmid',
+	refreshOnceOnNavigation: true,
+});
 
 const routes = [];
 let route404, pathMap;
 
 if (process.env.NODE_ENV !== 'production') pathMap = {};
 
-// register all components in directory as routes (excepting files/folders starting from "_")
-requireAll(require.context('src/pages/', true, /^(?:(?!\/?_).)+\.(vue|js)$/), (component, name) => {
-	const route = {
-		component,
-		// generate route path based on file path
-		// remove file extension and '/index'
-		path: name.substr(1).replace(/(\/index)?\.[a-zA-Z0-9]+$/, '') +
-			// allow components adding their own route parameters
-			(component.routePath ? ('/' + component.routePath) : ''),
-		// add meta fields if there are any
-		meta: component.routeMeta,
-		// sub routes
-		children: component.routes
-	};
+// register all components in directory as routes (except files/folders starting from "_")
+const requirePages = require.context('src/pages/', true, /^(?:(?!\/?_).)+\.(vue|js)$/);
+for (const name of requirePages.keys()) {
+	const component = requirePages(name).default,
+		route = {
+			component,
+			// generate route path based on file path
+			// remove file extension and '/index'
+			path: name.substr(1).replace(/(\/index)?\.[a-zA-Z0-9]+$/, '') +
+				// allow components adding their own route parameters
+				(component.routePath ? ('/' + component.routePath) : ''),
+			// add meta fields if there are any
+			meta: component.routeMeta,
+			// sub routes
+			children: component.routes,
+		};
 
 	// prefetch data for all route components
-	if (!component.mixins) component.mixins = [];
-	component.mixins.push(prefetchMixin);
+	if (component.prefetch) {
+		if (!component.mixins) component.mixins = [];
+		component.mixins.push(prefetchMixin);
+	}
 
 	if (route.path === '/404') {
 		// generate component name automatically
@@ -55,7 +67,7 @@ requireAll(require.context('src/pages/', true, /^(?:(?!\/?_).)+\.(vue|js)$/), (c
 		}
 		routes.push(route);
 	}
-});
+}
 
 // catch-all route (404)
 if (route404) routes.push(route404);
@@ -69,5 +81,5 @@ export default () => new Router({
 		// use to restore scroll position after prefetching within component code
 		if (saved) to.meta.scrollPosition = saved;
 		return saved || { x: 0, y: 0 };
-	}
+	},
 });

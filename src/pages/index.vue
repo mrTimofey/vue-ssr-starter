@@ -2,13 +2,14 @@
 	export default {
 		routeMeta: {
 			// just testing
-			statusCode: 201
+			statusCode: 201,
 		},
 		head: {
-			title: 'Home'
-		}
+			title: 'Home',
+		},
 	};
 </script>
+
 <template lang="pug">
 	//- test relative import
 	include ../mixins.pug

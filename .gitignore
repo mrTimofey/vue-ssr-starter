@@ -2,5 +2,5 @@
 /dist/
 /node_modules/
 /npm-debug.log
-/.env.js
+/.env
 /package-lock.json

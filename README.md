@@ -42,18 +42,17 @@ cp .env.example.js .env.js
 ## Application structure
 
 * `index.js` - application server
-* `assets/` - application static assets (images, fonts, icons etc.)
-	* `sprite.svg` - generated sprites file, `require('assets/sprite.svg')` will return file contents string
-	* `docs/` - downloadable static content
-	* `fonts/` - guess what
-	* `i/` - static images (backgrounds, patterns etc.)
-	* `icons/` - contains SVG icons for the sprite
 * `build/` - code related to project building
 	* `setup-dev-server` - development server setup with hot reloading
-	* `svg-sprite` - svg sprite generation script, gathers icons from `assets/icons` and compiles them into `assets/sprite.svg`
+	* `svg-sprite` - svg sprite generation script, gathers icons from `src/assets/svg-icons` and compiles them into `src/assets/sprite.svg`
 	* `webpack/` - webpack config, `base` - common, `server` for server with SSR, `client` for browser
 * `dist/` - production build files
 * `src/`
+	* `assets/` - application static assets (images, fonts, icons etc.)
+		* `sprite.svg` - generated sprites file, `require('src/assets/sprite.svg')` will return file contents string
+		* `fonts/` - guess what
+		* `images/` - static images (backgrounds, patterns etc.)
+		* `svg-icons/` - contains SVG icons for the sprite
 	* `entry/` - main entry points
 		* `app` - shared between server and client, exports a factory function returning root component instance, mixes it with `app.vue`
 		* `client` - client entry

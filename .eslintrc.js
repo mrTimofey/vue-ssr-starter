@@ -1,5 +1,4 @@
 module.exports = {
-	extends: ['plugin:vue/recommended'],
 	parser: 'vue-eslint-parser',
 	parserOptions: {
 		ecmaVersion: 9,
@@ -22,8 +21,11 @@ module.exports = {
 		node: true,
 		es6: true
 	},
-	plugins: ['vue'],
-	// add your custom rules here
+	plugins: [
+		'vue',
+		'filenames'
+	],
+	extends: ['plugin:vue/recommended'],
 	rules: {
 		'no-console': 1,
 		'no-constant-condition': 2,
@@ -44,17 +46,17 @@ module.exports = {
 		'no-unsafe-finally': 2,
 		'no-unsafe-negation': 2,
 		'use-isnan': 1,
-		'valid-jsdoc': 1,
+		'valid-jsdoc': 0,
 		'valid-typeof': 2,
 		'array-callback-return': 1,
 		'block-scoped-var': 1,
 		'dot-notation': 2,
-		'eqeqeq': [1, 'smart'],
+		'eqeqeq': [2, 'smart'],
 		'no-alert': 2,
 		'no-case-declarations': 2,
 		'no-empty-function': 1,
 		'no-empty-pattern': 2,
-		'no-eq-null': 1,
+		'no-eq-null': 0,
 		'no-eval': 2,
 		'no-extra-bind': 2,
 		'no-floating-decimal': 2,
@@ -71,7 +73,7 @@ module.exports = {
 		'no-self-assign': 1,
 		'no-self-compare': 1,
 		'no-throw-literal': 2,
-		'no-unused-expressions': 1,
+		'no-unused-expressions': 2,
 		'no-useless-call': 2,
 		'no-useless-concat': 1,
 		'no-useless-escape': 2,
@@ -84,22 +86,28 @@ module.exports = {
 		'no-catch-shadow': 2,
 		'no-delete-var': 2,
 		'no-shadow-restricted-names': 2,
-		'no-undef': 1,
-		'no-unused-vars': 1,
+		'no-undef': 0,
+		'no-unused-vars': 2,
 		'no-use-before-define': 2,
 		'handle-callback-err': 1,
 		'block-spacing': [1, 'always'],
 		'brace-style': [1, 'stroustrup', { allowSingleLine: true }],
 		'camelcase': 1,
-		'comma-dangle': [1, 'never'],
+		'comma-dangle': ['error', {
+			"arrays": "always-multiline",
+			"objects": "always-multiline",
+			"imports": "never",
+			"exports": "never",
+			"functions": "ignore"
+		}],
 		'comma-spacing': 1,
 		'comma-style': 1,
 		'computed-property-spacing': 1,
 		'func-call-spacing': 1,
 		'func-style': [1, 'declaration', { allowArrowFunctions: true }],
-		'indent': [1, 'tab'],
+		'indent': 0,
 		'key-spacing': 1,
-		'new-cap': 2,
+		'new-cap': 0,
 		'new-parens': 2,
 		'no-mixed-spaces-and-tabs': 2,
 		'no-trailing-spaces': 2,
@@ -137,14 +145,15 @@ module.exports = {
 		'template-curly-spacing': 1,
 		'vue/component-name-in-template-casing': [1, 'kebab-case'],
 		'vue/script-indent': [1, 'tab', { baseIndent: 1 }],
-		'vue/require-default-prop': 0
+		'vue/require-default-prop': 0,
+		'filenames/match-regex': [2, /^([a-z0-9]+[\-\.])*[a-z0-9]+$/, true]
 	},
-	'overrides': [
+	overrides: [
 		{
-			'files': ['*.vue'],
-			'rules': {
-				'indent': 'off'
+			files: ['*.vue'],
+			rules: {
+				indent: 0,
 			}
-		}
+		},
 	]
 };

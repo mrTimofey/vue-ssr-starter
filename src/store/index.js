@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import http, { authorized, recallToken, logout } from 'src/http';
+import http from 'src/http';
 
 Vue.use(Vuex);
 
@@ -8,51 +8,31 @@ Vue.use(Vuex);
 export default () => new Vuex.Store({
 	state: {
 		serverError: false,
-		// null if did not try to fetch, false if not authorized
-		user: null,
-		items: []
+		items: [],
 	},
 	getters: {
 		serverError: state => state.serverError,
-		user: state => state.user,
-		items: state => state.items
+		items: state => state.items,
 	},
 	mutations: {
-		fireServerError(state, err) {
+		setError(state, err) {
 			state.serverError = err || true;
 		},
-		clearServerError(state) {
-			state.serverError = false;
+		fireNotFoundError(state, message = '404 Not found') {
+			state.serverError = { statusCode: 404, message };
 		},
-		setUser(state, data) {
-			state.user = data;
+		clearError(state) {
+			state.serverError = false;
 		},
 		setItems(state, items) {
 			state.items = items;
-		}
+		},
 	},
 	actions: {
-		fetchUser({ commit }) {
-			if (authorized()) return http.get('auth')
-				.catch(err => err.response && err.response.status === 401 ? recallToken() : Promise.reject(err))
-				.then(res => res && commit('setUser', res.data))
-				.catch(err => {
-					commit('setUser', false);
-					throw err;
-				});
-			commit('setUser', false);
-		},
-		show404({ commit }, message = null) {
-			commit('fireServerError', { statusCode: 404, message });
-		},
-		logout({ commit }) {
-			logout();
-			commit('setUser', false);
-		},
 		fetchItems({ commit }) {
 			return http.get('https://randomuser.me/api/', { params: { results: 10 } }).then(res => {
 				commit('setItems', res.data.results);
 			});
-		}
-	}
+		},
+	},
 });

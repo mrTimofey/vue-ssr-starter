@@ -3,8 +3,8 @@ const fs = require('fs'),
 	path = require('path'),
 	SVGSpriter = require('svg-sprite');
 
-const spritesDir = path.resolve(process.cwd(), 'assets', 'icons'),
-	outputDir = path.resolve(process.cwd(), 'assets');
+const spritesDir = path.resolve(process.cwd(), 'src', 'assets', 'svg-icons'),
+	outputDir = path.resolve(process.cwd(), 'src', 'assets');
 
 const transform = {
 	cleanupAttrs: true,
@@ -37,37 +37,37 @@ const transform = {
 	convertShapeToPath: true,
 	transformsWithOnePath: { floatPrecision: 1 },
 	removeDimensions: true,
-	removeAttrs: { attrs:  ['fill', 'stroke']},
+	removeAttrs: { attrs: ['fill', 'stroke']},
 	removeStyleElement: true,
-	collapseGroups: true
+	collapseGroups: true,
 };
 
 const spriter = new SVGSpriter({
 	dest: outputDir,
-	log: 'debug',
+	log: process.env.NODE_ENV === 'production' ? null : 'debug',
 	shape: {
 		id: {
-			generator: 'i-%s'
+			generator: 'i-%s',
 		},
 		transform: [
 			{ svgo: { plugins: Object.keys(transform).map(k => ({ [k]: transform[k] })) } },
 			{ svgo: { plugins: [
 				// collapseGroups is not recursive (
-				{ collapseGroups: true }
-			]} }
-		]
+				{ collapseGroups: true },
+			]} },
+		],
 	},
 	svg: {
 		xmlDeclaration: false,
 		doctypeDeclaration: false,
-		dimensionAttributes: false
+		dimensionAttributes: false,
 	},
 	mode: {
 		symbol: {
 			dest: '.',
-			sprite: 'sprite.svg'
-		}
-	}
+			sprite: 'sprite.svg',
+		},
+	},
 });
 
 for (let f of fs.readdirSync(spritesDir)) {
