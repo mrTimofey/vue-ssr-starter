@@ -7,7 +7,7 @@ const staticFileLoaders = {
 			test: /\.(woff|woff2|eot|otf|ttf)$/,
 			options: {
 				esModule: false,
-				context: 'assets',
+				context: 'src/assets',
 				name: '[path][name].[ext]?[hash:6]',
 			},
 		},
@@ -15,7 +15,7 @@ const staticFileLoaders = {
 			test: /\.(png|jpe?g|gif|svg)$/,
 			options: {
 				esModule: false,
-				context: 'assets',
+				context: 'src/assets',
 				limit: 256,
 				name: '[path][name].[ext]?[hash:6]',
 			},
@@ -24,7 +24,7 @@ const staticFileLoaders = {
 			test: /\.(pdf|docx?|pptx?|rtf|txt)$/,
 			options: {
 				esModule: false,
-				context: 'assets',
+				context: 'src/assets',
 				name: '[path][name].[ext]?[hash:6]',
 			},
 		},
