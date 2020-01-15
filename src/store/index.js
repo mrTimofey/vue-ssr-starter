@@ -4,6 +4,10 @@ import http from 'src/http';
 
 Vue.use(Vuex);
 
+const fireNotFoundError = (state, message = '404 Not found') => {
+	state.serverError = { statusCode: 404, message };
+};
+
 // we should return factory for SSR (runInNewContext: false)
 export default () => new Vuex.Store({
 	state: {
@@ -16,11 +20,10 @@ export default () => new Vuex.Store({
 	},
 	mutations: {
 		setError(state, err) {
-			state.serverError = err || true;
+			if (err === 404) fireNotFoundError(state);
+			else state.serverError = err || true;
 		},
-		fireNotFoundError(state, message = '404 Not found') {
-			state.serverError = { statusCode: 404, message };
-		},
+		fireNotFoundError,
 		clearError(state) {
 			state.serverError = false;
 		},
