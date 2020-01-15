@@ -1,3 +1,4 @@
+import Vue from 'vue';
 import createApp from './app';
 import sprite from 'src/assets/sprite.svg';
 
