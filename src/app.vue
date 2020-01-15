@@ -1,5 +1,5 @@
 <script>
-	import { mapGetters, mapActions } from 'vuex';
+	import { mapGetters } from 'vuex';
 	import 'src/styles/reset.styl';
 
 	import ServerError from 'src/components/server-error.vue';
@@ -8,10 +8,6 @@
 		name: 'App',
 		components: { ServerError },
 		computed: mapGetters(['serverError']),
-		mounted() {
-			this.fetchUser();
-		},
-		methods: mapActions(['fetchUser']),
 		head() {
 			let title = 'Loading...';
 			if (this.serverError) {

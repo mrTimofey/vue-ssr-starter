@@ -1,5 +1,7 @@
 import Vue from 'vue';
 import createApp from './app';
+import { filenameToCamelCase } from 'src/utils';
+import http from 'src/http';
 import sprite from 'src/assets/sprite.svg';
 
 // directives
@@ -29,8 +31,7 @@ if (window.__APP__) {
 	if (window.__APP__.state) app.$store.replaceState(window.__APP__.state);
 	if (window.__APP__.cmp && window.__APP__.cmp.length) {
 		app.$router.onReady(() => {
-			const comps = app.$router.getMatchedComponents()
-				.filter(comp => extractPrefetch(comp));
+			const comps = app.$router.getMatchedComponents();
 			for (let i in comps)
 				if (window.__APP__.cmp[i]) comps[i].prefetchedData = window.__APP__.cmp[i];
 		});

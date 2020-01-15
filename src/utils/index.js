@@ -1,10 +1,10 @@
 /**
  * Converts
  * @param {string} str string to process
- * @param {bool} lowerFirst lowercase first letter (uppercase by default)
+ * @param {boolean} lowerFirst lowercase first letter (uppercase by default)
  * @returns {string} processed string
  */
-export function filenameToCamelCase(str, lowerFirst) {
+export function filenameToCamelCase(str, lowerFirst = false) {
 	return str
 	// remove extension
 		.replace(/\.[a-z0-9]+$/i, '')
