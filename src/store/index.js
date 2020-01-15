@@ -20,7 +20,7 @@ export default () => new Vuex.Store({
 	},
 	mutations: {
 		setError(state, err) {
-			if (err === 404) fireNotFoundError(state);
+			if (err && (err === 404 || err.statusCode === 404)) fireNotFoundError(state, err.message);
 			else state.serverError = err || true;
 		},
 		fireNotFoundError,
