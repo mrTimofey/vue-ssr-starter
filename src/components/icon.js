@@ -2,8 +2,8 @@ export default {
 	props: {
 		name: {
 			type: String,
-			required: true
-		}
+			required: true,
+		},
 	},
 	functional: true,
 	render: (h, { props, data }) => h(
@@ -12,9 +12,9 @@ export default {
 			h('use', {
 				attrs: {
 					'xmlns:xlink': 'http://www.w3.org/1999/xlink',
-					'xlink:href': '#i-' + props.name
-				}
-			})
+					'xlink:href': '#i-' + props.name,
+				},
+			}),
 		]
-	)
+	),
 };

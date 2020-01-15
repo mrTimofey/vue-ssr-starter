@@ -1,98 +1,115 @@
-const fs = require('fs'),
-	path = require('path'),
+const path = require('path'),
 	{ VueLoaderPlugin } = require('vue-loader');
 
-// environment parameters
-const envFile = path.resolve(process.cwd(), '.env.js'),
-	env = fs.existsSync(envFile) ? require(envFile) : {};
-
-// shared options to use in multiple loaders (vue-loader and others in general)
-const options = {
-	buble: {
-		objectAssign: true,
-		transforms: {
-			dangerousForOf: true,
-			modules: false
-		}
+// shared loader options which will be slightly different on server/client
+const staticFileLoaders = {
+		fonts: {
+			test: /\.(woff|woff2|eot|otf|ttf)$/,
+			options: {
+				esModule: false,
+				context: 'assets',
+				name: '[path][name].[ext]?[hash:6]',
+			},
+		},
+		images: {
+			test: /\.(png|jpe?g|gif|svg)$/,
+			options: {
+				esModule: false,
+				context: 'assets',
+				limit: 256,
+				name: '[path][name].[ext]?[hash:6]',
+			},
+		},
+		docs: {
+			test: /\.(pdf|docx?|pptx?|rtf|txt)$/,
+			options: {
+				esModule: false,
+				context: 'assets',
+				name: '[path][name].[ext]?[hash:6]',
+			},
+		},
 	},
-	pug: {
+	pugOptions = {
 		doctype: 'html',
-		basedir: process.cwd()
-	},
-	fonts: {
-		test: /\.(woff|woff2|eot|otf|ttf)$/,
-		name: '[path][name].[ext]?[hash:6]'
-	},
-	images: {
-		test: /\.(png|jpe?g|gif|svg)$/,
-		limit: 256,
-		name: '[path][name].[ext]?[hash:6]'
-	},
-	docs: {
-		test: /\.(pdf|docx?|pptx?|rtf|txt)$/,
-		name: '[path][name].[ext]?[hash:6]'
-	}
-};
+		basedir: process.cwd(),
+	};
 
-exports.options = options;
+exports.staticFileLoaders = staticFileLoaders;
 
-exports.env = env;
+exports.createConfig = (runtimeEnv) => {
+	const vueLoader = {
+		test: /\.vue$/,
+		loader: 'vue-loader',
+		options: {},
+	};
 
-exports.createConfig = () => ({
-	devtool: false,
-	mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
-	output: {
-		path: path.resolve(process.cwd(), 'dist'),
-		publicPath: '/dist/',
-		filename: '[name].js?[chunkhash:6]',
-		chunkFilename: '[name].js?[chunkhash:6]'
-	},
-	module: {
-		rules: [
+	const config = {
+		devtool: false,
+		mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
+		output: {
+			publicPath: '/dist/',
+			filename: '[name].[chunkhash:8].js',
+			chunkFilename: '[name].[chunkhash:8].js',
+		},
+		module: {
+			rules: [
 
-			// source files
+				// source files
 
-			{
-				test: /\.vue$/,
-				loader: 'vue-loader'
-			},
-			{
-				test: /\.js$/,
-				loader: 'buble-loader',
-				// needed for vue-loader to correctly import modules' components
-				exclude: file => /node_modules/.test(file) && !/\.vue\.js/.test(file),
-				options: options.buble
-			},
-			{
-				test: /\.pug$/,
-				oneOf: [
-					// this applies to <template lang="pug"> in Vue components
-					{
-						resourceQuery: /^\?vue/,
-						loader: 'pug-plain-loader',
-						options: options.pug
-					},
-					// this applies to pug imports inside JavaScript
-					{
-						use: ['raw-loader', {
+				{
+					test: /\.js$/,
+					loader: 'babel-loader',
+					// needed for vue-loader to correctly import modules' components
+					exclude: file => /node_modules/.test(file) && !/\.vue\.js/.test(file),
+				},
+				vueLoader,
+				{
+					test: /\.pug$/,
+					oneOf: [
+						// this applies to <template lang="pug"> in Vue components
+						{
+							resourceQuery: /^\?vue/,
 							loader: 'pug-plain-loader',
-							options: options.pug
-						}]
-					}
-				]
-			}
-		]
-	},
-	resolve: {
-		modules: [
-			'node_modules',
-			process.cwd()
-		]
-	},
-	performance: {
-		hints: process.env.NODE_ENV === 'production' ? 'warning' : false
-	},
-	plugins: [
-		new VueLoaderPlugin()
-	]
-});
+							options: pugOptions,
+						},
+						// this applies to pug imports inside JavaScript
+						{
+							use: ['raw-loader', {
+								loader: 'pug-plain-loader',
+								options: pugOptions,
+							}],
+						},
+					],
+				},
+			],
+		},
+		resolve: {
+			extensions: ['.js', '.vue', '.json'],
+			modules: [
+				'node_modules',
+				process.cwd(),
+			],
+		},
+		performance: {
+			hints: process.env.NODE_ENV === 'production' ? 'warning' : false,
+		},
+		plugins: [
+			new VueLoaderPlugin(),
+		],
+		stats: {
+			all: false,
+			colors: true,
+			errors: true,
+			hash: true,
+			timings: true,
+			version: true,
+		},
+	};
+
+	if (process.env.NODE_ENV === 'development') {
+		vueLoader.options.cacheDirectory = path.resolve(process.cwd(), 'node_modules/.cache/vue-loader-cache');
+		vueLoader.options.cacheIdentifier = runtimeEnv;
+	}
+
+	return config;
+};

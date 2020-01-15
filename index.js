@@ -9,7 +9,7 @@ const fs = require('fs'),
 	vueSR = require('vue-server-renderer');
 
 // application variables
-const port = process.env.PORT || env.port || 8080,
+const port = process.env.PORT || 8080,
 	production = process.env.NODE_ENV === 'production',
 	config = {
 		production,
@@ -21,15 +21,11 @@ const port = process.env.PORT || env.port || 8080,
 		proxyEnabled: process.env.PROXY_ENABLED || !production,
 	};
 
-const app = polka();
-
 let pe;
 if (!production) pe = new (require('pretty-error'))();
 const formatError = production ? err => err.stack : err => pe.render(err);
 
 let layout, renderer;
-
-console.log('Starting app server...');
 
 /**
  * Split layout HTML allowing server renderer to inject component output, store data, meta tags, etc.
@@ -70,9 +66,11 @@ function parseLayout(html) {
 	];
 }
 
-if (config.proxyEnabled) {
-	require('./setup-proxy')(app, config);
-}
+console.log('Starting app server...');
+
+const app = polka();
+
+if (config.proxyEnabled) require('./setup-proxy')(app, config);
 
 if (config.production) {
 	layout = parseLayout(fs.readFileSync(path.resolve('./dist/index.html'), 'utf-8'));
@@ -144,10 +142,9 @@ app.get('*', (req, res) => {
 
 	stream.on('end', () => {
 		if (errorOccurred) return;
-		if (context.storeState && context.storeState.serverError) {
+		if (context.storeState && context.storeState.serverError)
 			// let application handle server error if possible
 			console.error(context.storeState.serverError);
-		}
 		res.statusCode = context.statusCode || 200;
 		body.forEach(chunk => { res.write(chunk); });
 

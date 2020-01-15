@@ -2,7 +2,7 @@ function onError(err, app) {
 	if (typeof err === 'number') err = { statusCode: err };
 	else if (!err) err = { statusCode: 500 };
 	// let the app know if something goes wrong
-	app.$store.commit('fireServerError', err);
+	app.$store.commit('setError', err);
 	return { err };
 }
 
@@ -14,7 +14,7 @@ function update(vm, route) {
 	const res = fn({
 		route,
 		store: vm.$store,
-		props: route.params
+		props: route.params,
 	});
 	if (!res) return Promise.resolve();
 	if (typeof res.then !== 'function') return Promise.resolve({ data: res });
@@ -45,7 +45,7 @@ export const serverMixin = {
 		// fill data on component create
 		if (this.$ssrContext.componentStates && this.$ssrContext.componentStates[this.$options.name])
 			Object.assign(this.$data, this.$ssrContext.componentStates[this.$options.name]);
-	}
+	},
 };
 
 export const clientMixin = {
@@ -75,26 +75,23 @@ export const clientMixin = {
 					}
 				);
 			});
-	}
+	},
 };
 
 export const prefetchMixin = process.env.VUE_ENV === 'server' ? serverMixin : clientMixin;
 
 export function serverPrefetch(app, context, comp) {
-	const fn = comp ? comp.prefetch : app.$options.prefetch,
-		key = comp ? comp.name : false;
-	return fn ?
-		fn({
-			route: app.$route,
-			store: app.$store,
-			props: app.$route.params
-		}).then((data) => {
-			if (!key || !data || Object.keys(data).length === 0) return;
-			// save component data to the context to restore it on the client side while hydrating
-			if (!context.componentStates) context.componentStates = {};
-			context.componentStates[key] = data;
-		}).catch(err => {
-			onError(err, app);
-		}) :
-		Promise.resolve();
+	const fn = comp ? comp.prefetch : app.$options.prefetch;
+	if (!fn) return Promise.resolve();
+	return fn({
+		route: app.$route,
+		store: app.$store,
+		props: app.$route.params,
+	}).then((data) => {
+		// save component data to the context to restore it on the client side while hydrating
+		if (!context.componentStates) context.componentStates = [];
+		context.componentStates.push(data);
+	}).catch(err => {
+		onError(err, app);
+	});
 }

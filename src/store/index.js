@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import http, { authorized, recallToken, logout } from 'src/http';
 
 Vue.use(Vuex);
 
@@ -8,41 +7,19 @@ Vue.use(Vuex);
 export default () => new Vuex.Store({
 	state: {
 		serverError: false,
-		// null if did not try to fetch, false if not authorized
-		user: null
 	},
 	getters: {
 		serverError: state => state.serverError,
-		user: state => state.user
 	},
 	mutations: {
-		fireServerError(state, err) {
+		setError(state, err) {
 			state.serverError = err || true;
 		},
-		clearServerError(state) {
+		fireNotFoundError(state, message = '404 Not found') {
+			state.serverError = { statusCode: 404, message };
+		},
+		clearError(state) {
 			state.serverError = false;
 		},
-		setUser(state, data) {
-			state.user = data;
-		}
 	},
-	actions: {
-		fetchUser({ commit }) {
-			if (authorized()) return http.get('auth')
-				.catch(err => err.response && err.response.status === 401 ? recallToken() : Promise.reject(err))
-				.then(res => res && commit('setUser', res.data))
-				.catch(err => {
-					commit('setUser', false);
-					throw err;
-				});
-			commit('setUser', false);
-		},
-		show404({ commit }, message = null) {
-			commit('fireServerError', { statusCode: 404, message });
-		},
-		logout({ commit }) {
-			logout();
-			commit('setUser', false);
-		}
-	}
 });

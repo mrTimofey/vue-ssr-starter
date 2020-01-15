@@ -6,6 +6,12 @@
 
 	export default {
 		name: 'App',
+		components: { ServerError },
+		computed: mapGetters(['serverError']),
+		mounted() {
+			this.fetchUser();
+		},
+		methods: mapActions(['fetchUser']),
 		head() {
 			let title = 'Loading...';
 			if (this.serverError) {
@@ -19,22 +25,17 @@
 				title,
 				titleTemplate: '%s | App',
 				htmlAttrs: {
-					lang: 'en'
+					lang: 'en',
 				},
 				meta: [
 					{ vmid: 'charset', charset: 'UTF-8' },
 					{ vmid: 'viewport', content: 'width=device-width,initial-scale=1,user-scalable=no,maximum-scale=1' }
-				]
+				],
 			};
 		},
-		components: { ServerError },
-		computed: mapGetters(['serverError']),
-		mounted() {
-			this.fetchUser();
-		},
-		methods: mapActions(['fetchUser'])
 	};
 </script>
+
 <template lang="pug">
 	#wrapper
 		main
