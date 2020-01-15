@@ -29,7 +29,7 @@
 				},
 				meta: [
 					{ vmid: 'charset', charset: 'UTF-8' },
-					{ vmid: 'viewport', content: 'width=device-width,initial-scale=1,user-scalable=no,maximum-scale=1' }
+					{ vmid: 'viewport', content: 'width=device-width,initial-scale=1,user-scalable=no,maximum-scale=1' },
 				],
 			};
 		},
