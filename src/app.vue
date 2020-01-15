@@ -1,5 +1,5 @@
 <script>
-	import { mapGetters, mapActions } from 'vuex';
+	import { mapGetters } from 'vuex';
 	import 'src/styles/reset.styl';
 	import 'src/app.styl';
 	import 'src/footer.css';
@@ -15,10 +15,6 @@
 			txt,
 		}),
 		computed: mapGetters(['serverError']),
-		mounted() {
-			this.fetchUser();
-		},
-		methods: mapActions(['fetchUser']),
 		head() {
 			let title = 'Loading...';
 			if (this.serverError) {
