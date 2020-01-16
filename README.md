@@ -4,12 +4,12 @@ Includes:
 
 * Webpack 4
 * [polka](https://github.com/lukeed/polka) web-server
-* [buble](https://github.com/Rich-Harris/buble) transpiler (light-weight babel)
 * Vue 2 with SSR, Vuex and vue-loader
 * Stylus with [kouto-swiss](http://kouto-swiss.io/)
 * Axios
 * Pug
 * SVG sprites builder
+* ESlint with pre-push hook
 
 ## Getting started
 
@@ -26,21 +26,27 @@ npm run build
 npm start
 ```
 
-## .env configuration
+## Configuration
 
-You can configure application port, HTTP proxy and base path for API.
+`.env.dev` contains environment variables used for local development. You can change application port,
+API base URL for server and client and enable/disable proxy (http-proxy-middleware).
 
-```bash
-cp .env.example.js .env.js
+For production builds you should provide same environment variables yourself.
+Alternatively you can use `.env` after these steps:
+1. Move `dotenv` from `devDependencies` to `dependencies`.
+2. Create `.env` file with production config.
+3. Run `npm start` or `NODE_ENV=production node -r dotenv/config index`.
 
-# modify .env.js file, see the file itself for more information
-```
+## API proxy
+
+See `setup-proxy.js` for description.
 
 ## Application structure
 
 * `index.js` - application server
-* `build/` - code related to project building
-	* `setup-dev-server` - development server setup with hot reloading
+* `setup-proxy.js` - `http-proxy-middleware` setup
+* `build/` - build related code
+	* `setup-dev-server` - development server setup
 	* `svg-sprite` - svg sprite generation script, gathers icons from `src/assets/svg-icons` and compiles them into `src/assets/sprite.svg`
 	* `webpack/` - webpack config, `base` - common, `server` for server with SSR, `client` for browser
 * `dist/` - production build files
@@ -64,7 +70,7 @@ cp .env.example.js .env.js
 	* `utils/` - common utility functions
 		* `index` - common utility functions
 		* `ssr` - SSR related functions and mixins
-	* `app.vue` - aplication root component, implicitly mixed with `entry\app`
+	* `app.vue` - application root component, implicitly mixed with `entry\app`
 	* `http` - exports http client instance (Axios)
 	* `layout.pug` - application HTML layout
 	* `router` - exports a factory function returning vue-router instance
@@ -89,13 +95,8 @@ Every component within `src/pages` directory can use some special features provi
 	See `src/utils/ssr` mixin.
 * Boolean `prefetching` data field indicates when prefetch is running.
 
-	**IMPORTANT: there is no component context within `prefetch` function because component instance is not created yet!**
+	**IMPORTANT: there is no component context within `prefetch` function because component instance is not created yet! That means you should not try to use `this`.**
 
 `prefetch` also works on the root component (`src/app.vue`) with some restrictions:
 
 * no way to pass component data (only store can be affected).
-
-## Development checklist
-
-* SSR configurable cache
-* basic Nginx + Phusion Passenger configuration example
