@@ -18,7 +18,6 @@ const serverConfig = Object.assign({}, baseConfig, {
 	plugins: (baseConfig.plugins || []).concat([
 		new DefinePlugin({
 			'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
-			'process.env.VUE_ENV': '"server"',
 			window: 'undefined',
 		}),
 		new VueSSRServerPlugin(),
