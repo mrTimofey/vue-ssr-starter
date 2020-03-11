@@ -39,23 +39,24 @@ function update(vm, route) {
 
 const data = () => ({ prefetching: false });
 
+function created() {
+	/* eslint-disable no-invalid-this */
+	const data = this.constructor.extendOptions.prefetchedData;
+	if (!data) return;
+	// add prefetched data only before hydration (just after SSR) and then delete it
+	Object.assign(this.$data, data);
+	delete this.constructor.extendOptions.prefetchedData;
+	/* eslint-enable no-invalid-this */
+}
+
 export const serverMixin = {
 	data,
-	created() {
-		// fill data on component create
-		if (this.$ssrContext.componentStates && this.$ssrContext.componentStates[this.$options.name])
-			Object.assign(this.$data, this.$ssrContext.componentStates[this.$options.name]);
-	},
+	created,
 };
 
 export const clientMixin = {
 	data,
-	created() {
-		if (!window.__COMP_STATES__ || !window.__COMP_STATES__[this.$options.name]) return;
-		// add prefetched data only after hydration (just after SSR)
-		Object.assign(this.$data, window.__COMP_STATES__[this.$options.name]);
-		delete window.__COMP_STATES__[this.$options.name];
-	},
+	created,
 	// on route path change
 	beforeRouteUpdate(to, from, next) {
 		if (to.path !== from.path) update(this, to).then(({ err }) => {
@@ -78,7 +79,7 @@ export const clientMixin = {
 	},
 };
 
-export const prefetchMixin = process.env.VUE_ENV === 'server' ? serverMixin : clientMixin;
+export const prefetchMixin = window ? clientMixin : serverMixin;
 
 export function serverPrefetch(app, context, comp) {
 	const fn = comp ? comp.prefetch : app.$options.prefetch;
@@ -88,9 +89,11 @@ export function serverPrefetch(app, context, comp) {
 		store: app.$store,
 		props: app.$route.params,
 	}).then((data) => {
+		if (!comp) return;
 		// save component data to the context to restore it on the client side while hydrating
 		if (!context.componentStates) context.componentStates = [];
-		context.componentStates.push(data);
+		comp.prefetchedData = data || {};
+		context.componentStates.push(comp.prefetchedData);
 	}).catch(err => {
 		onError(err, app);
 	});
