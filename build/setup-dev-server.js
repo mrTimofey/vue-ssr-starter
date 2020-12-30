@@ -14,7 +14,6 @@ module.exports = (app, opts) => {
 	if (!clientConfig.plugins) clientConfig.plugins = [];
 	clientConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
 	if (!clientConfig.optimization) clientConfig.optimization = {};
-	clientConfig.optimization.noEmitOnErrors = true;
 
 	// dev middleware
 	const clientCompiler = webpack(clientConfig),

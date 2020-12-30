@@ -130,7 +130,6 @@ if (process.env.NODE_ENV === 'production') {
 			},
 		},
 	];
-	clientConfig.optimization.moduleIds = 'hashed';
 }
 else {
 	const WebpackBarPlugin = require('webpackbar');
@@ -141,13 +140,12 @@ else {
 			options: { sourceMap: true },
 		},
 	], true);
-	clientConfig.optimization.moduleIds = 'named';
 	clientConfig.plugins.push(
 		new WebpackBarPlugin({
 			name: 'client',
 			color: 'green',
 			reporters: ['fancy'],
-		}),
+		})
 	);
 }
 
