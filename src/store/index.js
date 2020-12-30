@@ -9,11 +9,11 @@ export default () => new Vuex.Store({
 	state: {
 		serverError: false,
 		// null if did not try to fetch, false if not authorized
-		user: null
+		user: null,
 	},
 	getters: {
 		serverError: state => state.serverError,
-		user: state => state.user
+		user: state => state.user,
 	},
 	mutations: {
 		fireServerError(state, err) {
@@ -24,7 +24,7 @@ export default () => new Vuex.Store({
 		},
 		setUser(state, data) {
 			state.user = data;
-		}
+		},
 	},
 	actions: {
 		fetchUser({ commit }) {
@@ -43,6 +43,6 @@ export default () => new Vuex.Store({
 		logout({ commit }) {
 			logout();
 			commit('setUser', false);
-		}
-	}
+		},
+	},
 });

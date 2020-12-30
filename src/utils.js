@@ -94,7 +94,7 @@ export class ListDataFetcher {
 			 * @see https://github.com/axios/axios#cancellation
 			 */
 			cancelToken: window && new CancelToken(c => { this._cancelLast = window && c; }),
-			params: this.paramsCallback ? this.paramsCallback({ ...args, route, props }) : {}
+			params: this.paramsCallback ? this.paramsCallback({ ...args, route, props }) : {},
 		}).then(res => {
 			this._cancelLast = null;
 			// noinspection JSUnresolvedVariable, JSCheckFunctionSignatures
@@ -104,8 +104,8 @@ export class ListDataFetcher {
 					total: parseInt(res.data.pagination.total) || 0,
 					currentPage: parseInt(res.data.pagination.current_page) || 0,
 					lastPage: parseInt(res.data.pagination.last_page) || 0,
-					perPage: parseInt(res.data.pagination.per_page) || 0
-				}
+					perPage: parseInt(res.data.pagination.per_page) || 0,
+				},
 			};
 		}).catch(err => {
 			if (!err.isCancelError) throw err;

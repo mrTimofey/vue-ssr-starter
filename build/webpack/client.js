@@ -1,27 +1,32 @@
 const path = require('path'),
-	{ staticFileLoaders, createConfig } = require('./base'),
+	fs = require('fs'),
+	createConfig = require('./base'),
 	{ DefinePlugin } = require('webpack'),
-	WebpackBarPlugin = require('webpackbar'),
-	HTMLPlugin = require('html-webpack-plugin'),
-	VueSSRClientPlugin = require('vue-server-renderer/client-plugin');
+	HtmlPlugin = require('html-webpack-plugin'),
+	VueSsrClientPlugin = require('vue-server-renderer/client-plugin');
 
-const baseConfig = createConfig();
+const baseConfig = createConfig('client');
 
 const clientConfig = Object.assign({}, baseConfig, {
-	entry: './src/entry/client.ts',
+	entry: './src/entry/client.js',
+	output: {
+		...baseConfig.output,
+		path: path.resolve(process.cwd(), 'dist/public'),
+	},
 	plugins: (baseConfig.plugins || []).concat([
 		new DefinePlugin({
+			// eslint-disable-next-line @typescript-eslint/naming-convention
 			'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+			// eslint-disable-next-line @typescript-eslint/naming-convention
 			'process.env.VUE_ENV': '"client"',
 		}),
-		new WebpackBarPlugin({
-			name: 'client',
-			color: 'green',
-		}),
-		new HTMLPlugin({
+		new HtmlPlugin({
 			template: 'src/layout.pug',
 			// assets injection is controlled by vue-server-renderer with manifest in production
 			inject: process.env.NODE_ENV !== 'production',
+			// pug-loader outputs already minified html and html-webpack-plugin
+			// minifier removes necessary <!--APP--> comment, so disable minification
+			minify: false,
 		}),
 	]),
 	optimization: {
@@ -34,50 +39,7 @@ const clientConfig = Object.assign({}, baseConfig, {
 	},
 });
 
-clientConfig.module.rules = (baseConfig.module.rules || []).concat([
-	{
-		test: /sprite\.svg$/,
-		loader: 'raw-loader',
-	},
-	{
-		loader: 'file-loader',
-		...staticFileLoaders.fonts,
-	},
-	{
-		test: staticFileLoaders.images.test,
-		exclude: /sprite\.svg$/,
-		loaders: [
-			{
-				loader: 'url-loader',
-				options: staticFileLoaders.images.options,
-			},
-			{
-				loader: 'image-webpack-loader',
-				options: {
-					optipng: {
-						// optipng is really slow so disable it on dev
-						enabled: process.env.NODE_ENV === 'production',
-						optimizationLevel: 7,
-					},
-					gifsicle: {
-						interlaced: false,
-					},
-					mozjpeg: {
-						quality: 85,
-						progressive: true,
-					},
-				},
-			},
-		],
-	},
-	{
-		loader: 'file-loader',
-		...staticFileLoaders.docs,
-	},
-]);
-
-function addStyleRules(finalLoader) {
-	const sourceMap = process.env.NODE_ENV !== 'production';
+function addStyleRules(finalLoaders, sourceMap = false) {
 	for (let rule of [
 		{
 			test: /\.styl(us)?$/,
@@ -85,10 +47,12 @@ function addStyleRules(finalLoader) {
 				{
 					loader: 'stylus-loader',
 					options: {
-						import: [
-							path.resolve(process.cwd(), 'node_modules/kouto-swiss/index.styl'),
-							path.resolve(process.cwd(), 'src/shared.styl'),
-						],
+						stylusOptions: {
+							import: [
+								path.resolve(process.cwd(), 'node_modules/kouto-swiss/index.styl'),
+								path.resolve(process.cwd(), 'src/shared.styl'),
+							],
+						},
 						sourceMap,
 					},
 				},
@@ -100,10 +64,7 @@ function addStyleRules(finalLoader) {
 		},
 	]) {
 		rule.use = [
-			finalLoader || {
-				loader: 'vue-style-loader',
-				options: { sourceMap },
-			},
+			...finalLoaders,
 			{
 				loader: 'css-loader',
 				options: { sourceMap },
@@ -114,12 +75,20 @@ function addStyleRules(finalLoader) {
 	}
 }
 
-function addDevHelpers() {
+if (process.env.NODE_ENV === 'development') {
 	const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin'),
 		WebpackNotifier = require('fork-ts-checker-notifier-webpack-plugin');
 	clientConfig.plugins.push(
 		new ForkTsCheckerWebpackPlugin({
-			vue: true,
+			typescript: {
+				diagnosticsOptions: {
+					syntactic: true,
+					semantic: true,
+					declaration: true,
+					global: true,
+				},
+				extensions: { vue: true },
+			},
 		}),
 		new WebpackNotifier()
 	);
@@ -127,30 +96,59 @@ function addDevHelpers() {
 
 if (process.env.NODE_ENV === 'production') {
 	const MiniCssExtractPlugin = require('mini-css-extract-plugin'),
-		OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin'),
+		OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin'),
 		MinifyPlugin = require('terser-webpack-plugin');
-	addStyleRules(MiniCssExtractPlugin.loader);
+	addStyleRules([
+		{
+			loader: MiniCssExtractPlugin.loader,
+		},
+	]);
 	clientConfig.plugins.push(
-		new MiniCssExtractPlugin({ filename: '[name].css?[hash:6]' }),
-		new VueSSRClientPlugin(),
+		new MiniCssExtractPlugin({ filename: '[name].[contenthash:8].css' }),
+		new VueSsrClientPlugin()
 	);
+
 	if (!clientConfig.optimization) clientConfig.optimization = {};
 	clientConfig.optimization.minimizer = [
 		new MinifyPlugin({
 			cache: true,
 			parallel: true,
 		}),
-		new OptimizeCSSAssetsPlugin({
+		new OptimizeCssAssetsPlugin({
 			assetNameRegExp: /\.css(\?.*)?$/,
 		}),
+		// move non-public files from public folder to the /dist root
+		{
+			apply(compiler) {
+				compiler.hooks.done.tap('MoveFilesAfterBuild', () => {
+					for (const file of ['index.html', 'vue-ssr-client-manifest.json']) {
+						const dest = path.resolve(process.cwd(), 'dist', file);
+						if (fs.existsSync(dest)) fs.unlinkSync(dest);
+						fs.renameSync(path.resolve(clientConfig.output.path, file), dest);
+					}
+				});
+			},
+		},
 	];
 	clientConfig.optimization.moduleIds = 'hashed';
 }
 else {
-	if (process.env.NODE_ENV === 'development') addDevHelpers();
-	addStyleRules();
-	clientConfig.devtool = 'inline-source-map';
+	const WebpackBarPlugin = require('webpackbar');
+
+	addStyleRules([
+		{
+			loader: 'vue-style-loader',
+			options: { sourceMap: true },
+		},
+	], true);
 	clientConfig.optimization.moduleIds = 'named';
+	clientConfig.plugins.push(
+		new WebpackBarPlugin({
+			name: 'client',
+			color: 'green',
+			reporters: ['fancy'],
+		}),
+	);
 }
 
 module.exports = clientConfig;

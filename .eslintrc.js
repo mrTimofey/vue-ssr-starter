@@ -1,3 +1,4 @@
+/* eslint-disable quote-props,filenames/match-regex */
 module.exports = {
 	parser: 'vue-eslint-parser',
 	parserOptions: {
@@ -6,29 +7,29 @@ module.exports = {
 		sourceType: 'module',
 		ecmaFeatures: {
 			impliedStrict: true,
-			experimentalDecorators: true
-		}
+			experimentalDecorators: true,
+		},
 	},
+	ignorePatterns: [
+		'**/coverage/*',
+		'dist/',
+		'node_modules/',
+	],
 	root: true,
-	globals: {
-		document: true,
-		navigator: true,
-		window: true,
-		apiBaseURL: true
-	},
 	env: {
 		browser: true,
 		amd: true,
 		node: true,
-		es6: true
+		es6: true,
 	},
 	plugins: [
+		'@typescript-eslint',
 		'vue',
-		'@typescript-eslint'
+		'filenames',
 	],
 	extends: ['plugin:vue/recommended'],
 	rules: {
-		'no-console': 1,
+		'no-console': 2,
 		'no-constant-condition': 2,
 		'no-dupe-args': 2,
 		'no-dupe-keys': 2,
@@ -52,7 +53,7 @@ module.exports = {
 		'array-callback-return': 1,
 		'block-scoped-var': 1,
 		'dot-notation': 2,
-		'eqeqeq': [1, 'smart'],
+		'eqeqeq': [2, 'smart'],
 		'no-alert': 2,
 		'no-case-declarations': 2,
 		'no-empty-function': 1,
@@ -74,7 +75,7 @@ module.exports = {
 		'no-self-assign': 1,
 		'no-self-compare': 1,
 		'no-throw-literal': 2,
-		'no-unused-expressions': 1,
+		'no-unused-expressions': 2,
 		'no-useless-call': 2,
 		'no-useless-concat': 1,
 		'no-useless-escape': 2,
@@ -88,18 +89,18 @@ module.exports = {
 		'no-delete-var': 2,
 		'no-shadow-restricted-names': 2,
 		'no-undef': 0,
-		'no-unused-vars': 0,
+		'no-unused-vars': 2,
 		'no-use-before-define': 2,
 		'handle-callback-err': 1,
 		'block-spacing': [1, 'always'],
 		'brace-style': [1, 'stroustrup', { allowSingleLine: true }],
 		'camelcase': 1,
 		'comma-dangle': ['error', {
-			"arrays": "always-multiline",
-			"objects": "always-multiline",
-			"imports": "never",
-			"exports": "never",
-			"functions": "ignore"
+			arrays: 'always-multiline',
+			objects: 'always-multiline',
+			imports: 'never',
+			exports: 'never',
+			functions: 'ignore',
 		}],
 		'comma-spacing': 1,
 		'comma-style': 1,
@@ -118,14 +119,14 @@ module.exports = {
 		'one-var-declaration-per-line': 1,
 		'operator-assignment': 1,
 		'quote-props': [2, 'as-needed'],
-		'quotes': [1, 'single', { allowTemplateLiterals: true }],
+		'quotes': [2, 'single', { allowTemplateLiterals: true }],
 		'semi-spacing': 1,
 		'semi': 2,
 		'space-before-blocks': 1,
 		'space-before-function-paren': [1, {
 			anonymous: 'never',
 			named: 'never',
-			asyncArrow: 'always'
+			asyncArrow: 'always',
 		}],
 		'space-in-parens': [1, 'never'],
 		'space-infix-ops': 1,
@@ -144,29 +145,43 @@ module.exports = {
 		'prefer-arrow-callback': 1,
 		'require-yield': 2,
 		'template-curly-spacing': 1,
-		'@typescript-eslint/array-type': [2, 'array'],
-		'@typescript-eslint/class-name-casing': 2,
+		'@typescript-eslint/array-type': [2, { default: 'array' }],
 		'@typescript-eslint/indent': [1, 'tab'],
 		'@typescript-eslint/member-delimiter-style': [2, {
 			multiline: { delimiter: 'semi', requireLast: true },
-			singleline: { delimiter: 'comma', requireLast: false }
+			singleline: { delimiter: 'comma', requireLast: false },
 		}],
+		'@typescript-eslint/naming-convention': [2,
+			{ selector: 'default', format: ['camelCase', 'StrictPascalCase', 'UPPER_CASE']},
+			{ selector: 'property', format: ['camelCase', 'StrictPascalCase'], leadingUnderscore: 'allow' },
+			{ selector: 'enum', format: ['StrictPascalCase']},
+			{ selector: 'enumMember', format: ['StrictPascalCase']},
+			{ selector: 'typeAlias', format: ['StrictPascalCase']},
+			{ selector: 'typeParameter', format: ['StrictPascalCase']},
+			{ selector: 'class', format: ['StrictPascalCase']},
+			{ selector: 'interface', format: ['StrictPascalCase'], prefix: ['I']},
+		],
 		'@typescript-eslint/no-array-constructor': 2,
-		'@typescript-eslint/no-extraneous-class': 1,
+		'@typescript-eslint/no-extraneous-class': 2,
 		'@typescript-eslint/no-misused-new': 2,
-		'@typescript-eslint/no-unused-vars': 1,
-		'@typescript-eslint/no-use-before-define': 1,
+		'@typescript-eslint/no-unused-vars': 2,
+		'@typescript-eslint/no-use-before-define': 2,
+		'@typescript-eslint/no-useless-constructor': 2,
+		'@typescript-eslint/no-redeclare': 2,
 		'vue/component-name-in-template-casing': [1, 'kebab-case'],
-		'vue/script-indent': [1, 'tab', { baseIndent: 1 }],
-		'vue/require-default-prop': 0
+		'vue/require-default-prop': 0,
+		'filenames/match-regex': [2, '^([a-z0-9]+[-.])*[a-z0-9]+$', true],
 	},
 	overrides: [
 		{
-			files: ['*.vue'],
+			files: ['*.ts'],
 			rules: {
-				indent: 0,
-				'@typescript-eslint/indent': 0
-			}
-		}
-	]
+				'no-useless-constructor': 0,
+				// replaced with @typescript-eslint/no-unused-vars
+				'no-unused-vars': 0,
+				// replaced with @typescript-eslint/no-redeclare, allows function overload
+				'no-redeclare': 0,
+			},
+		},
+	],
 };

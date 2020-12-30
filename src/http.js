@@ -1,12 +1,11 @@
-/* eslint-disable quote-props,dot-notation */
 import Axios from 'axios';
 
 const http = Axios.create({
 	baseURL: apiBaseURL,
 	headers: {
 		'X-Requested-With': 'XMLHttpRequest',
-		'Accept': 'application/json'
-	}
+		Accept: 'application/json',
+	},
 });
 
 http.interceptors.response.use(null, baseErr => {
@@ -21,7 +20,7 @@ http.interceptors.response.use(null, baseErr => {
 			err.request = {
 				method: baseErr.response.request.method,
 				path: baseErr.response.request.path,
-				headers: baseErr.response.request._headers
+				headers: baseErr.response.request._headers,
 			};
 		}
 		delete baseErr.response.request;
@@ -45,7 +44,7 @@ export function authorize(data = null) {
 		if (data.remember_token) window.localStorage.rememberToken = data.remember_token;
 	}
 	if (!window.localStorage.apiToken) return;
-	http.defaults.headers['Authorization'] = 'Bearer ' + window.localStorage.apiToken;
+	http.defaults.headers.Authorization = 'Bearer ' + window.localStorage.apiToken;
 }
 
 /**
@@ -65,7 +64,7 @@ export function logout() {
 	if (authorized()) http.delete('auth');
 	window.localStorage.removeItem('apiToken');
 	window.localStorage.removeItem('rememberToken');
-	delete http.defaults.headers['Authorization'];
+	delete http.defaults.headers.Authorization;
 }
 
 /**
@@ -91,7 +90,7 @@ export function recallToken() {
  * @return {String|undefined} token
  */
 export function getApiToken() {
-	return http.defaults.headers['Authorization'] && http.defaults.headers['Authorization'].substr(7);
+	return http.defaults.headers.Authorization && http.defaults.headers.Authorization.substr(7);
 }
 
 authorize();

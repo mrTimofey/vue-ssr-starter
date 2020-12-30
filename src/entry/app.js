@@ -34,7 +34,7 @@ Vue.use(Meta, {
 	keyName: 'head',
 	attribute: 'data-meta',
 	ssrAttribute: 'data-meta-ssr',
-	tagIDKeyName: 'vmid'
+	tagIDKeyName: 'vmid',
 });
 
 // we should return factory for SSR (runInNewContext: false)

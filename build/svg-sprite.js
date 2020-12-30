@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 const fs = require('fs'),
 	path = require('path'),
-	SVGSpriter = require('svg-sprite');
+	SvgSpriter = require('svg-sprite');
 
 const spritesDir = path.resolve(process.cwd(), 'assets', 'icons'),
 	outputDir = path.resolve(process.cwd(), 'assets');
@@ -42,7 +42,7 @@ const transform = {
 	collapseGroups: true,
 };
 
-const spriter = new SVGSpriter({
+const spriter = new SvgSpriter({
 	dest: outputDir,
 	log: process.env.NODE_ENV === 'production' ? null : 'debug',
 	shape: {

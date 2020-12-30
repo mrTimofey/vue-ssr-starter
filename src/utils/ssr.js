@@ -14,7 +14,7 @@ function update(vm, route) {
 	const res = fn({
 		route,
 		store: vm.$store,
-		props: route.params
+		props: route.params,
 	});
 	if (!res) return Promise.resolve();
 	if (typeof res.then !== 'function') return Promise.resolve({ data: res });
@@ -45,7 +45,7 @@ export const serverMixin = {
 		// fill data on component create
 		if (this.$ssrContext.componentStates && this.$ssrContext.componentStates[this.$options.name])
 			Object.assign(this.$data, this.$ssrContext.componentStates[this.$options.name]);
-	}
+	},
 };
 
 export const clientMixin = {
@@ -75,7 +75,7 @@ export const clientMixin = {
 					}
 				);
 			});
-	}
+	},
 };
 
 export const prefetchMixin = process.env.VUE_ENV === 'server' ? serverMixin : clientMixin;
@@ -87,7 +87,7 @@ export function serverPrefetch(app, context, comp) {
 		fn({
 			route: app.$route,
 			store: app.$store,
-			props: app.$route.params
+			props: app.$route.params,
 		}).then((data) => {
 			if (!key || !data || Object.keys(data).length === 0) return;
 			// save component data to the context to restore it on the client side while hydrating

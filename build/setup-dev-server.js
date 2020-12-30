@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 const path = require('path'),
 	webpack = require('webpack'),
-	MFS = require('memory-fs');
+	{ Volume } = require('memfs');
 
 const clientConfig = require('./webpack/client'),
 	serverConfig = require('./webpack/server');
@@ -19,15 +19,9 @@ module.exports = (app, opts) => {
 	// dev middleware
 	const clientCompiler = webpack(clientConfig),
 		serverCompiler = webpack(serverConfig),
-		devMiddleware = require('webpack-dev-middleware')(clientCompiler, {
-			publicPath: clientConfig.output.publicPath,
-			stats: {
-				colors: true,
-				chunks: false,
-			},
-		}),
+		devMiddleware = require('webpack-dev-middleware')(clientCompiler),
 		hotMiddleware = require('webpack-hot-middleware')(clientCompiler),
-		mfs = new MFS(),
+		mfs = new Volume(),
 		layoutPath = path.join(clientConfig.output.path, 'index.html'),
 		serverBundlePath = path.join(serverConfig.output.path, 'vue-ssr-server-bundle.json');
 
@@ -37,6 +31,7 @@ module.exports = (app, opts) => {
 	serverCompiler.outputFileSystem = mfs;
 
 	clientCompiler.hooks.done.tap('done', () => {
+		console.log();
 		if (devMiddleware.fileSystem.existsSync(layoutPath))
 			opts.layoutUpdated(devMiddleware.fileSystem.readFileSync(layoutPath, 'utf-8'));
 	});

@@ -5,16 +5,15 @@ const fs = require('fs'),
 	serialize = require('serialize-javascript'),
 	vueSR = require('vue-server-renderer');
 
-const port = process.env.APP_PORT || 3000,
+const port = process.env.APP_PORT || 8080,
 	config = {
 		port,
 		production: process.env.NODE_ENV === 'production',
 		apiBaseUrl: {
-			server: process.env.API_BASE_SSR || `http://localhost:${port}/`,
-			client: process.env.API_BASE_CLIENT || '/',
+			server: process.env.API_BASE_SSR && (process.env.API_BASE_SSR.replace(/\/$/, '') + '/') || `http://localhost:${port}/`,
+			client: process.env.API_BASE_CLIENT && (process.env.API_BASE_CLIENT.replace(/\/$/, '') + '/') || '/',
 		},
-		proxyEnabled: !!process.env.PROXY_ENABLED,
-		serveStatic: !!process.env.SERVE_STATIC,
+		proxyBase: process.env.PROXY_BASE || '',
 	};
 
 // application variables
@@ -22,15 +21,7 @@ const app = polka(),
 	layoutFile = path.resolve('./dist/index.html'),
 	faviconPath = path.join(process.cwd(), 'favicon.ico');
 
-let formatError, layout, renderer;
-
-if (config.production) {
-	formatError = err => err.stack;
-}
-else {
-	const prettyError = new (require('pretty-error'))();
-	formatError = err => prettyError.render(err);
-}
+let layout, renderer;
 
 /**
  * Split layout HTML allowing server renderer to inject component output, store data, meta tags, etc.
@@ -50,7 +41,9 @@ function parseLayout(html) {
 	const body = '</head>' + layout[0] + '<body';
 	layout = layout[1].split('<!--APP-->');
 	const afterBody = '>' + layout[0];
-	const end = layout[1];
+	layout = layout[1].split('</body>');
+	const beforeClosingBody = layout[0],
+		end = '</body>' + layout[1];
 
 	return [
 		// before app layout
@@ -67,24 +60,54 @@ function parseLayout(html) {
 				afterBody;
 		},
 		// after app layout
+		beforeClosingBody,
 		end,
 	];
 }
 
-if (config.proxyEnabled) {
-	require('./build/setup-proxy')(app);
-}
-
-if (config.serveStatic) {
-	app.use('/dist', require('serve-static')('./dist'));
-}
+if (config.proxyBase) require('./setup-proxy')(app, config.proxyBase);
 
 if (config.production) {
+	const clientManifest = require('./dist/vue-ssr-client-manifest.json'),
+		serverBundle = require('./dist/server/vue-ssr-server-bundle.json'),
+		localPublicPath = clientManifest.publicPath;
+
 	layout = parseLayout(fs.readFileSync(layoutFile, 'utf-8'));
-	renderer = vueSR.createBundleRenderer(path.resolve('./dist/vue-ssr-server-bundle.json'), {
+	renderer = vueSR.createBundleRenderer(serverBundle, {
 		runInNewContext: false,
-		clientManifest: require('./dist/vue-ssr-client-manifest.json'),
+		clientManifest,
 	});
+
+	if (localPublicPath.startsWith('/')) {
+		let staticHandler = null;
+
+		// polka understands only single-slash root paths, so register global middleware with some hacks to serve any required prefix
+		app.use((req, res, next) => {
+			if (req.path.startsWith(localPublicPath)) {
+				// lazy-load static server for environments without an external static server
+				if (!staticHandler) staticHandler = require('serve-static')('./dist/public', {
+					maxAge: '3d',
+					immutable: true,
+				});
+				// access log
+				console.log({
+					url: req.url,
+					referer: req.headers.referer,
+				});
+				// hack request for staticHandler...
+				const { path, url } = req;
+				req.path = path.substring(localPublicPath.length) || '/';
+				req.url = url.substring(localPublicPath.length) || '/';
+				staticHandler(req, res, err => {
+					// ...and revert it back
+					req.path = path;
+					req.url = url;
+					next(err);
+				});
+			}
+			else next();
+		});
+	}
 }
 else {
 	require('./build/setup-dev-server')(app, {
@@ -97,9 +120,7 @@ else {
 	});
 }
 
-if (fs.existsSync(faviconPath)) {
-	app.use(require('serve-favicon')(faviconPath));
-}
+if (fs.existsSync(faviconPath)) app.use(require('serve-favicon')(faviconPath));
 
 app.get('*', (req, res) => {
 	if (!renderer || !layout) return res.end('Compiling app, refresh in a moment...');
@@ -131,7 +152,7 @@ app.get('*', (req, res) => {
 			body += layout[0](
 				// <head> ...
 				[meta, title, link, style, script, noscript].reduce((acc, el) => acc + el.text(), '') +
-				context.renderResourceHints() + context.renderStyles(),
+					context.renderResourceHints() + context.renderStyles(),
 				// <html ATTRS>
 				htmlAttrs.text(),
 				// <body ATTRS>
@@ -150,30 +171,30 @@ app.get('*', (req, res) => {
 
 	stream.on('end', () => {
 		if (errorOccurred) return;
-		if (context.initialVuexState && context.initialVuexState.serverError) {
-			// let application handle server error if possible
-			console.error((new Date()).toUTCString() + ': data prefetching error');
+		if (context.initialVuexState && context.initialVuexState.serverError)
 			console.error(context.initialVuexState.serverError);
-		}
 		res.statusCode = context.statusCode || 200;
 		res.write(body);
 
-		const injectData = { cnf: clientEnvConfig };
+		const injectData = { cfg: clientEnvConfig };
 		if (context.initialVuexState) injectData.state = context.initialVuexState;
 		if (context.initialComponentStates) injectData.cmp = context.initialComponentStates;
+		else delete injectData.disableMarketingScripts;
 		res.write(`<script>window.__APP__=${serialize(injectData)}</script>`);
 
 		res.write(context.renderScripts());
-		res.end(layout[1]);
+		res.write(layout[1]);
+		res.end(layout[2]);
 	});
 
 	stream.on('error', err => {
 		errorOccurred = true;
 		res.statusCode = 500;
-		console.error(new Date().toISOString());
-		console.error(formatError(err));
+		console.error(err);
 		res.end(config.production ? 'Something went wrong...' : `<pre>${err.stack}\n\n<b>Watch console for more information</b></pre>`);
 	});
 });
 
 app.listen(config.port);
+
+console.log(`Server listening on port ${config.port}`);
